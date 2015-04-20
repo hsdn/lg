@@ -1,7 +1,7 @@
 ## HSDN PHP Looking Glass
 PHP Version of BGP Looking Glass script, based on the Perl sources: https://github.com/Cougar/lg
 
-### General Features:
+### General Features
 - Supports the Telnet and SSH (through Putty/plink)
 - Supports the Cisco, MikroTik v5 and v6, Quagga (Zebra) and JunOS routers
 - Supports the IPv4 and IPv6 protocols
@@ -9,17 +9,17 @@ PHP Version of BGP Looking Glass script, based on the Perl sources: https://gith
 - Drawing graph of BGP AS pathes using GraphViz toolkit
 - Works on php 5.2.0 and above
 
-### System Requirements:
+### System Requirements
 - php version 5.2.0 and above with Sockets and Filter (http://www.php.net/)
 - Putty for SSH connections usign `plink' command (http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html)
 - GraphViz toolkit for drawing BGP pathes graph (http://www.graphviz.org/)
 - php pear package Image_GraphViz (http://pear.php.net/package/Image_GraphViz)
 
-### General demonstration
+### Demonstration
 - http://lg.hsdn.org/
 - http://lg.regnets.ru/
 
-### Graph of BGP AS pathes demonstration
+#### Graph of BGP AS pathes demonstration
 - http://lg.hsdn.org/?command=graph&protocol=ipv6&query=google.com&router=saratov-br1
 
 ### License
