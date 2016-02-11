@@ -1,6 +1,6 @@
 <?php
 /**
- * HSDN Looking Glass version 1.1.27b
+ * HSDN Looking Glass version 1.1.28b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink)
@@ -176,7 +176,8 @@ if ($command != 'graph' OR !isset($_REQUEST['render']) OR !isset($_CONFIG['route
 			body { font: 14px normal Arial, Helvetica, sans-serif; margin: 30px 10%; color: #000; background: #fff; }
 			h2 { font-size: 24px; font-weight: normal; }
 			form { margin: 0; padding: 0 0 15px 0; }
-			p, hr, object { margin: 0; padding: 0 0 15px 0; }
+			p, object { margin: 0; padding: 0 0 15px 0; }
+			hr { margin: 0 0 15px 0; border: none; color: #000; background-color: #000; height: 1px; }
 			a:link, a:visited { color: <?php print $_CONFIG['color'] ?>; }
 			a:hover { color: #ccc; }
 			table { border: 0; }
@@ -207,7 +208,7 @@ if ($command != 'graph' OR !isset($_REQUEST['render']) OR !isset($_CONFIG['route
 		<div class="center"><a href="?"><img src="<?php print $_CONFIG['logo'] ?>" border="0" alt="lg"></a></div>
 <?php endif ?>
 		<div class="center"><h2>AS<?php print $_CONFIG['asn'] ?> Looking Glass</h2></div>
-		<hr size="1" color="#000" noshade="noshade" />
+		<hr />
 <?
 flush();
 }
@@ -314,7 +315,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 		$protocol = 'ipv4';
 
 		print '<div class="center"><p class="warning">The router does not support IPv6. Using IPv4.</p></div>';
-		print '<hr size="1" color="#000" noshade="noshade" />';
+		print '<hr />';
 	}
 
 	$url = $_CONFIG['routers'][$router]['url'];
@@ -395,7 +396,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 	else if ($query != '' AND $command != 'graph')
 	{
 		print '<div class="center"><p class="warning">No parameter needed.</p></div>';
-		print '<hr size="1" color="#000" noshade="noshade" />';
+		print '<hr />';
 	}
 
 	if ($exec)
@@ -571,7 +572,7 @@ else
 
 // HTML footer
 ?>
-		<hr size="1" color="#000" noshade="noshade" />
+		<hr />
 		<div class="center">
 			<p><small>Information: <a href="https://stat.ripe.net/AS<?php print $_CONFIG['asn'] ?>" target="_blank">RIPEstat</a> <a href="http://bgp.he.net/AS<?php print $_CONFIG['asn'] ?>" target="_blank">he.net</a> <a href="http://as.robtex.com/as<?php print $_CONFIG['asn'] ?>.html#asinfo" target="_blank">robtex.com</a> <a href="http://as.robtex.com/as<?php print $_CONFIG['asn'] ?>.png" target="_blank">Peering Map</a> <a href="http://www.peeringdb.com/view.php?asn=<?php print $_CONFIG['asn'] ?>" target="_blank">PeeringDB</a></small></p>
 			<p>Copyright &copy; <?php print date('Y') ?> <?php print htmlspecialchars($_CONFIG['company']) ?></p>
