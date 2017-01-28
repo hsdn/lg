@@ -20,7 +20,7 @@ PHP Version of BGP Looking Glass script, based on the Perl sources: https://gith
 - http://lg.regnets.ru/
 
 #### Graph of BGP AS pathes demonstration
-- http://lg.hsdn.org/?command=graph&protocol=ipv6&query=google.com&router=saratov-br1
+- http://lg.hsdn.org/?command=graph&protocol=ipv4&query=8.8.8.8&router=saratov-br1
 
 ### License
     HSDN Looking Glass
