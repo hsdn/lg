@@ -1,6 +1,6 @@
 <?php
 /**
- * HSDN Looking Glass version 1.1.28b
+ * HSDN Looking Glass version 1.1.29b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink)
@@ -209,7 +209,7 @@ if ($command != 'graph' OR !isset($_REQUEST['render']) OR !isset($_CONFIG['route
 <?php endif ?>
 		<div class="center"><h2>AS<?php print $_CONFIG['asn'] ?> Looking Glass</h2></div>
 		<hr />
-<?
+<?php
 flush();
 }
 
@@ -567,7 +567,7 @@ else
 			</table>
 		</div>
 		</form>
-<?
+<?php
 }
 
 // HTML footer
@@ -579,7 +579,7 @@ else
 		</div>
 	</body>
 </html>
-<?
+<?php
 
 // ------------------------------------------------------------------------
 
