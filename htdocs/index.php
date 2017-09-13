@@ -889,7 +889,7 @@ function parse_out($output, $check = FALSE)
 		{
 			$data_exp = explode(' ', trim($summary_part), 3);
 
-			$summary_part = preg_replace("/bgp-as-path=\"([^\"]+)\"/ex", "stripslashes('bgp-as-path=\"'.link_as('\\1').'\"')", $summary_part);
+			$summary_part = preg_replace_callback("/bgp-as-path=\"([^\"]+)\"/x", function ($matches) { return stripslashes("bgp-as-path='".link_as($matches[1])."'"); }, $summary_part);
 
 			if (strpos($data_exp[1], 'A') !== FALSE)
 			{
@@ -907,7 +907,7 @@ function parse_out($output, $check = FALSE)
 	// MikroTik
 	if (preg_match("/^\/routing bgp advertisements print/i", $exec) AND $os == 'mikrotik')
 	{
-		return preg_replace("/^(.{8}\s)([\d\.A-Fa-f:\/]+)(\s+)/e", '"\\1".link_command("bgp", "\\2")."\\3"', $output);
+		return preg_replace_callback("/^(.{8}\s)([\d\.A-Fa-f:\/]+)(\s+)/", function ($matches) { return $matches[1].link_command("bgp", $matches[2]).$matches[3]; }, $output);
 	}
 
 	// MikroTik
