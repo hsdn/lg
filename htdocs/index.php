@@ -1,27 +1,27 @@
 <?php
 /**
- * HSDN Looking Glass version 1.1.29b
+ * HSDN Looking Glass version 1.2.0b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink)
- *	- Supports the Cisco, MikroTik v5 and v6, Quagga (Zebra) and JunOS routers
- *	- Supports the IPv4 and IPv6 protocols
- *	- Automatic conversion IPs to subnets using RADb (for MikroTik)
- *	- Drawing graph of BGP AS pathes using GraphViz toolkit
+ *  - Supports the Cisco, MikroTik v5 and v6, Quagga (Zebra) and JunOS routers
+ *  - Supports the IPv4 and IPv6 protocols
+ *  - Automatic conversion IPs to subnets using RADb (for MikroTik)
+ *  - Drawing graph of BGP AS pathes using GraphViz toolkit
  *  - Works on php 5.2.0 and above
  *
  * System Requirements:
  *  - php version 5.2.0 and above with Sockets and Filter
- *		http://www.php.net/
+ *      http://www.php.net/
  *  - Putty for SSH connections usign `plink' command
- *		http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html
+ *      http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html
  *  - GraphViz toolkit for drawing BGP pathes graph
- *		http://www.graphviz.org/
+ *      http://www.graphviz.org/
  *  - php pear package Image_GraphViz 
- *		http://pear.php.net/package/Image_GraphViz
+ *      http://pear.php.net/package/Image_GraphViz
  *
  *
- * Copyright (C) 2012-2014 Information Networks Ltd. <info@hsdn.org>
+ * Copyright (C) 2012-2017 Information Networks Ltd. <info@hsdn.org>
  *                         http://www.hsdn.org/
  *
  * Copyright (C) 2000-2002 Cougar <cougar@random.ee>
@@ -123,7 +123,7 @@ $_CONFIG['routers'] = array
 		'ipv6' => TRUE,
 		'os' => 'ios',
 	),
-	/*'kemerovo-br1' => array
+	'kemerovo-br1' => array
 	(
 		'url' => 'telnet://46.8.40.1:23',
 		'pingtraceurl' => FALSE,
@@ -132,7 +132,7 @@ $_CONFIG['routers'] = array
 		'ipv6' => TRUE,
 		'os' => 'ios',
 	),
-	'test' => array
+	/*'test' => array
 	(
 		'url' => 'telnet://rviews:rviews@route-server.ip.att.net',
 		'pingtraceurl' => FALSE,
@@ -165,12 +165,12 @@ if ($command != 'graph' OR !isset($_REQUEST['render']) OR !isset($_CONFIG['route
 {
 // HTML header
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 	<head>
 		<title>AS<?php print $_CONFIG['asn'] ?> Looking Glass</title>
-		<link rel="shortcut icon" href="favicon.ico" />
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta charset="utf-8">
+		<link rel="shortcut icon" href="favicon.ico">
 		<style type="text/css"> 
 		<!--
 			body { font: 14px normal Arial, Helvetica, sans-serif; margin: 30px 10%; color: #000; background: #fff; }
@@ -208,7 +208,7 @@ if ($command != 'graph' OR !isset($_REQUEST['render']) OR !isset($_CONFIG['route
 		<div class="center"><a href="?"><img src="<?php print $_CONFIG['logo'] ?>" border="0" alt="lg"></a></div>
 <?php endif ?>
 		<div class="center"><h2>AS<?php print $_CONFIG['asn'] ?> Looking Glass</h2></div>
-		<hr />
+		<hr>
 <?php
 flush();
 }
@@ -315,7 +315,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 		$protocol = 'ipv4';
 
 		print '<div class="center"><p class="warning">The router does not support IPv6. Using IPv4.</p></div>';
-		print '<hr />';
+		print '<hr>';
 	}
 
 	$url = $_CONFIG['routers'][$router]['url'];
@@ -396,7 +396,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 	else if ($query != '' AND $command != 'graph')
 	{
 		print '<div class="center"><p class="warning">No parameter needed.</p></div>';
-		print '<hr />';
+		print '<hr>';
 	}
 
 	if ($exec)
@@ -500,22 +500,22 @@ if (isset($_CONFIG['routers'][$router]) AND
 			<table border="0" class="legend">
 				<tr><td bgcolor="#CCCCFF" width="15">&nbsp;</td><td>Upstream AS</td><td width="80">&nbsp;</td><td bgcolor="#CCFFCC" width="15">&nbsp;</td><td>Peering AS</td><td width="80">&nbsp;</td><td bgcolor="white"><div style="height:12px;width:37px;background-image:url('data:image/gif;base64,R0lGODlhJQAMAOcAAAQCBISChJQ2NMTCxERCRcSCTGRiZYRWNEw2HKSipOTi5CQiJWRCJORCROyiXPzClISGnFRSVXRydKyi5DQyNRQSFJSSqdwCBPTy99xqlNTS1PwiJNSGvMSm7FxGRGxijIR+fPzk5JySzPSKVLS0tCQlNFxSdCQXDERCXOTC3LS21Dw6PSwCBNQeHAwKDPxSLHxyo+x2hNTS9MTG5KRyROzs7JSGwRwaHeyitPzU1KSivGxsbGRagVxaXXx8fLSq8ZycnPw0NOSaXLyCTExKTrxqbHwiJPylpDQzRPz+/GxuhCwqN4yOjJRkPEQ+WeTk/CwsLPRCTKSa3PwUFBQOCtza/Py0tNSPVGxKLIyKn1RVZBQWHPwDBPz09PxkZPybnIR3rFxcbExKZPzExDw6VPx8fNzO/KyqxJyatPQeLBQCBMzMzERGVGRldFw+JDQiFHRyhNzb3PQqPPTu/PyEhLy8vLyy/AwNFPxVVMzK6pSOxBweLOza7Lyq9HxunDQuQfxMTLwmJPzavPyUlMyb3JxaXLx+TFRKbCQeLOxufKysrPSuvORKZMSy/OTO7Hx+lPwKDIyCt/x0dPzc3Pw8PPysrPy8vPxsbPzNzPyMjPxaXIyKjMyOzHRqlcyKVCweFLy+3JSWlNyWW4R+tJxqPMTC3LSyzFw6PPwaHPwsLPzs7AwGBFQ5JGxGLPSiYLSi5hwSDKSV1ExCXLy61tzW/Dw1TJSSlOzi9PxERKya3BwWJMQqLISClNTW5CwmNKx2ROzs/PSmtGxsfHx7jJyarOyeXJxmPHRNLFxafExKbJyOzIx+fPR2hIx+tAQGBERGRWRmZOTm5CQmJWRGLPzGnFRWVDQ2NZSWrPT298Sq9GxmjlxWeTw+PQwODNTW9pSKxBweHaSmvWRehFxeXExOTCwuNNze/IyOpExOXDw+TKyuypyetXR2iMzO7Lyu+FROcPwODHRunPweHfSmZLSm7ExGZOzm/Kye44SGhMTGxIRaNKSmpHR2dBQWFNTW1PwmJCwAAAAAJQAMAAAIagCTCBxIsKBBVQYTKlxo8AsXL5YYSpzokAuXKZIwTdxYsKJFi/LK5OC40ePHj6kyhRh4pKXLlzBjXjpJ82OQRElq6tw5ZWfNKCQb+rQYZFDQhCZPpqIz6ajCpCFHOl1YccqlMVMnHoG4MSAAOw==')"></div></td><td>Best route</td></tr>
 			</table>
-			<br />
+			<br>
 			<div id="loading" style="display:inline"><p><b>Please wait...</b></p></div>
 			<!--[if IE]>
-				<p><img src="?command=graph&amp;protocol=<?php print $protocol ?>&amp;query=<?php print $query ?>&amp;router=<?php print $router ?>&amp;render=png" type="image/svg+xml" alt="" title="" /></p>
+				<p><img src="?command=graph&amp;protocol=<?php print $protocol ?>&amp;query=<?php print $query ?>&amp;router=<?php print $router ?>&amp;render=png" type="image/svg+xml" alt="" title=""></p>
 			<![endif]-->
 			<![if ! IE]>
 				<object data="?command=graph&amp;protocol=<?php print $protocol ?>&amp;query=<?php print $query ?>&amp;router=<?php print $router ?>&amp;render=true" type="image/svg+xml"></object>
 			<![endif]>
-			<br />
+			<br>
 		</div>
 <?php
 			}
 		}
 		else
 		{
-			print '<p><b>Router:</b> '.$_CONFIG['routers'][$router]['description'].'<br /><b>Command:</b> '.$exec.'</p><pre><code>';
+			print '<p><b>Router:</b> '.$_CONFIG['routers'][$router]['description'].'<br><b>Command:</b> '.$exec.'</p><pre><code>';
 			flush();
 
 			process($url, $exec);
@@ -536,19 +536,19 @@ else
 				<tr><th>Type of Query</th><th>Additional parameters</th><th>Node</th></tr>
 				<tr><td>
 				<table border="0" cellpadding="2" cellspacing="2">
-					<tr><td><input type="radio" name="command" id="bgp" value="bgp" checked="checked" /></td><td><label for="bgp">bgp</label></td></tr>
-					<tr><td><input type="radio" name="command" id="advertised-routes" value="advertised-routes" /></td><td><label for="advertised-routes">bgp&nbsp;advertised-routes</label></td></tr>
-					<tr><td><input type="radio" name="command" id="summary" value="summary" /></td><td><label for="summary">bgp&nbsp;summary</label></td></tr>
-					<tr><td><input type="radio" name="command" id="graph" value="graph" /></td><td><label for="graph">bgp graph</label></td></tr>
-					<tr><td><input type="radio" name="command" id="trace" value="trace" /></td><td><label for="trace">traceroute</label></td></tr>
-					<tr><td><input type="radio" name="command" id="ping" value="ping" /></td><td><label for="ping">ping</label></td></tr>
+					<tr><td><input type="radio" name="command" id="bgp" value="bgp" checked="checked"></td><td><label for="bgp">bgp</label></td></tr>
+					<tr><td><input type="radio" name="command" id="advertised-routes" value="advertised-routes"></td><td><label for="advertised-routes">bgp&nbsp;advertised-routes</label></td></tr>
+					<tr><td><input type="radio" name="command" id="summary" value="summary"></td><td><label for="summary">bgp&nbsp;summary</label></td></tr>
+					<tr><td><input type="radio" name="command" id="graph" value="graph"></td><td><label for="graph">bgp graph</label></td></tr>
+					<tr><td><input type="radio" name="command" id="trace" value="trace"></td><td><label for="trace">traceroute</label></td></tr>
+					<tr><td><input type="radio" name="command" id="ping" value="ping"></td><td><label for="ping">ping</label></td></tr>
 					<tr><td></td><td style="padding-top:10px">
 					<select name="protocol">
 						<option value="ipv4">IPv4</option>
 						<option value="ipv6">IPv6</option>
 					</select></td></tr>
 				</table></td>
-				<td align="center"><input name="query" size="30" /></td>
+				<td align="center"><input name="query" size="30"></td>
 				<td align="right">
 				<select name="router">
 <?php foreach ($routers as $group => $group_data): ?>
@@ -563,7 +563,7 @@ else
 <?php endif ?>
 <?php endforeach ?>
 				</select></td></tr>
-				<tr><td align="center" colspan="3"><p><input type="submit" value="Submit" /> | <input type="reset" value="Reset" /></p></td></tr>
+				<tr><td align="center" colspan="3"><p><input type="submit" value="Submit"> | <input type="reset" value="Reset"></p></td></tr>
 			</table>
 		</div>
 		</form>
@@ -572,7 +572,7 @@ else
 
 // HTML footer
 ?>
-		<hr />
+		<hr>
 		<div class="center">
 			<p><small>Information: <a href="https://stat.ripe.net/AS<?php print $_CONFIG['asn'] ?>" target="_blank">RIPEstat</a> <a href="http://bgp.he.net/AS<?php print $_CONFIG['asn'] ?>" target="_blank">he.net</a> <a href="http://as.robtex.com/as<?php print $_CONFIG['asn'] ?>.html#asinfo" target="_blank">robtex.com</a> <a href="http://as.robtex.com/as<?php print $_CONFIG['asn'] ?>.png" target="_blank">Peering Map</a> <a href="http://www.peeringdb.com/view.php?asn=<?php print $_CONFIG['asn'] ?>" target="_blank">PeeringDB</a></small></p>
 			<p>Copyright &copy; <?php print date('Y') ?> <?php print htmlspecialchars($_CONFIG['company']) ?></p>
@@ -889,7 +889,13 @@ function parse_out($output, $check = FALSE)
 		{
 			$data_exp = explode(' ', trim($summary_part), 3);
 
-			$summary_part = preg_replace("/bgp-as-path=\"([^\"]+)\"/ex", "stripslashes('bgp-as-path=\"'.link_as('\\1').'\"')", $summary_part);
+			$summary_part = preg_replace_callback(
+				"/bgp-as-path=\"([^\"]+)\"/x",
+				function ($matches) {
+					return stripslashes('bgp-as-path=\"'.link_as($matches[1]).'\"');
+				},
+				$summary_part
+			);
 
 			if (strpos($data_exp[1], 'A') !== FALSE)
 			{
@@ -907,13 +913,25 @@ function parse_out($output, $check = FALSE)
 	// MikroTik
 	if (preg_match("/^\/routing bgp advertisements print/i", $exec) AND $os == 'mikrotik')
 	{
-		return preg_replace("/^(.{8}\s)([\d\.A-Fa-f:\/]+)(\s+)/e", '"\\1".link_command("bgp", "\\2")."\\3"', $output);
+		return preg_replace_callback(
+			"/^(.{8}\s)([\d\.A-Fa-f:\/]+)(\s+)/",
+			function ($matches) {
+				return $matches[1].link_command("bgp", $matches[2]).$matches[3];
+			},
+			$output
+		);
 	}
 
 	// MikroTik
 	if (preg_match("/^\/(ip|ipv6) route print/i", $exec) AND $os == 'mikrotik')
 	{
-		return preg_replace("/(^[\s\d]+)(\s+[A-z]+\s+)([\d\.A-Fa-f:\/]+)(\s+)/e", '"\\1\\2".link_command("bgp", "\\3")."\\4"', $output);
+		return preg_replace_callback(
+			"/(^[\s\d]+)(\s+[A-z]+\s+)([\d\.A-Fa-f:\/]+)(\s+)/",
+			function ($matches) {
+				return $matches[1].$matches[2].link_command("bgp", $matches[3]).$matches[4];
+			},
+			$output
+		);
 	}
 
 	// MikroTik
@@ -1152,39 +1170,113 @@ function parse_out($output, $check = FALSE)
 
 	if ($exec == 'show ip bgp summary')
 	{
-		$output = preg_replace("/( local AS number )(\d+)/e", '"\\1".link_as("\\2")', $output);
+		$output = preg_replace_callback(
+			"/( local AS number )(\d+)/",
+			function ($matches) {
+				return $matches[1].link_as($matches[2]);
+			},
+			$output
+		);
 
 		// JunOS
 		if ($os == 'junos')
 		{
-			$output = preg_replace("/^([\dA-Fa-f:\.]+\s+)(\d+)/e", '"\\1".link_as("\\2")', $output);
+			$output = preg_replace_callback(
+				"/^([\dA-Fa-f:\.]+\s+)(\d+)/",
+				function ($matches) {
+					return $matches[1].link_as($matches[2]);
+				},
+				$output
+			);
 		}
 		else
 		{
-			$output = preg_replace("/^([\d\.]+\s+\d+\s+)(\d+)/e", '"\\1".link_as("\\2")', $output);
+			$output = preg_replace_callback(
+				"/^([\d\.]+\s+\d+\s+)(\d+)/",
+				function ($matches) {
+					return $matches[1].link_as($matches[2]);
+				},
+				$output
+			);
 		}
 
-		$output = preg_replace("/^(\d+\.\d+\.\d+\.\d+)(\s+.*\s+)([1-9]\d*)\n$/e", '"\\1\\2".link_command("routes", "\\1", "\\3")."\n"', $output);
-		$output = preg_replace("/^(\d+\.\d+\.\d+\.\d+)(\s+)/e", 'link_command("bgp", "neighbors+\\1", "\\1")."\\2"', $output);
+		$output = preg_replace_callback(
+			"/^(\d+\.\d+\.\d+\.\d+)(\s+.*\s+)([1-9]\d*)\n$/",
+			function ($matches) {
+				return $matches[1].$matches[2].link_command("routes", $matches[1], $matches[3])."\n";
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^(\d+\.\d+\.\d+\.\d+)(\s+)/",
+			function ($matches) {
+				return link_command("bgp", "neighbors+".$matches[1], $matches[1]).$matches[2];
+			},
+			$output
+		);
 
 		// IPv6 neighbours
-		$output = preg_replace("/^(.{15} 4\s+)(\d+)/e", '"\\1".link_as("\\2")', $output);
-		$output = preg_replace("/^([\dA-Fa-f]*:[\dA-Fa-f:]*)(\s+)/e", 'link_command("bgp", "neighbors+\\1", "\\1")."\\2"', $output);
-		$output = preg_replace("/^([\dA-Fa-f]*:[\dA-Fa-f:]*)\n$/e", 'link_command("bgp", "neighbors+\\1", "\\1")."\n"', $output);
+		$output = preg_replace_callback(
+			"/^(.{15} 4\s+)(\d+)/",
+			function ($matches) {
+				return $matches[1].link_as($matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^([\dA-Fa-f]*:[\dA-Fa-f:]*)(\s+)/",
+			function ($matches) {
+				return link_command("bgp", "neighbors+".$matches[1], $matches[1]).$matches[2];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^([\dA-Fa-f]*:[\dA-Fa-f:]*)\n$/",
+			function ($matches) {
+				return link_command("bgp", "neighbors+".$matches[1], $matches[1])."\n";
+			},
+			$output
+		);
 
 		return $output;
 	}
 
 	if ($exec == 'show ipv6 bgp summary' OR $exec == 'show bgp ipv6 unicast summary') 
 	{
-		$output = preg_replace("/^(.{15} 4\s+)(\d+)/e", '"\\1".link_as("\\2")', $output);
+		$output = preg_replace_callback(
+			"/^(.{15} 4\s+)(\d+)/",
+			function ($matches) {
+				return $matches[1].link_as($matches[2]);
+			},
+			$output
+		);
 
 		if (preg_match("/^([\dA-Fa-f]*:[\dA-Fa-f:]*)\s+4\s+/", $output, $lastip_exp))
 		{
 			$lastip = $lastip_exp[1];
-			$output = preg_replace("/^(.{15} 4\s+)(\d+)/e", '"\\1".link_as("\\2")', $output);
-			$output = preg_replace("/^([\dA-Fa-f:]+)(\s+.*\s+)([1-9]\d*)$/e", 'link_command("routes", "'.$lastip.'", "\\3")', $output);
-			$output = preg_replace("/^([\dA-Fa-f:]+)(\s+)/e", 'link_command("routes", "\\1")."\\2"', $output);
+
+			$output = preg_replace_callback(
+				"/^(.{15} 4\s+)(\d+)/",
+				function ($matches) {
+					return $matches[1].link_as($matches[2]);
+				},
+				$output
+			);
+			$output = preg_replace_callback(
+				"/^([\dA-Fa-f:]+)(\s+.*\s+)([1-9]\d*)$/",
+				function ($matches) {
+					global $lastip;
+					return link_command("routes", $lastip, $matches[3]);
+				},
+				$output
+			);
+			$output = preg_replace_callback(
+				"/^([\dA-Fa-f:]+)(\s+)/",
+				function ($matches) {
+					return link_command("routes", $matches[1]).$matches[2];
+				},
+				$output
+			);
 
 			unset($lastip);
 		}
@@ -1192,12 +1284,26 @@ function parse_out($output, $check = FALSE)
 		if (preg_match("/^([\dA-Fa-f:]+)\n$/", $output, $lastip_exp))
 		{
 			$lastip = $lastip_exp[1];
-			$output = preg_replace("/^([\dA-Fa-f:]+)/e", 'link_command("routes", "\\1")', $output);
+
+			$output = preg_replace_callback(
+				"/^([\dA-Fa-f:]+)/",
+				function ($matches) {
+					return link_command("routes", $matches[1]);
+				},
+				$output
+			);
 		}
 
 		if (isset($lastip) AND preg_match("/^(\s+.*\s+)([1-9]\d*)\n$/", $output)) 
 		{
-			$output = preg_replace("/^(\s+.*\s+)([1-9]\d*)\n$/e", '"\\1".link_command("routes", "'.$lastip.'", "\\2")."\n"', $output);
+			$output = preg_replace_callback(
+				"/^(\s+.*\s+)([1-9]\d*)\n$/",
+				function ($matches) {
+					global $lastip;
+					return $matches[1].link_command("routes", $lastip, $matches[2])."\n";
+				},
+				$output
+			);
 
 			unset($lastip);
 		}
@@ -1213,16 +1319,48 @@ function parse_out($output, $check = FALSE)
 			$lastip = $lastip_exp[1];
 
 			// IPv4
-			$output = preg_replace("/^(\d+\.\d+\.\d+\.\d+)(\s+.*\s+)([1-9]\d*)(\s+\d+\s+\d+\s+\d+\s+\d+\s+[\d:]+\s+)(\d+)\/(\d+)\/(\d+)(\s+)/e", '"\\1\\2".link_command("routes", "\\1", "\\3")."\\4".link_command("routes", "\\1", "\\5")."/".link_command("routes", "\\1", "\\6")."/".link_command("routes", "\\1", "\\7")."\\8"', $output);
+			$output = preg_replace_callback(
+				"/^(\d+\.\d+\.\d+\.\d+)(\s+.*\s+)([1-9]\d*)(\s+\d+\s+\d+\s+\d+\s+\d+\s+[\d:]+\s+)(\d+)\/(\d+)\/(\d+)(\s+)/",
+				function ($matches) {
+					return $matches[1].$matches[2].
+						link_command("routes", $matches[1], $matches[3]).$matches[4].
+						link_command("routes", $matches[1], $matches[5])."/".
+						link_command("routes", $matches[1], $matches[6])."/".
+						link_command("routes", $matches[1], $matches[7]).$matches[8];
+				},
+				$output
+			);
 
 			// IPv4/IPv6
-			$output = preg_replace("/^([\dA-Fa-f:][\d\.A-Fa-f:]+\s+)(\d+)(\s+)/e", '"\\1".link_as("\\2")."\\3"', $output);
-			$output = preg_replace("/^([\dA-Fa-f:][\d\.A-Fa-f:]+)(\s+)/e", 'link_command("bgp", "neighbors+\\1", "\\1")."\\2"', $output);
+			$output = preg_replace_callback(
+				"/^([\dA-Fa-f:][\d\.A-Fa-f:]+\s+)(\d+)(\s+)/",
+				function ($matches) {
+					return $matches[1].link_as($matches[2]).$matches[3];
+				},
+				$output
+			);
+			$output = preg_replace_callback(
+				"/^([\dA-Fa-f:][\d\.A-Fa-f:]+)(\s+)/",
+				function ($matches) {
+					return link_command("bgp", "neighbors+".$matches[1], $matches[1]).$matches[2];
+				},
+				$output
+			);
 		}
 
 		if (isset($lastip) AND preg_match("/(  [^:]+: )(\d+)\/(\d+)\/(\d+)$/", $output))
 		{
-			$output = preg_replace("/^(  [^:]+: )(\d+)\/(\d+)\/(\d+)\n$/e", '"\\1".link_command("routes", "'.$lastip.'", "\\2")."/".link_command("bgp", "neighbors+'.$lastip.'+routes+all", "\\3")."/".link_command("bgp", "neighbors+'.$lastip.'+routes+damping+suppressed", "\\4")."\n"', $output);
+			$output = preg_replace_callback(
+				"/^(  [^:]+: )(\d+)\/(\d+)\/(\d+)\n$/",
+				function ($matches) {
+					global $lastip;
+					return "\\1".
+						link_command("routes", $lastip, $matches[2])."/".
+						link_command("bgp", "neighbors+".$lastip."+routes+all", $matches[3])."/".
+						link_command("bgp", "neighbors+".$lastip."+routes+damping+suppressed", $matches[4])."\n";
+				},
+				$output
+			);
 
 			unset($lastip);
 		}
@@ -1237,11 +1375,41 @@ function parse_out($output, $check = FALSE)
 		preg_match("/^show (ip bgp|bgp ipv6) prefix-list/i", $exec) OR
 		preg_match("/^show (ip bgp|bgp ipv6) route-map/i", $exec))
 	{
-		$output = preg_replace("/^([\*r ](>|d|h| ).{59})([\d\s,\{\}]+)([ie\?])\n$/e", '"\\1".link_as("\\3")."\\4\n"', $output);
-		$output = preg_replace("/^([\*r ](>|d|h| )[i ])([\d\.A-Fa-f:\/]+)(\s+)/e", '"\\1".link_command("bgp", "\\3")."\\4"', $output);
-		$output = preg_replace("/^([\*r ](>|d|h| )[i ])([\d\.A-Fa-f:\/]+)\n$/e", '"\\1".link_command("bgp", "\\3")."\n"', $output);
-		$output = preg_replace("/^(( ){20}.{41})([\d\s,\{\}]+)([ie\?])\n$/e", '"\\1".link_as("\\3")."\\4\n"', $output);
-		$output = preg_replace("/(, remote AS )(\d+)(,)/e", '"\\1".link_as("\\2")."\\3\n"', $output);
+		$output = preg_replace_callback(
+			"/^([\*r ](>|d|h| ).{59})([\d\s,\{\}]+)([ie\?])\n$/",
+			function ($matches) {
+				return $matches[1].link_as($matches[3]).$matches[4]."\n";
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^([\*r ](>|d|h| )[i ])([\d\.A-Fa-f:\/]+)(\s+)/",
+			function ($matches) {
+				return $matches[1].link_command("bgp", $matches[3]).$matches[4];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^([\*r ](>|d|h| )[i ])([\d\.A-Fa-f:\/]+)\n$/",
+			function ($matches) {
+				return $matches[1].link_command("bgp", $matches[3])."\n";
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^(( ){20}.{41})([\d\s,\{\}]+)([ie\?])\n$/",
+			function ($matches) {
+				return $matches[1].link_as($matches[3]).$matches[4]."\n";
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(, remote AS )(\d+)(,)/",
+			function ($matches) {
+				return $matches[1].link_as($matches[2]).$matches[3]."\n";
+			},
+			$output
+		);
 
 		return $output;
 	}
@@ -1249,15 +1417,63 @@ function parse_out($output, $check = FALSE)
 	// JunOS
 	if (preg_match("/^show route receive-protocol bgp\s+[\d\.A-Fa-f:]+/i", $exec)) 
 	{
-		$output = preg_replace("/(Community: )([\d: ]+)/e", '"\\1".link_community("\\2")', $output);
-		$output = preg_replace("/(Communities: )([\d: ]+)/e", '"\\1".link_community("\\2")', $output);
-		$output = preg_replace("/(^\s+AS path: )([\d ]+)/e", '"\\1".link_as("\\2")', $output);
-		$output = preg_replace("/^([\d\.\s].{24})([\d\.]+)(\s+)/e", '"\\1".link_command("bgp", "neighbors+\\2", "\\2")', $output);
-		$output = preg_replace("/^([\d\.\/]+)(\s+)/e", 'link_command("bgp", "\\1")."\\2"', $output);
-		$output = preg_replace("/^([\d\.A-Fa-f:\/]+)(\s+)/e", 'link_command("bgp", "\\1+exact", "\\1")."\\2"', $output);
-		$output = preg_replace("/^([\d\.A-Fa-f:\/]+)\s*\n$/e", 'link_command("bgp", "\\1+exact", "\\1")', $output);
-		$output = preg_replace("/^([ \*] )([\d\.A-Fa-f:\/]+)(\s+)/e", '"\\1".link_command("bgp", "\\2+exact", "\\2")."\\3"', $output);
-		
+		$output = preg_replace_callback(
+			"/(Community: )([\d: ]+)/",
+			function ($matches) {
+				return $matches[1].link_community($matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(Communities: )([\d: ]+)/",
+			function ($matches) {
+				return $matches[1].link_community($matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(^\s+AS path: )([\d ]+)/",
+			function ($matches) {
+				return $matches[1].link_as($matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^([\d\.\s].{24})([\d\.]+)(\s+)/",
+			function ($matches) {
+				return $matches[1].link_command("bgp", "neighbors+".$matches[2], $matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^([\d\.\/]+)(\s+)/",
+			function ($matches) {
+				return link_command("bgp", $matches[1]).$matches[2];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^([\d\.A-Fa-f:\/]+)(\s+)/",
+			function ($matches) {
+				return link_command("bgp", $matches[1]."+exact", $matches[1]).$matches[2];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^([\d\.A-Fa-f:\/]+)\s*\n$/",
+			function ($matches) {
+				return link_command("bgp", $matches[1]."+exact", $matches[1]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^([ \*] )([\d\.A-Fa-f:\/]+)(\s+)/",
+			function ($matches) {
+				return $matches[1].link_command("bgp", $matches[2]."+exact", $matches[2]).$matches[3];
+			},
+			$output
+		);
+
 		return $output;
 	}
 
@@ -1266,12 +1482,49 @@ function parse_out($output, $check = FALSE)
 	{
 		$ip = $ip_exp[1];
 
-		$output = preg_replace("/^([\d\.\s].{64})([\d\s,\{\}]+)([I\?])\n$/e", '"\\1".link_as("\\2")."\\3\n"', $output);
-		$output = preg_replace("/^([\d\.\s].{24})([\d\.]+)(\s+)/e", '"\\1".link_command("bgp", "neighbors+\\2", "\\2")."\\3"', $output);
-		$output = preg_replace("/^([\d\.\/]+)(\s+)/e", 'link_command("bgp", "\\1")."\\2"', $output);
-		$output = preg_replace("/^([\d\.A-Fa-f:\/]+)(\s+)/e", 'link_command("bgp", "\\1+exact", "\\1")."\\2"', $output);
-		$output = preg_replace("/^([\d\.A-Fa-f:\/]+)\s*\n$/e", 'link_command("bgp", "\\1+exact", "\\1")."\n"', $output);
-		$output = preg_replace("/^([ \*] )([\d\.A-Fa-f:\/]+)(\s+)/e", '"\\1".link_command("bgp", "neighbors+"'.$ip.'"+advertised-routes+\\2", "\\2")."\\3"', $output);
+		$output = preg_replace_callback(
+			"/^([\d\.\s].{64})([\d\s,\{\}]+)([I\?])\n$/",
+			function ($matches) {
+				return $matches[1].link_as($matches[2]).$matches[3]."\n";
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^([\d\.\s].{24})([\d\.]+)(\s+)/",
+			function ($matches) {
+				return $matches[1].link_command("bgp", "neighbors+".$matches[2], $matches[2]).$matches[3];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^([\d\.\/]+)(\s+)/",
+			function ($matches) {
+				return link_command("bgp", $matches[1]).$matches[2];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^([\d\.A-Fa-f:\/]+)(\s+)/",
+			function ($matches) {
+				return link_command("bgp", $matches[1]."+exact", $matches[1]).$matches[2];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^([\d\.A-Fa-f:\/]+)\s*\n$/",
+			function ($matches) {
+				return link_command("bgp", $matches[1]."+exact", $matches[1])."\n";
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^([ \*] )([\d\.A-Fa-f:\/]+)(\s+)/",
+			function ($matches) {
+				global $ip;
+				return $matches[1].link_command("bgp", "neighbors+".$ip."+advertised-routes+".$matches[2], $matches[2]).$matches[3];
+			},
+			$output
+		);
 
 		return $output;
 	}
@@ -1284,20 +1537,108 @@ function parse_out($output, $check = FALSE)
 			$lastip = $lastip_exp[1];
 		}
 
-		$output = preg_replace("/(Prefix )(advertised)( [1-9]\d*)/e", '"\\1".link_command("advertised-routes", "'.$lastip.'", "\\2")."\\3"', $output);
-		$output = preg_replace("/(    Prefixes Total:                 )(\d+)( )/e", '"\\1".link_command("advertised-routes", "'.$lastip.'", "\\2")."\\3"', $output);
-		$output = preg_replace("/(prefixes )(received)( [1-9]\d*)/e", '"\\1".link_command("routes", "'.$lastip.'", "\\2")."\\3"', $output);
-		$output = preg_replace("/(    Prefixes Current: \s+)(\d+)(\s+)(\d+)/e", '"\\1".link_command("advertised-routes", "'.$lastip.'", "\\2")."\\3".link_command("routes", "'.$lastip.'", "\\4")', $output);
-		$output = preg_replace("/(\s+)(Received)( prefixes:\s+[1-9]\d*)/e", '"\\1".link_command("routes", "'.$lastip.'", "\\2")."\\3"', $output);
-		$output = preg_replace("/(    Saved \(soft-reconfig\):\s+)(\d+|n\/a)(\s+)(\d+)/e", '"\\1\\2\\3".link_command("received-routes", "'.$lastip.'", "\\4")', $output);
-		$output = preg_replace("/( [1-9]\d* )(accepted)( prefixes)/e", '"\\1".link_command("routes", "'.$lastip.'", "\\2")."\\3"', $output);
-		$output = preg_replace("/^(  [1-9]\d* )(accepted|denied but saved)( prefixes consume \d+ bytes)/e", '"\\1".link_command("received-routes", "'.$lastip.'", "\\2")."\\3"', $output);
-		$output = preg_replace("/^(BGP neighbor is )(\d+\.\d+\.\d+\.\d+)(,)/e", '"\\1".link_whois("\\2")."\\3"', $output);
+		$output = preg_replace_callback(
+			"/(Prefix )(advertised)( [1-9]\d*)/",
+			function ($matches) {
+				global $lastip;
+				return $matches[1].link_command("advertised-routes", $lastip, $matches[2]).$matches[3];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(    Prefixes Total:                 )(\d+)( )/",
+			function ($matches) {
+				global $lastip;
+				return $matches[1].link_command("advertised-routes", $lastip, $matches[2]).$matches[3];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(prefixes )(received)( [1-9]\d*)/",
+			function ($matches) {
+				global $lastip;
+				return $matches[1].link_command("routes", $lastip, $matches[2]).$matches[3];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(    Prefixes Current: \s+)(\d+)(\s+)(\d+)/",
+			function ($matches) {
+				global $lastip;
+				return $matches[1].
+					link_command("advertised-routes", $lastip, $matches[2]).$matches[3].
+					link_command("routes", $lastip, $matches[4]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(\s+)(Received)( prefixes:\s+[1-9]\d*)/",
+			function ($matches) {
+				global $lastip;
+				return $matches[1].link_command("routes", $lastip, $matches[2]).$matches[3];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(    Saved \(soft-reconfig\):\s+)(\d+|n\/a)(\s+)(\d+)/",
+			function ($matches) {
+				global $lastip;
+				return $matches[1].$matches[2].$matches[3].link_command("received-routes", $lastip, $matches[4]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/( [1-9]\d* )(accepted)( prefixes)/",
+			function ($matches) {
+				global $lastip;
+				return $matches[1].link_command("routes", $lastip, $matches[2]).$matches[3];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^(  [1-9]\d* )(accepted|denied but saved)( prefixes consume \d+ bytes)/",
+			function ($matches) {
+				global $lastip;
+				return $matches[1].link_command("received-routes", $lastip, $matches[2]).$matches[3];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^(BGP neighbor is )(\d+\.\d+\.\d+\.\d+)(,)/",
+			function ($matches) {
+				return $matches[1].link_whois($matches[2]).$matches[3];
+			},
+			$output
+		);
 		$output = preg_replace("/^( Description: )(.*)$/", '\\1<b>\\2</b>', $output);
-		$output = preg_replace("/(,\s+remote AS )(\d+)(,)/e", '"\\1".link_as("\\2")."\3"', $output);
-		$output = preg_replace("/(, local AS )(\d+)(,)/e", '"\\1".link_as("\\2")."\3"', $output);
-		$output = preg_replace("/( update prefix filter list is )(\S+)/e", '"\\1".link_command("bgp", "prefix-list+\\2", "\\2")', $output);
-		$output = preg_replace("/(Route map for \S+ advertisements is\s+:?\*?)(\S+)/e", '"\\1".link_command("bgp", "route-map+\\2", "\\2")', $output);
+		$output = preg_replace_callback(
+			"/(,\s+remote AS )(\d+)(,)/",
+			function ($matches) {
+				return $matches[1].link_as($matches[2]).$matches[3];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(, local AS )(\d+)(,)/",
+			function ($matches) {
+				return $matches[1].link_as($matches[2]).$matches[3];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/( update prefix filter list is )(\S+)/",
+			function ($matches) {
+				return $matches[1].link_command("bgp", "prefix-list+".$matches[2], $matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(Route map for \S+ advertisements is\s+:?\*?)(\S+)/",
+			function ($matches) {
+				return $matches[1].link_command("bgp", "route-map+".$matches[2], $matches[2]);
+			},
+			$output
+		);
 
 		return $output;
 	}
@@ -1306,14 +1647,51 @@ function parse_out($output, $check = FALSE)
 	{
 		$ip = $ip_exp[1];
 
-		$output = preg_replace("/(Prefix )(advertised)( [1-9]\d*)/e", '"\\1".link_command("advertised-routes", "'.$ip.'", "\\2")."\\3"', $output);
-
-		$output = preg_replace("/( [1-9]\d* )(accepted)( prefixes)/e", '"\\1".link_command("routes", "'.$ip.'", "\\2")."\\3"', $output);
+		$output = preg_replace_callback(
+			"/(Prefix )(advertised)( [1-9]\d*)/",
+			function ($matches) {
+				global $ip;
+				return $matches[1].link_command("advertised-routes", "'.$ip.'", $matches[2]).$matches[3];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/( [1-9]\d* )(accepted)( prefixes)/",
+			function ($matches) {
+				global $ip;
+				return $matches[1].link_command("routes", $ip, $matches[2]).$matches[3];
+			},
+			$output
+		);
 		$output = preg_replace("/^( Description: )(.*)$/", '\\1<b>\\2</b>', $output);
-		$output = preg_replace("/(\s+remote AS )(\d+)(,)/e", '"\\1".link_as("\\2")."\3"', $output);
-		$output = preg_replace("/(\s+local AS )(\d+)(,)/e", '"\\1".link_as("\\2")."\3"', $output);
-		$output = preg_replace("/( update prefix filter list is )(\S+)/e", '"\\1".link_command("bgp", "prefix-list+\\2", "\\2")', $output);
-		$output = preg_replace("/(Route map for \S+ advertisements is\s+:?\*?)(\S+)/e", '"\\1".link_command("bgp", "route-map+\\2", "\\2")', $output);
+		$output = preg_replace_callback(
+			"/(\s+remote AS )(\d+)(,)/",
+			function ($matches) {
+				return $matches[1].link_as($matches[2]).$matches[3];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(\s+local AS )(\d+)(,)/",
+			function ($matches) {
+				return $matches[1].link_as($matches[2]).$matches[3];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/( update prefix filter list is )(\S+)/",
+			function ($matches) {
+				return $matches[1].link_command("bgp", "prefix-list+".$matches[2], $matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(Route map for \S+ advertisements is\s+:?\*?)(\S+)/",
+			function ($matches) {
+				return $matches[1].link_command("bgp", "route-map+".$matches[2], $matches[2]);
+			},
+			$output
+		);
 
 		return $output;
 	}
@@ -1322,23 +1700,75 @@ function parse_out($output, $check = FALSE)
 	{
 		$ip = $ip_exp[1];
 
-		$output = preg_replace("/(\s+AS )(\d+)/e", '"\\1".link_as("\\2")', $output);
-		$output = preg_replace("/(\s+AS: )(\d+)/e", '"\\1".link_as("\\2")', $output);
-		$output = preg_replace("/^(    Active prefixes:\s+)(\d+)/e", '"\\1".link_command("routes", "'.$ip.'", "\\2")', $output);
-		$output = preg_replace("/^(    Received prefixes:\s+)(\d+)/e", '"\\1".link_command("bgp", "neighbors+"'.$ip.'"+routes+all", "\\2")', $output);
-		$output = preg_replace("/^(    Suppressed due to damping:\s+)(\d+)/e", '"\\1".link_command("bgp", "neighbors+"'.$ip.'"+routes+damping+suppressed", "\\2")', $output);
-		$output = preg_replace("/^(  )(Export)(: )/e", '"\\1".link_command("advertised-routes", "'.$ip.'", "\\2")."\\3"', $output);
-		$output = preg_replace("/( )(Import)(: )/e", '"\\1".link_command("bgp", "neighbors+"'.$ip.'"+routes+all", "\\2")."\\3"', $output);
-	
+		$output = preg_replace_callback(
+			"/(\s+AS )(\d+)/",
+			function ($matches) {
+				return $matches[1].link_as($matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(\s+AS: )(\d+)/",
+			function ($matches) {
+				return $matches[1].link_as($matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^(    Active prefixes:\s+)(\d+)/",
+			function ($matches) {
+				global $ip;
+				return $matches[1].link_command("routes", $ip, $matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^(    Received prefixes:\s+)(\d+)/",
+			function ($matches) {
+				global $ip;
+				return $matches[1].link_command("bgp", "neighbors+".$ip."+routes+all", $matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^(    Suppressed due to damping:\s+)(\d+)/",
+			function ($matches) {
+				global $ip;
+				return $matches[1].link_command("bgp", "neighbors+".$ip."+routes+damping+suppressed", $matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^(  )(Export)(: )/",
+			function ($matches) {
+				global $ip;
+				return $matches[1].link_command("advertised-routes", $ip, $matches[2]).$matches[3];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/( )(Import)(: )/",
+			function ($matches) {
+				global $ip;
+				return $matches[1].link_command("bgp", "neighbors+".$ip."+routes+all", $matches[2]).$matches[3];
+			},
+			$output
+		);
+
 		return $output;
 	}
 
 	// JunOS
 	if (preg_match("/^show route protocol bgp .* terse/i", $exec)) 
 	{
-		//$output = preg_replace("/^(.{20} B .{25} \>.{15}[^ ]*)( [\d\s,\{\}]+)(.*)$/e", '"\\1".link_command("bgp", "\\2+exact", "\\2")."\\3"', $output);
-		$output = preg_replace("/^([\* ] )([\d\.A-Fa-f:\/]+)(\s+)/e", '"\\1".link_command("bgp", "\\2+exact", "\\2")."\\3"', $output);
-	
+		$output = preg_replace_callback(
+			"/^([\* ] )([\d\.A-Fa-f:\/]+)(\s+)/",
+			function ($matches) {
+				return $matches[1].link_command("bgp", $matches[2]."+exact", $matches[2]).$matches[3];
+			},
+			$output
+		);
+
 		return $output;
 	}
 
@@ -1376,13 +1806,55 @@ function parse_out($output, $check = FALSE)
 			$best = '';
 		}
 
-		$output = preg_replace("/( from )([0-9\.A-Fa-f:]+)/e", '"\\1".link_command("bgp", "neighbors+\\2", "\\2")', $output);
-		$output = preg_replace("/(                Source: )([0-9\.A-Fa-f:]+)/e", '"\\1".link_command("bgp", "neighbors+\\2", "\\2")', $output);
-		$output = preg_replace("/(\s+AS: )([\d ]+)/e", 'link_as("\\2")', $output);
-		$output = preg_replace("/(Community: )([\d: ]+)/e", '"\\1".link_community("\\2")', $output);
-		$output = preg_replace("/(Communities: )([\d: ]+)/e", '"\\1".link_community("\\2")', $output);
-		$output = preg_replace("/(^\s+AS path: )([\d ]+)/e", '"\\1".link_as("\\2")', $output);
-		$output = preg_replace("/^(:?\n?[\dA-Fa-f:]+[\d\.A-Fa-f:\/]+)(\s*)/e", '"<b>".link_command("bgp", "\\1+exact", "\\1")."</b>\\2"', $output);
+		$output = preg_replace_callback(
+			"/( from )([0-9\.A-Fa-f:]+)/",
+			function ($matches) {
+				return $matches[1].link_command("bgp", "neighbors+".$matches[2], $matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(                Source: )([0-9\.A-Fa-f:]+)/",
+			function ($matches) {
+				return $matches[1].link_command("bgp", "neighbors+".$matches[2], $matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(\s+AS: )([\d ]+)/",
+			function ($matches) {
+				return link_as($matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(Community: )([\d: ]+)/",
+			function ($matches) {
+				return $matches[1].link_community($matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(Communities: )([\d: ]+)/",
+			function ($matches) {
+				return $matches[1].link_community($matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(^\s+AS path: )([\d ]+)/",
+			function ($matches) {
+				return $matches[1].link_as($matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^(:?\n?[\dA-Fa-f:]+[\d\.A-Fa-f:\/]+)(\s*)/",
+			function ($matches) {
+				return "<b>".link_command("bgp", $matches[1]."+exact", $matches[1])."</b>".$matches[2];
+			},
+			$output
+		);
 
 		if (isset($best) AND $best != '')
 		{
@@ -1417,8 +1889,21 @@ function parse_out($output, $check = FALSE)
 			preg_match("/, \(aggregated by /", $output)) 
 		{
 			$count++;
-			$output = preg_replace("/^([^\(A-z\n]+)/e", 'link_as("\\1")', $output);
-			$output = preg_replace("/(, \(aggregated by )(\d+) ([^\)]+)/e", '"\\1".link_as("\\2")." ".link_whois("\\3")', $output);
+
+			$output = preg_replace_callback(
+				"/^([^\(A-z\n]+)/",
+				function ($matches) {
+					return link_as($matches[1]);
+				},
+				$output
+			);
+			$output = preg_replace_callback(
+				"/(, \(aggregated by )(\d+) ([^\)]+)/",
+				function ($matches) {
+					return $matches[1].link_as($matches[2])." ".link_whois($matches[3]);
+				},
+				$output
+			);
 		}
 
 		if (isset($best) AND $best == $count)
@@ -1426,10 +1911,34 @@ function parse_out($output, $check = FALSE)
 			$output = '<span style="color:#ff0000">'.$output.'</span>';
 		}
 
-		$output = preg_replace("/( from )([0-9\.A-Fa-f:]+)( )/e", '"\\1".link_command("bgp", "neighbors+\\2", "\\2")."\\3"', $output);
-		$output = preg_replace("/(Community: )([\d: ]+)/e", '"\\1".link_community("\\2")', $output);
-		$output = preg_replace("/(Communities: )([\d: ]+)/e", '"\\1".link_community("\\2")', $output);
-		$output = preg_replace("/(^\s+AS path: )([\d ]+)/e", 'link_as("\\2")', $output);
+		$output = preg_replace_callback(
+			"/( from )([0-9\.A-Fa-f:]+)( )/",
+			function ($matches) {
+				return $matches[1].link_command("bgp", "neighbors+".$matches[2], $matches[2]).$matches[3];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(Community: )([\d: ]+)/",
+			function ($matches) {
+				return $matches[1].link_community($matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(Communities: )([\d: ]+)/",
+			function ($matches) {
+				return $matches[1].link_community($matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/(^\s+AS path: )([\d ]+)/",
+			function ($matches) {
+				return link_as($matches[2]);
+			},
+			$output
+		);
 
 		return $output;
 	}
@@ -1437,9 +1946,30 @@ function parse_out($output, $check = FALSE)
 	if (preg_match("/^trace/", $exec))
 	{
 		$output = preg_replace("/\[AS0\]\s(.*)/", "\\1", $output);
-		$output = preg_replace("/(\[AS)(\d+)(\])\s(.*)(\))(.*)/e", '"\\4\\5 \\1 ".link_as("\\2")."\\3\\6"', $output); // IPv4
-		$output = preg_replace("/(\[AS)(\d+)(\])\s([^\s]+)\s(.*)/e", '"\\4 \\1 ".link_as("\\2")."\\3\\5"', $output); // IPv6
-		$output = preg_replace("/(\[AS\s+)(\d+)(\])/e", '"\\1".link_as("\\2")."\\3"', $output);
+
+		// IPv4
+		$output = preg_replace_callback(
+			"/(\[AS)(\d+)(\])\s(.*)(\))(.*)/",
+			function ($matches) {
+				return $matches[4].$matches[5]." ".$matches[1]." ".link_as($matches[2]).$matches[3].$matches[6];
+			},
+			$output
+		);
+		// IPv6
+		$output = preg_replace_callback(
+			"/(\[AS)(\d+)(\])\s([^\s]+)\s(.*)/",
+			function ($matches) {
+				return $matches[4]." ".$matches[1]." ".link_as($matches[2]).$matches[3].$matches[5];
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/\((.*)\) (\[AS\s+)(\d+)(\])/",
+			function ($matches) {
+				return get_as($matches[1], $matches[3]);
+			},
+			$output
+		);
 
 		return $output;
 	}
@@ -1480,7 +2010,7 @@ function parse_bgp_path($output)
 				$best = $i;
 			}
 
-			if (preg_match("/bgp-as-path=\"([^\"]+)\"/ex", $summary_part, $exp))
+			if (preg_match("/bgp-as-path=\"([^\"]+)\"/", $summary_part, $exp))
 			{
 				if ($path = parse_as_path($exp[1]))
 				{
@@ -1717,8 +2247,54 @@ function link_as($line, $word = FALSE)
 {
 	global $_CONFIG;
 
+	//print_r($line);
+	
 	return preg_replace("/(?:AS)?([\d]+)/is", 
 		"<a href=\"".htmlspecialchars($_CONFIG['aswhois'])."AS\\1\" target=\"_blank\">".($word ? 'AS' : '')."\\1</a>", $line);
+}
+
+function get_as($ip, $original_as)
+{
+	if ($original_as == 15835)
+	{
+		$as = 65535;
+
+		if($conn = fsockopen ('whois.cymru.com', 43)) 
+		{
+			fputs($conn, $ip."\r\n");
+
+			$output = '';
+
+			while(!feof($conn))
+			{
+				$output .= fgets($conn,128);
+			}
+
+			$output = explode("\n", $output);
+			if (isset($output[1]))
+			{
+				$_as = explode("|", $output[1]);
+			}
+			
+			if (isset($_as[0]))
+			{
+				$as = trim($_as[0]);
+				
+				if ($as == 'NA')
+				{
+					$as = 65535;
+				}
+			}
+
+			fclose($conn);
+		}
+
+		return '(' . $ip .') [AS ' . link_as($as) . ']';
+	}
+	else
+	{
+		return '(' . $ip .') [AS ' . link_as($original_as) . ']';
+	}
 }
 
 /**
