@@ -1,6 +1,6 @@
 <?php
 /**
- * HSDN Looking Glass version 1.2.0b
+ * HSDN Looking Glass version 1.2.2b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink)
@@ -466,6 +466,8 @@ if (isset($_CONFIG['routers'][$router]) AND
 
 		if ($command == 'graph')
 		{
+			$ER = error_reporting(0);
+
 			@include 'Image/GraphViz.php';
 
 			if (!class_exists('Image_GraphViz'))
@@ -512,6 +514,8 @@ if (isset($_CONFIG['routers'][$router]) AND
 		</div>
 <?php
 			}
+
+			error_reporting($ER);
 		}
 		else
 		{
@@ -590,7 +594,7 @@ function process($url, $exec, $return_buffer = FALSE)
 {
 	global $_CONFIG, $router, $protocol, $os, $command, $query, $ros;
 
-	$lines = $line = FALSE;
+	$lines = $line = $is_exception = FALSE;
 	$index = 0;
 
 	$str_in = array();
@@ -830,6 +834,8 @@ function process($url, $exec, $return_buffer = FALSE)
 			}
 			catch (Exception $exception) 
 			{
+				$is_exception = TRUE;
+
 				if (!$return_buffer)
 				{
 					print '<p class="error">Telnet error: '.$exception->getMessage().'</p>';
@@ -849,7 +855,7 @@ function process($url, $exec, $return_buffer = FALSE)
 		print $line;
 	}
 
-	if ($line == '' AND !isset($exception))
+	if (empty($line) AND $is_exception == FALSE)
 	{
 		print '<p class="error">Command failed.</p>';
 	}
