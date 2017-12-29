@@ -1,6 +1,6 @@
 <?php
 /**
- * HSDN Looking Glass version 1.2.4b
+ * HSDN Looking Glass version 1.2.5b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink)
@@ -288,7 +288,7 @@ $queries = array
 		(
 			'bgp' => 'show bgp %s',
 			'advertised-routes'	=> 'show route advertising-protocol bgp %s',
-			'routes'	=> 'show route protocol bgp %s terse',
+			'routes'	=> 'show route receive-protocol bgp %s active-path',
 			'summary' => 'show bgp summary',
 			'ping' => 'ping count 5 %s',
 			'trace' => 'traceroute %s as-number-lookup',
@@ -297,7 +297,7 @@ $queries = array
 		(
 			'bgp' => 'show bgp %s',
 			'advertised-routes' => 'show route advertising-protocol bgp %s',
-			'routes'	=> 'show route protocol bgp %s terse',
+			'routes'	=> 'show route receive-protocol bgp %s active-path',
 			'summary' => 'show bgp summary',
 			'ping' => 'ping count 5 %s',
 			'trace' => 'traceroute %s',
@@ -440,7 +440,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 			}
 			else if (preg_match("/^show bgp\s+([\d\.A-Fa-f:]+)$/", $exec, $exec_exp))
 			{
-				$exec = 'show route protocol bgp '.$exec_exp[1].' table '.$table; // terse
+				$exec = 'show route protocol bgp '.$exec_exp[1].' table '.$table;
 			}
 			else if (preg_match("/^show bgp\s+([\d\.A-Fa-f:\/]+) exact$/", $exec, $exec_exp)) 
 			{
@@ -1720,6 +1720,13 @@ function parse_out($output, $check = FALSE)
 			"/^(    Received prefixes:\s+)(\d+)/",
 			function ($matches) use ($ip) {
 				return $matches[1].link_command("bgp", "neighbors+".$ip."+routes+all", $matches[2]);
+			},
+			$output
+		);
+		$output = preg_replace_callback(
+			"/^(    Advertised prefixes:\s+)(\d+)/",
+			function ($matches) use ($ip) {
+				return $matches[1].link_command("routes", "advertising-protocol+bgp+".$ip, $matches[2]);
 			},
 			$output
 		);
