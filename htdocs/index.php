@@ -1,6 +1,6 @@
 <?php
 /**
- * HSDN Looking Glass version 1.2.2b
+ * HSDN Looking Glass version 1.2.3b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink)
@@ -554,7 +554,7 @@ else
 				</table></td>
 				<td align="center"><input name="query" size="30"></td>
 				<td align="right">
-				<select name="router">
+				<select name="router" style="min-width: 180px">
 <?php foreach ($routers as $group => $group_data): ?>
 <?php if ($group != ''): ?>
 					<optgroup label="<?php print htmlspecialchars($group) ?>">
@@ -845,19 +845,22 @@ function process($url, $exec, $return_buffer = FALSE)
 			break;
 	}
 
-	if ($return_buffer)
+	if ($lines)
 	{
-		return $lines;
-	}
+		if ($return_buffer)
+		{
+			return $lines;
+		}
 
-	if ($lines AND ($line = parse_out($lines)))
-	{
-		print $line;
-	}
+		if ($line = parse_out($lines))
+		{
+			print $line;
+		}
 
-	if (empty($line) AND $is_exception == FALSE)
-	{
-		print '<p class="error">Command failed.</p>';
+		if (empty($line) AND $is_exception == FALSE)
+		{
+			print '<p class="error">Command failed.</p>';
+		}
 	}
 
 	flush();
