@@ -1,6 +1,6 @@
 <?php
 /**
- * HSDN Looking Glass version 1.2.5b
+ * HSDN Looking Glass version 1.2.6b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink)
@@ -1726,7 +1726,7 @@ function parse_out($output, $check = FALSE)
 		$output = preg_replace_callback(
 			"/^(    Advertised prefixes:\s+)(\d+)/",
 			function ($matches) use ($ip) {
-				return $matches[1].link_command("routes", "advertising-protocol+bgp+".$ip, $matches[2]);
+				return $matches[1].link_command("advertised-routes", $ip, $matches[2]);
 			},
 			$output
 		);
