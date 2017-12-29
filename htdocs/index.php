@@ -1,6 +1,6 @@
 <?php
 /**
- * HSDN Looking Glass version 1.2.3b
+ * HSDN Looking Glass version 1.2.4b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink)
@@ -1273,8 +1273,7 @@ function parse_out($output, $check = FALSE)
 			);
 			$output = preg_replace_callback(
 				"/^([\dA-Fa-f:]+)(\s+.*\s+)([1-9]\d*)$/",
-				function ($matches) {
-					global $lastip;
+				function ($matches) use ($lastip) {
 					return link_command("routes", $lastip, $matches[3]);
 				},
 				$output
@@ -1307,8 +1306,7 @@ function parse_out($output, $check = FALSE)
 		{
 			$output = preg_replace_callback(
 				"/^(\s+.*\s+)([1-9]\d*)\n$/",
-				function ($matches) {
-					global $lastip;
+				function ($matches) use ($lastip) {
 					return $matches[1].link_command("routes", $lastip, $matches[2])."\n";
 				},
 				$output
@@ -1361,8 +1359,7 @@ function parse_out($output, $check = FALSE)
 		{
 			$output = preg_replace_callback(
 				"/^(  [^:]+: )(\d+)\/(\d+)\/(\d+)\n$/",
-				function ($matches) {
-					global $lastip;
+				function ($matches) use ($lastip) {
 					return "\\1".
 						link_command("routes", $lastip, $matches[2])."/".
 						link_command("bgp", "neighbors+".$lastip."+routes+all", $matches[3])."/".
@@ -1528,8 +1525,7 @@ function parse_out($output, $check = FALSE)
 		);
 		$output = preg_replace_callback(
 			"/^([ \*] )([\d\.A-Fa-f:\/]+)(\s+)/",
-			function ($matches) {
-				global $ip;
+			function ($matches) use ($ip) {
 				return $matches[1].link_command("bgp", "neighbors+".$ip."+advertised-routes+".$matches[2], $matches[2]).$matches[3];
 			},
 			$output
@@ -1548,32 +1544,28 @@ function parse_out($output, $check = FALSE)
 
 		$output = preg_replace_callback(
 			"/(Prefix )(advertised)( [1-9]\d*)/",
-			function ($matches) {
-				global $lastip;
+			function ($matches) use ($lastip) {
 				return $matches[1].link_command("advertised-routes", $lastip, $matches[2]).$matches[3];
 			},
 			$output
 		);
 		$output = preg_replace_callback(
 			"/(    Prefixes Total:                 )(\d+)( )/",
-			function ($matches) {
-				global $lastip;
+			function ($matches) use ($lastip) {
 				return $matches[1].link_command("advertised-routes", $lastip, $matches[2]).$matches[3];
 			},
 			$output
 		);
 		$output = preg_replace_callback(
 			"/(prefixes )(received)( [1-9]\d*)/",
-			function ($matches) {
-				global $lastip;
+			function ($matches) use ($lastip) {
 				return $matches[1].link_command("routes", $lastip, $matches[2]).$matches[3];
 			},
 			$output
 		);
 		$output = preg_replace_callback(
 			"/(    Prefixes Current: \s+)(\d+)(\s+)(\d+)/",
-			function ($matches) {
-				global $lastip;
+			function ($matches) use ($lastip) {
 				return $matches[1].
 					link_command("advertised-routes", $lastip, $matches[2]).$matches[3].
 					link_command("routes", $lastip, $matches[4]);
@@ -1582,32 +1574,28 @@ function parse_out($output, $check = FALSE)
 		);
 		$output = preg_replace_callback(
 			"/(\s+)(Received)( prefixes:\s+[1-9]\d*)/",
-			function ($matches) {
-				global $lastip;
+			function ($matches) use ($lastip) {
 				return $matches[1].link_command("routes", $lastip, $matches[2]).$matches[3];
 			},
 			$output
 		);
 		$output = preg_replace_callback(
 			"/(    Saved \(soft-reconfig\):\s+)(\d+|n\/a)(\s+)(\d+)/",
-			function ($matches) {
-				global $lastip;
+			function ($matches) use ($lastip) {
 				return $matches[1].$matches[2].$matches[3].link_command("received-routes", $lastip, $matches[4]);
 			},
 			$output
 		);
 		$output = preg_replace_callback(
 			"/( [1-9]\d* )(accepted)( prefixes)/",
-			function ($matches) {
-				global $lastip;
+			function ($matches) use ($lastip) {
 				return $matches[1].link_command("routes", $lastip, $matches[2]).$matches[3];
 			},
 			$output
 		);
 		$output = preg_replace_callback(
 			"/^(  [1-9]\d* )(accepted|denied but saved)( prefixes consume \d+ bytes)/",
-			function ($matches) {
-				global $lastip;
+			function ($matches) use ($lastip) {
 				return $matches[1].link_command("received-routes", $lastip, $matches[2]).$matches[3];
 			},
 			$output
@@ -1658,16 +1646,14 @@ function parse_out($output, $check = FALSE)
 
 		$output = preg_replace_callback(
 			"/(Prefix )(advertised)( [1-9]\d*)/",
-			function ($matches) {
-				global $ip;
+			function ($matches) use ($ip) {
 				return $matches[1].link_command("advertised-routes", "'.$ip.'", $matches[2]).$matches[3];
 			},
 			$output
 		);
 		$output = preg_replace_callback(
 			"/( [1-9]\d* )(accepted)( prefixes)/",
-			function ($matches) {
-				global $ip;
+			function ($matches) use ($ip) {
 				return $matches[1].link_command("routes", $ip, $matches[2]).$matches[3];
 			},
 			$output
@@ -1725,40 +1711,35 @@ function parse_out($output, $check = FALSE)
 		);
 		$output = preg_replace_callback(
 			"/^(    Active prefixes:\s+)(\d+)/",
-			function ($matches) {
-				global $ip;
+			function ($matches) use ($ip) {
 				return $matches[1].link_command("routes", $ip, $matches[2]);
 			},
 			$output
 		);
 		$output = preg_replace_callback(
 			"/^(    Received prefixes:\s+)(\d+)/",
-			function ($matches) {
-				global $ip;
+			function ($matches) use ($ip) {
 				return $matches[1].link_command("bgp", "neighbors+".$ip."+routes+all", $matches[2]);
 			},
 			$output
 		);
 		$output = preg_replace_callback(
 			"/^(    Suppressed due to damping:\s+)(\d+)/",
-			function ($matches) {
-				global $ip;
+			function ($matches) use ($ip) {
 				return $matches[1].link_command("bgp", "neighbors+".$ip."+routes+damping+suppressed", $matches[2]);
 			},
 			$output
 		);
 		$output = preg_replace_callback(
 			"/^(  )(Export)(: )/",
-			function ($matches) {
-				global $ip;
+			function ($matches) use ($ip) {
 				return $matches[1].link_command("advertised-routes", $ip, $matches[2]).$matches[3];
 			},
 			$output
 		);
 		$output = preg_replace_callback(
 			"/( )(Import)(: )/",
-			function ($matches) {
-				global $ip;
+			function ($matches) use ($ip) {
 				return $matches[1].link_command("bgp", "neighbors+".$ip."+routes+all", $matches[2]).$matches[3];
 			},
 			$output
