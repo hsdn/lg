@@ -1,6 +1,6 @@
 <?php
 /**
- * HSDN Looking Glass version 1.2.7b
+ * HSDN Looking Glass version 1.2.8b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink)
@@ -493,7 +493,7 @@ else
 ?>
 		<hr>
 		<div class="center">
-			<p><small>Information: <a href="https://stat.ripe.net/AS<?php print $_CONFIG['asn'] ?>" target="_blank">RIPEstat</a> <a href="http://bgp.he.net/AS<?php print $_CONFIG['asn'] ?>" target="_blank">he.net</a> <a href="http://as.robtex.com/as<?php print $_CONFIG['asn'] ?>.html#asinfo" target="_blank">robtex.com</a> <a href="http://as.robtex.com/as<?php print $_CONFIG['asn'] ?>.png" target="_blank">Peering Map</a> <a href="http://www.peeringdb.com/view.php?asn=<?php print $_CONFIG['asn'] ?>" target="_blank">PeeringDB</a></small></p>
+			<p><small>Information: <a href="https://stat.ripe.net/AS<?php print $_CONFIG['asn'] ?>" target="_blank">RIPEstat</a> <a href="http://bgp.he.net/AS<?php print $_CONFIG['asn'] ?>" target="_blank">he.net</a> <a href="https://www.robtex.com/as/AS<?php print $_CONFIG['asn'] ?>.html" target="_blank">robtex.com</a> <a href="http://www.peeringdb.com/view.php?asn=<?php print $_CONFIG['asn'] ?>" target="_blank">PeeringDB</a></small></p>
 			<p>Copyright &copy; <?php print date('Y') ?> <?php print htmlspecialchars($_CONFIG['company']) ?></p>
 		</div>
 	</body>
