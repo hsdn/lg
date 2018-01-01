@@ -25,7 +25,7 @@ PHP Version of BGP Looking Glass script, based on the Perl sources: https://gith
 ### License
     HSDN Looking Glass
 
-    Copyright (C) 2012-2014 Information Networks Ltd.
+    Copyright (C) 2012-2018 Information Networks Ltd.
     Copyright (C) 2000-2002 Cougar
     Copyright (C) 2014 Regional Networks Ltd.
 

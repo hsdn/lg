@@ -1,0 +1,76 @@
+<?php isset($_CONFIG) or die('No direct access allowed.');
+
+// ------------------------------------------------------------------------
+// LOOKING GLASS CONFIGURATIONS
+// ------------------------------------------------------------------------
+
+/*
+ * Your own AS number
+ */
+$_CONFIG['asn'] = '56727';
+
+/*
+ * Your own company name
+ */
+$_CONFIG['company'] = 'Information Networks Ltd.';
+
+/*
+ * Your logo URL (or FALSE)
+ */
+$_CONFIG['logo'] = 'lg_logo.gif';
+
+/*
+ * Main style color
+ */
+$_CONFIG['color'] = '#3366cc';
+
+/*
+ * Putty `plink' command path (for SSH connections)
+ */
+$_CONFIG['plink'] = '/usr/local/bin/plink';
+
+/*
+ * URL address of the IP whois service
+ */
+$_CONFIG['ipwhois'] = 'http://noc.hsdn.org/whois/';
+
+/*
+ * URL address of the AS whois service
+ */
+$_CONFIG['aswhois'] = 'http://noc.hsdn.org/aswhois/';
+
+/**
+ * Router nodes
+ *
+ * Parameters:
+ *	url          - URL address in format: [ssh|telnet]://[login]:[password]@[host]:[port]
+ *	pingtraceurl - URL address for ping and traceroute tools (or FALSE)
+ *	description  - Node description
+ *	group        - Node group name (of FALSE)
+ *	ipv6         - Node is supports IPv6 (TRUE/FALSE)
+ *	os           - Node OS (ios, mikrotik, quagga, junos)
+ */
+$_CONFIG['routers'] = array
+(
+	'saratov-br1' => array
+	(
+		'url' => 'telnet://91.226.136.129:23',
+		'pingtraceurl' => FALSE,
+		'description' => 'Saratov (RU), BR1',
+		'group' => 'AS56727',
+		'ipv6' => TRUE,
+		'os' => 'ios',
+	),
+	'example' => array
+	(
+		'url' => 'telnet://rviews:rviews@route-server.ip.att.net',
+		'pingtraceurl' => FALSE,
+		'description' => 'AT&T example',
+		'group' => 'Example',
+		'ipv6' => FALSE,
+		'os' => 'junos',
+	),
+);
+
+
+/* End of file */

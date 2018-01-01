@@ -1,6 +1,6 @@
 <?php
 /**
- * HSDN Looking Glass version 1.2.6b
+ * HSDN Looking Glass version 1.2.7b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink)
@@ -21,7 +21,7 @@
  *      http://pear.php.net/package/Image_GraphViz
  *
  *
- * Copyright (C) 2012-2017 Information Networks Ltd. <info@hsdn.org>
+ * Copyright (C) 2012-2018 Information Networks Ltd. <info@hsdn.org>
  *                         http://www.hsdn.org/
  *
  * Copyright (C) 2000-2002 Cougar <cougar@random.ee>
@@ -44,117 +44,32 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// ------------------------------------------------------------------------
-// BEGIN CONFIGURATIONS
-// ------------------------------------------------------------------------
-
-/*
- * Your own AS number
- */
-$_CONFIG['asn'] = '56727';
-
-/*
- * Your own company name
- */
-$_CONFIG['company'] = 'Information Networks Ltd.';
-
-/*
- * Your logo URL (or FALSE)
- */
-$_CONFIG['logo'] = 'lg_logo.gif';
-
-/*
- * Main style color
- */
-$_CONFIG['color'] = '#3366cc';
-
-/*
- * Putty `plink' command path (for SSH connections)
- */
-$_CONFIG['plink'] = '/usr/local/bin/plink';
-
-/*
- * URL address of the IP whois service
- */
-$_CONFIG['ipwhois'] = 'http://noc.hsdn.org/whois/';
-
-/*
- * URL address of the AS whois service
- */
-$_CONFIG['aswhois'] = 'http://noc.hsdn.org/aswhois/';
-
-/**
- * Router nodes
- *
- * Parameters:
- *	url          - URL address in format: [ssh|telnet]://[login]:[password]@[host]:[port]
- *	pingtraceurl - URL address for ping and traceroute tools (or FALSE)
- *	description  - Node description
- *	group        - Node group name (of FALSE)
- *	ipv6         - Node is supports IPv6 (TRUE/FALSE)
- *	os           - Node OS (ios, mikrotik, quagga, junos)
- */
-$_CONFIG['routers'] = array
-(
-	/*'saratov-br1' => array
-	(
-		'url' => 'telnet://rviews@91.226.136.130:23',
-		'pingtraceurl' => 'telnet://rviews:Rviews@91.226.136.130:2300',
-		'description' => 'Saratov (RU), BR1',
-		'group' => 'AS56727',
-		'ipv6' => TRUE,
-		'os' => 'quagga',
-	),*/
-	'saratov-br1' => array
-	(
-		'url' => 'telnet://91.226.136.129:23',
-		'pingtraceurl' => FALSE,
-		'description' => 'Saratov (RU), BR1',
-		'group' => 'AS56727',
-		'ipv6' => TRUE,
-		'os' => 'ios',
-	),
-	'rs' => array
-	(
-		'url' => 'telnet://91.226.136.180:23',
-		'pingtraceurl' => FALSE,
-		'description' => 'Route Server',
-		'group' => 'AS56727',
-		'ipv6' => TRUE,
-		'os' => 'ios',
-	),
-	'kemerovo-br1' => array
-	(
-		'url' => 'telnet://46.8.40.1:23',
-		'pingtraceurl' => FALSE,
-		'description' => 'Kemerovo (RU), BR1',
-		'group' => 'AS60894',
-		'ipv6' => TRUE,
-		'os' => 'ios',
-	),
-	/*'test' => array
-	(
-		'url' => 'telnet://rviews:rviews@route-server.ip.att.net',
-		'pingtraceurl' => FALSE,
-		'description' => 'AT&T test',
-		'group' => '',
-		'ipv6' => FALSE,
-		'os' => 'junos',
-	),*/
-);
-
-// ------------------------------------------------------------------------
-// END OF CONFIGURATIONS
-// ------------------------------------------------------------------------
-
-
+//error_reporting(0);
 
 // ------------------------------------------------------------------------
 // Do not edit below this line, unless you fully understand the implications.
 // ------------------------------------------------------------------------
 
-//error_reporting(0);
+// Configurations defaults. DO NOT EDIT THIS!
+// For your configurations, please use the file `lg_config.php'
+$_CONFIG = array
+(
+	'asn' => '12345',
+	'company' => 'My Company Name',
+	'logo' => FALSE,
+	'color' => '#009900',
+	'plink' => '/usr/local/bin/plink',
+	'ipwhois' => 'http://noc.hsdn.org/whois/',
+	'aswhois' => 'http://noc.hsdn.org/aswhois/',
+	'routers' => array(),
+);
+
 @ob_end_flush();
+
+if (file_exists('lg_config.php') AND is_readable('lg_config.php'))
+{
+	require_once 'lg_config.php';
+}
 
 $router = isset($_REQUEST['router']) ? trim($_REQUEST['router']) : FALSE; 
 $protocol = isset($_REQUEST['protocol']) ? trim($_REQUEST['protocol']) : FALSE;
