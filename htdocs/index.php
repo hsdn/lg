@@ -1,6 +1,6 @@
 <?php
 /**
- * HSDN Looking Glass version 1.2.8b
+ * HSDN Looking Glass version 1.2.9b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink)
@@ -2607,7 +2607,7 @@ function group_routers($array)
 * Based on the code originally written by Marc Ennaji and extended by 
 * Matthias Blaser <mb@adfinis.ch>
 *
-* Modified by Dmitry Shin <dmitry.s@hsdn.org>, 2014
+* Modified by Dmitry Shin <dmitry.s@hsdn.org>, 2018
 */
 class Telnet 
 {
@@ -2665,8 +2665,8 @@ class Telnet
 			chr(0xFF).chr(0xFC).chr(0x23).	// 0xFF 0xFC 0x23 - WON'T command - X-DISPLAY-LOCATION
 			chr(0xFF).chr(0xFC).chr(0x24).	// 0xFF 0xFC 0x24 - WON'T command - ENVIRONMENT
 			chr(0xFF).chr(0xFA).			// 0xFF 0xFA ... - SB command
-								chr(0x1F).chr(0x00).chr(0x50).chr(0x00).chr(0x18).	// NEGOTIATE-WINDOW-SIZE 
-																					// <Width1>=0 <Width0>=80 <Height1>=0 <Height0>=24
+								chr(0x1F).chr(0x00).chr(0xA0).chr(0x00).chr(0x18).	// NEGOTIATE-WINDOW-SIZE 
+																					// <Width1>=0 <Width0>=160 <Height1>=0 <Height0>=24
 			chr(0xFF).chr(0xF0).			// 0xFF 0xF0 - SE command
 			chr(0xFF).chr(0xFA).			// 0xFF 0xFA ... - SB command
 								chr(0x20).chr(0x00).chr(0x33).chr(0x38).chr(0x34).
