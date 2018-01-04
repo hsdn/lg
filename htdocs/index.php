@@ -1,6 +1,6 @@
 <?php
 /**
- * HSDN Looking Glass version 1.2.11b
+ * HSDN Looking Glass version 1.2.12b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink)
@@ -605,6 +605,11 @@ function process($url, $exec, $return_buffer = FALSE)
 				pclose($fp);
 			}
 
+			if (!$line)
+			{
+				print '<p class="error">Command failed.</p>';
+			}
+
 			break;
 
 		case 'telnet':
@@ -769,11 +774,6 @@ function process($url, $exec, $return_buffer = FALSE)
 		{
 			print $line;
 		}
-	}
-
-	if (empty($buffer))
-	{
-		print '<p class="error">Command failed.</p>';
 	}
 
 	flush();
@@ -2275,17 +2275,40 @@ function get_path_graph($router, $query, $as_pathes, $as_best_path, $format = 's
 	// Draw our AS
 	if (!in_array('AS'.$_CONFIG['asn'], $as_list))
 	{
-		$graph->addNode('AS'.$_CONFIG['asn'], array
+		$group_as = 'AS'.$_CONFIG['asn'];
+		$group_label = $group_as."\n".$_CONFIG['company'];
+
+		$node_array = array
 		(
-			'URL' => $_CONFIG['aswhois'].'AS'.$_CONFIG['asn'],
 			'target' => '_blank',
-			'label' => 'AS'.$_CONFIG['asn']."\n".$_CONFIG['company'], 
+			'label' => $group_label,
 			'style' => 'filled',
 			'fillcolor' => 'white', 
 			'fontsize' => $font_size
-		));
+		);
 
-		$graph->addEdge(array('AS'.$_CONFIG['asn'] => $router), array
+		if (isset($_CONFIG['routers'][$router]['group']) AND 
+			$_CONFIG['routers'][$router]['group'] !== $_CONFIG['asn'] AND
+			$_CONFIG['routers'][$router]['group'] !== $group_as)
+		{
+			$group_as = 'AS'.ltrim($_CONFIG['routers'][$router]['group'], 'AS');
+			$group_label = $_CONFIG['routers'][$router]['group'];
+
+			if ($group_asinfo = get_asinfo($group_as))
+			{
+				$group_label = isset($group_asinfo['description']) ? $group_as."\n".$group_asinfo['description'] : $group_as;
+				$node_array['URL'] = $_CONFIG['aswhois'].$group_as;
+			}
+
+			$node_array['label'] = $group_label;
+		}
+		else
+		{
+			$node_array['URL'] = $_CONFIG['aswhois'].$group_as;
+		}
+
+		$graph->addNode($group_as, $node_array);
+		$graph->addEdge(array($group_as => $router), array
 		(
 			'color' => 'red'
 		));
