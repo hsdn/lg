@@ -1,6 +1,6 @@
 <?php
 /**
- * HSDN Looking Glass version 1.2.9b
+ * HSDN Looking Glass version 1.2.11b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink)
@@ -106,12 +106,9 @@ if ($command != 'graph' OR !isset($_REQUEST['render']) OR !isset($_CONFIG['route
 		</style>
 		<script type="text/javascript">
 		<!--
-			function load()
-			{
+			function load() {
 				var loading = document.getElementById('loading');
-
-				if (loading !== null)
-				{
+				if (loading !== null) {
 					loading.style.display = 'none';
 				}
 			}
@@ -509,9 +506,11 @@ function process($url, $exec, $return_buffer = FALSE)
 {
 	global $_CONFIG, $router, $protocol, $os, $command, $query, $ros;
 
+	$exec = escapeshellcmd($exec);
+
+	$buffer = '';
 	$lines = $line = $is_exception = FALSE;
 	$index = 0;
-
 	$str_in = array();
 
 	switch ($url['scheme'])
@@ -642,7 +641,6 @@ function process($url, $exec, $return_buffer = FALSE)
 
 				$telnet->write(($os == 'junos') ? $exec.' | no-more' : $exec);
 
-				$buffer = '';
 				$i = $j = 0;
 
 				do
@@ -771,11 +769,11 @@ function process($url, $exec, $return_buffer = FALSE)
 		{
 			print $line;
 		}
+	}
 
-		if (empty($line) AND $is_exception == FALSE)
-		{
-			print '<p class="error">Command failed.</p>';
-		}
+	if (empty($buffer))
+	{
+		print '<p class="error">Command failed.</p>';
 	}
 
 	flush();
@@ -1798,7 +1796,7 @@ function parse_out($output, $check = FALSE)
 				!preg_match("/[a-z\:\.]+/", $output)
 			) OR 
 			preg_match("/^  Local/", $output) OR
-			preg_match("/, \(aggregated by /", $output)) 
+			preg_match("/, \([^)]+\)/", $output)) 
 		{
 			$count++;
 
@@ -2001,7 +1999,7 @@ function parse_bgp_path($output)
 					!preg_match("/[a-z\:\.]+/", $line)
 				) OR 
 				preg_match("/^  Local/", $line) OR
-				preg_match("/, \(aggregated by /", $line)) 
+				preg_match("/, \([^)]+\)/", $line)) 
 			{
 				$line = preg_replace("/^([^\(A-z\n]+).*/", "\\1", $line);
 
