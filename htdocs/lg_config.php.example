@@ -7,12 +7,12 @@
 /*
  * Your own AS number
  */
-$_CONFIG['asn'] = '56727';
+$_CONFIG['asn'] = '12345';
 
 /*
  * Your own company name
  */
-$_CONFIG['company'] = 'Information Networks Ltd.';
+$_CONFIG['company'] = 'My Company Name';
 
 /*
  * Your logo URL (or FALSE)
@@ -22,7 +22,7 @@ $_CONFIG['logo'] = 'lg_logo.gif';
 /*
  * Main style color
  */
-$_CONFIG['color'] = '#3366cc';
+$_CONFIG['color'] = '#E48559';
 
 /*
  * Putty `plink' command path (for SSH connections)
@@ -52,23 +52,24 @@ $_CONFIG['aswhois'] = 'http://noc.hsdn.org/aswhois/';
  */
 $_CONFIG['routers'] = array
 (
-	'saratov-br1' => array
+	'example1' => array
 	(
-		'url' => 'telnet://91.226.136.129:23',
+		'url' => 'telnet://route-views.optus.net.au:23',
 		'pingtraceurl' => FALSE,
-		'description' => 'Saratov (RU), BR1',
-		'group' => 'AS56727',
+		'description' => 'Example Router 1',
+		'group' => 'AS12345',
 		'ipv6' => TRUE,
 		'os' => 'ios',
 	),
-	'example' => array
+
+	'example2' => array
 	(
-		'url' => 'telnet://rviews:rviews@route-server.ip.att.net',
+		'url' => 'telnet://route-server.eastlink.ca:23',
 		'pingtraceurl' => FALSE,
-		'description' => 'AT&T example',
-		'group' => 'Example',
-		'ipv6' => FALSE,
-		'os' => 'junos',
+		'description' => 'Example Router 2',
+		'group' => 'AS12345',
+		'ipv6' => TRUE,
+		'os' => 'ios',
 	),
 );
 

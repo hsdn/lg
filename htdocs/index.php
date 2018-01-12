@@ -1,6 +1,6 @@
 <?php
 /**
- * HSDN Looking Glass version 1.2.12b
+ * HSDN PHP Looking Glass version 1.2.14b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink)
@@ -56,8 +56,8 @@ $_CONFIG = array
 (
 	'asn' => '12345',
 	'company' => 'My Company Name',
-	'logo' => FALSE,
-	'color' => '#009900',
+	'logo' => 'lg_logo.gif',
+	'color' => '#E48559',
 	'plink' => '/usr/local/bin/plink',
 	'ipwhois' => 'http://noc.hsdn.org/whois/',
 	'aswhois' => 'http://noc.hsdn.org/aswhois/',
@@ -83,6 +83,13 @@ if ($command != 'graph' OR !isset($_REQUEST['render']) OR !isset($_CONFIG['route
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+		<!--
+			=================================================
+			Powered by HSDN PHP Looking Glass
+			- https://git.dev.hsdn.org/pub/lg
+			- https://github.com/hsdn/lg
+			=================================================
+		-->
 		<title>AS<?php print $_CONFIG['asn'] ?> Looking Glass</title>
 		<meta charset="utf-8">
 		<link rel="shortcut icon" href="favicon.ico">
@@ -417,7 +424,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 			<br>
 			<div id="loading" style="display:inline"><p><b>Please wait...</b></p></div>
 			<!--[if IE]>
-				<p><img src="?command=graph&amp;protocol=<?php print $protocol ?>&amp;query=<?php print $query ?>&amp;router=<?php print $router ?>&amp;render=png" type="image/svg+xml" alt="" title=""></p>
+				<p><img src="?command=graph&amp;protocol=<?php print $protocol ?>&amp;query=<?php print $query ?>&amp;router=<?php print $router ?>&amp;render=png" alt="" title=""></p>
 			<![endif]-->
 			<![if ! IE]>
 				<object data="?command=graph&amp;protocol=<?php print $protocol ?>&amp;query=<?php print $query ?>&amp;router=<?php print $router ?>&amp;render=true" type="image/svg+xml"></object>
