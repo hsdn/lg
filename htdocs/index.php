@@ -184,7 +184,7 @@ $queries = array
 	(
 		'ipv4' => array
 		(
-			'bgp' => '/ip route print detail where dst-address=%s',
+			'bgp' => '/ip route print detail where bgp dst-address=%s',
 			'advertised-routes'	=> '/routing bgp advertisements print peer=%s',
 			'routes' => '/ip route print where gateway=%s',
 			'summary' => '/routing bgp peer print status where address-families=ip',
@@ -193,7 +193,7 @@ $queries = array
 		),
 		'ipv6' => array
 		(
-			'bgp' => '/ipv6 route print detail where dst-address=%s',
+			'bgp' => '/ipv6 route print detail where bgp dst-address=%s',
 			'advertised-routes'	=> '/routing bgp advertisements print peer=%s',
 			'routes' => '/ipv6 route print where gateway=%s',
 			'summary' => '/routing bgp peer print status where address-families=ipv6',
