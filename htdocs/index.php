@@ -513,7 +513,7 @@ function process($url, $exec, $return_buffer = FALSE)
 {
 	global $_CONFIG, $router, $protocol, $os, $command, $query, $ros;
 
-	$exec = escapeshellcmd($exec);
+	$exec = escapeshellcmd($exec)."\n";
 
 	$buffer = '';
 	$lines = $line = $is_exception = FALSE;
@@ -568,9 +568,9 @@ function process($url, $exec, $return_buffer = FALSE)
 							}
 							$ros = $ver[1];
 						}
-
 					}
 				}
+				$exec .= "\n";
 			}
 
 			if ($fp = @popen('echo n | '.$_CONFIG['plink'].' '.implode(' ', $params).' '.$exec, 'r'))
@@ -805,7 +805,7 @@ function parse_out($output, $check = FALSE)
 
 		$output_parts = explode("\n" , trim($output), ($protocol != 'ipv6' ? 4 : 3));
 
-		if (!isset($output_parts[2]))
+		if (!isset($output_parts[($protocol != 'ipv6' ? 3 : 2)]))
 		{
 			return 'Records for '.strip_tags($query).' is not found';
 		}
