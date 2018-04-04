@@ -188,8 +188,8 @@ $queries = array
 			'advertised-routes'	=> '/routing bgp advertisements print peer=%s',
 			'routes' => '/ip route print where gateway=%s',
 			'summary' => '/routing bgp peer print status where address-families=ip',
-			'ping' => '/ping count=5 size=56 %s',
-			'trace' => '/tool traceroute %s size=60 count=1',
+			'ping' => 'ping count=5 size=56 %s',
+			'trace' => 'tool traceroute %s size=60 count=1',
 		),
 		'ipv6' => array
 		(
@@ -197,8 +197,8 @@ $queries = array
 			'advertised-routes'	=> '/routing bgp advertisements print peer=%s',
 			'routes' => '/ipv6 route print where gateway=%s',
 			'summary' => '/routing bgp peer print status where address-families=ipv6',
-			'ping' => '/ping count=5 size=56 %s',
-			'trace' => '/tool traceroute %s size=60 count=1',
+			'ping' => 'ping count=5 size=56 %s',
+			'trace' => 'tool traceroute %s size=60 count=1',
 		)
 	),
 	'junos' => array
