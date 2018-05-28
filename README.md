@@ -16,11 +16,14 @@ PHP Version of BGP Looking Glass script, based on the Perl sources: https://gith
 - php pear package Image_GraphViz (http://pear.php.net/package/Image_GraphViz)
 
 ### Demonstration
-- http://lg.hsdn.org/
-- http://lg.regnets.ru/
+- http://dev.hsdn.org/lg/
+- http://lg.apc.sg/
+- http://lg.campus-rv.net/
+- http://lg.lankabell.com/
 
 #### Graph of BGP AS pathes demonstration
-- http://lg.regnets.ru/?command=graph&protocol=ipv4&query=8.8.8.8&router=kemerovo-br1
+- http://dev.hsdn.org/lg/?command=graph&protocol=ipv4&query=8.8.8.8&router=example1
+- http://lg.campus-rv.net/?command=graph&protocol=ipv4&query=8.8.8.8&router=edge
 
 ### License
     HSDN Looking Glass
