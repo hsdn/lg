@@ -222,6 +222,52 @@ $queries = array
 			'trace' => 'traceroute %s',
 		)
 	),
+	'openbgpd' => array
+	(
+		'ipv4' => array
+		(
+			'bgp' => 'bgpctl show ip bgp %s',
+			'advertised-routes'	=> 'bgpctl show rib neighbor %s out',
+			'received-routes' => 'bgpctl show rib neighbor %s in',
+			'routes'	=> 'bgpctl show rib selected neighbor %s',
+			'summary' => 'bgpctl show summary',
+			'ping' => 'ping -c 5 %s',
+			'trace' => 'traceroute %s',
+		),
+		'ipv6' => array
+		(
+			'bgp' => 'show bgp %s',
+			'advertised-routes' => 'bgpctl show rib neighbor %s out',
+			'received-routes' => 'bgpctl show rib neighbor %s in',
+			'routes'	=> 'bgpctl show rib selected neighbor %s',
+			'summary' => 'bgpctl show summary',
+			'ping' => 'ping6 -c 5 %s',
+			'trace' => 'traceroute6 %s',
+		)
+	),
+	'huawei' => array
+	(
+		'ipv4' => array
+		(
+			'bgp' => 'display bgp routing-table %s',
+			'advertised-routes'	=> 'display bgp routing-table peer %s advertised-routes',
+			'received-routes' => 'display bgp routing-table peer %s received-routes',
+			'routes'	=> 'display bgp routing-table peer %s received-routes active',
+			'summary' => 'display bgp peer',
+			'ping' => 'ping %s',
+			'trace' => 'tracert %s',
+		),
+		'ipv6' => array
+		(
+			'bgp' => 'display bgp ipv6 routing-table %s',
+			'advertised-routes' => 'display bgp ipv6 routing-table peer %s advertised-routes',
+			'received-routes' => 'display bgp ipv6 routing-table peer %s received-routes',
+			'routes'	=> 'display bgp ipv6 routing-table peer %s received-routes active',
+			'summary' => 'display bgp ipv6 peer',
+			'ping' => 'ping ipv6 %s',
+			'trace' => 'tracert ipv6 %s',
+		)
+	),
 );
 
 if (isset($_CONFIG['routers'][$router]) AND 
