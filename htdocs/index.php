@@ -1,6 +1,6 @@
 <?php
 /**
- * HSDN PHP Looking Glass version 1.2.14b
+ * HSDN PHP Looking Glass version 1.2.15b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink)
@@ -1503,7 +1503,7 @@ function parse_out($output, $check = FALSE)
 	if (preg_match("/^show ip bgp n\w*\s+([\d\.]+)/i", $exec) OR
 			 preg_match("/^show ip bgp n\w*$/i", $exec))
 	{
-		if (!isset($lastip) AND preg_match("/^BGP neighbor is ([\d\.]+),/", $output, $lastip_exp))
+		if (!isset($lastip) AND preg_match("/^BGP neighbor is ([\d\.]+)(,?)/", $output, $lastip_exp))
 		{
 			$lastip = $lastip_exp[1];
 		}
@@ -1567,7 +1567,7 @@ function parse_out($output, $check = FALSE)
 			$output
 		);
 		$output = preg_replace_callback(
-			"/^(BGP neighbor is )(\d+\.\d+\.\d+\.\d+)(,)/",
+			"/^(BGP neighbor is )(\d+\.\d+\.\d+\.\d+)(,?)/",
 			function ($matches) {
 				return $matches[1].link_whois($matches[2]).$matches[3];
 			},
