@@ -1,6 +1,6 @@
 <?php
 /**
- * HSDN PHP Looking Glass version 1.2.15b
+ * HSDN PHP Looking Glass version 1.2.16b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink)
@@ -693,7 +693,7 @@ function process($url, $exec, $return_buffer = FALSE)
 					$prompt = '/[^\s]{2,}[\$%>] {0,1}$/';
 				}
 
-				$telnet = new Telnet($url['host'], $url['port']);
+				$telnet = new Telnet($url['host'], $url['port'], 10, $prompt);
 				$telnet->connect();
 				$telnet->login($url['user'], $url['pass']);
 
