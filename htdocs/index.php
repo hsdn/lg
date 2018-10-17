@@ -1,6 +1,6 @@
 <?php
 /**
- * HSDN PHP Looking Glass version 1.2.17b
+ * HSDN PHP Looking Glass version 1.2.18b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink or sshpass)
@@ -797,6 +797,12 @@ function process($url, $exec, $return_buffer = FALSE)
 						if ($i == 1 AND $buffer == "\r\n")
 						{
 							$buffer = '';
+						}
+
+						// JunOS
+						if (strpos($buffer, '---(more)---') !== FALSE)
+						{
+							$buffer = ltrim(substr($buffer, 12), "\r\n");
 						}
 
 						$i++;
@@ -1758,6 +1764,27 @@ function parse_out($output, $check = FALSE)
 	// JunOS
 	if (preg_match("/^show route protocol bgp .* terse/i", $exec)) 
 	{
+		if (preg_match("/^([\+\-\*]){1}/", $output, $exp) AND strpos($output, 'Active Route') === FALSE)
+		{
+			if ($exp[1] == '*' OR $exp[1] == '+') 
+			{
+				$best = "#ff0000";
+			}
+			else if ($exp[1] == '-') 
+			{
+				$best = "#008800";
+			}
+			else 
+			{
+				$best = '';
+			}
+		}
+
+		if (isset($best) AND $best != '')
+		{
+			$output = '<span style="color:'.$best.'">'.$output.'</span>';
+		}
+
 		$output = preg_replace_callback(
 			"/^([\* ] )([\d\.A-Fa-f:\/]+)(\s+)/",
 			function ($matches) {
@@ -2015,6 +2042,45 @@ function parse_bgp_path($output)
 				}
 			}
 		}
+
+		return array
+		(
+			'best' => $best,
+			'pathes' => $pathes
+		);
+	}
+
+	// JunOS
+	if (preg_match("/^show route protocol bgp .* terse/i", $exec)) 
+	{
+		$lines = explode("\n", $output);
+
+		foreach ($lines as $line)
+		{
+			if (preg_match("/^[\+\-\*]{1}/", $line, $exp) AND strpos($line, 'Active Route') === FALSE)
+			{
+				$line =  preg_replace('/ {2,}/',' ',$line);
+				$line = explode(' ', $line);
+
+				if ($line[0] == '*' OR $line[0] == '+') 
+				{
+					if ($count == 0)
+					{
+						$count++;
+					}
+				}
+
+				$line = array_slice($line, 6, -1);
+				$line = implode(' ', $line);
+
+				if ($path = parse_as_path($line))
+				{
+					$pathes[] = $path;
+				}
+			}
+		}
+
+		$best = $count - 1;
 
 		return array
 		(
