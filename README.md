@@ -3,9 +3,9 @@ PHP Version of BGP Looking Glass script, based on the Perl sources: https://gith
 
 ### General Features
 - Supports the Telnet and SSH (through Putty/plink or sshpass).
-- Supports the Cisco, MikroTik v5/v6, Jinuper, Huawei (Comware), Quagga (Zebra) and OpenBGPD routers.
+- Supports the Cisco, MikroTik v5/v6, Juniper, Huawei (Comware), Quagga (Zebra) and OpenBGPD routers.
 - Supports the IPv4 and IPv6 protocols.
-- Automatic conversion IPs to subnets using Merit RADb (for MikroTik) (http://www.ra.net/).
+- Automatic conversion IPs to subnets using Merit RADb for MikroTik (http://www.ra.net/).
 - Drawing graph of BGP AS pathes using GraphViz toolkit.
 - Works on php 5.2.0 and above.
 
@@ -55,9 +55,9 @@ $_CONFIG['routers'] = array
 - `url` - URL address in format: **[ssh|telnet]://[login]:[password]@[host]:[port]**.
 - `pingtraceurl` - URL address for ping and traceroute tools for Quagga routers (or *FALSE*).
 - `description` - Router description.
-- `group` - Router group name - AS number (of *FALSE*).
+- `group` - Router group name - AS number (or *FALSE*).
 - `ipv6` - Router is supports IPv6 (*TRUE* or *FALSE*).
-- `os` - Router OS (*ios, mikrotik, quagga, junos, openbgpd, huawei*).
+- `os` - Router type (*ios*, *mikrotik*, *quagga,* *junos*, *openbgpd*, *huawei*).
 
 ### Demonstration
 - http://dev.hsdn.org/lg/
