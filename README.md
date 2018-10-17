@@ -16,9 +16,9 @@ PHP Version of BGP Looking Glass script, based on the Perl sources: https://gith
 - php pear package Image_GraphViz (http://pear.php.net/package/Image_GraphViz).
 
 ### Installation Instructions
-1. Copy *index.php* file to your web server directory.
-2. Copy *lg_config.php.dist* file as *lg_config.php* to your web server directory.
-3. Edit *lg_config.php* file (see parameters description below).
+1. Copy **index.php** file to your web server home directory.
+2. Copy **lg_config.php.example** file as **lg_config.php** into your web server home directory.
+3. Edit **lg_config.php** configuration file (see parameters description below).
 
 ### Configuration Parameters
 #### Branding Configuration
