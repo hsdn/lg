@@ -11,9 +11,50 @@ PHP Version of BGP Looking Glass script, based on the Perl sources: https://gith
 
 ### System Requirements
 - php version 5.2.0 and above with Sockets and Filter (http://www.php.net/)
-- Putty for SSH connections usign `plink' command (http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html)
+- For the SSH connections require 'sshpass' or Putty 'plink' command (http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html)
 - GraphViz toolkit for drawing BGP pathes graph (http://www.graphviz.org/)
 - php pear package Image_GraphViz (http://pear.php.net/package/Image_GraphViz)
+
+### Installation instructions
+1. Copy *index.php* file to your web server directory.
+2. Copy *lg_config.php.dist* file as *lg_config.php* to your web server directory.
+3. Edit *lg_config.php* file (see parameters description below).
+
+### Configuration parameters
+#### Branding configuration
+- `$_CONFIG['asn']` - Your AS number for display on the LG page.
+- `$_CONFIG['company']` - Your company for display on the LG page.
+- `$_CONFIG['logo']` - Your company logo for display on the LG page.
+- `$_CONFIG['color']` - Main color of design elements on the LG page.
+- `$_CONFIG['ipwhois']` - URL address of the IP whois service.
+- `$_CONFIG['aswhois']` - URL address of the AS whois service.
+#### Programs configuration
+- `$_CONFIG['sshcommand']` - Type of command to make a SSH connection (you can use *plink* or *sshpass* as value).
+- `$_CONFIG['plink']` - Path to **plink** command if you use it (for SSH connections).
+- `$_CONFIG['sshpass']` - Path to **sshpass** command if you use it (for SSH connections).
+#### Routers configuration
+Configuration of routers is specified as array in the parameter `$_CONFIG['routers']` with following format:
+```php
+$_CONFIG['routers'] = array
+(
+    'router1' = array
+    (
+        // Router parameters
+    ),
+    'router2' = array
+    (
+        // Router parameters
+    ),
+    // etc.
+);
+```
+##### Router parameters:
+- `url` - URL address in format: **[ssh|telnet]://[login]:[password]@[host]:[port]**.
+- `pingtraceurl` - URL address for ping and traceroute tools for Quagga routers (or *FALSE*).
+- `description` - Router description.
+- `group` - Router group name - AS number (of *FALSE*).
+- `ipv6` - Router is supports IPv6 (*TRUE* or *FALSE*).
+- `os` - Router OS (*ios, mikrotik, quagga, junos, openbgpd, huawei*).
 
 ### Demonstration
 - http://dev.hsdn.org/lg/
