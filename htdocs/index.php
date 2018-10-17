@@ -1,9 +1,9 @@
 <?php
 /**
- * HSDN PHP Looking Glass version 1.2.16b
+ * HSDN PHP Looking Glass version 1.2.17b
  *
  * General Features:
- *  - Supports the Telnet and SSH (through Putty/plink)
+ *  - Supports the Telnet and SSH (through Putty/plink or sshpass)
  *  - Supports the Cisco, MikroTik v5 and v6, Quagga (Zebra) and JunOS routers
  *  - Supports the IPv4 and IPv6 protocols
  *  - Automatic conversion IPs to subnets using RADb (for MikroTik)
@@ -58,7 +58,9 @@ $_CONFIG = array
 	'company' => 'My Company Name',
 	'logo' => 'lg_logo.gif',
 	'color' => '#E48559',
+	'sshcommand' => 'plink',
 	'plink' => '/usr/local/bin/plink',
+	'sshpass' => '/usr/bin/sshpass',
 	'ipwhois' => 'http://noc.hsdn.org/whois/',
 	'aswhois' => 'http://noc.hsdn.org/aswhois/',
 	'routers' => array(),
@@ -569,21 +571,53 @@ function process($url, $exec, $return_buffer = FALSE)
 	switch ($url['scheme'])
 	{
 		case 'ssh':
-			$params = array('-ssh');
-
-			if (isset($url['user']) AND $url['user'] != '')
+			switch ($_CONFIG['sshcommand'])
 			{
-				$params[] = '-l '.$url['user'];
-			}
+				// Use sshpass command
+				case 'sshpass':
+					$ssh_path = $_CONFIG['sshpass'];
+					$params = array();
 
-			if (isset($url['pass']) AND $url['pass'] != '')
-			{
-				$params[] = '-pw '.$url['pass'];
-			}
+					if (isset($url['pass']) AND $url['pass'] != '')
+					{
+						$params[] = '-p '.$url['pass'];
+					}
 
-			if (isset($url['port']) AND $url['port'] != '')
-			{
-				$params[] = '-P '.$url['port'];
+					$params[] = 'ssh';
+
+					if (isset($url['user']) AND $url['user'] != '')
+					{
+						$params[] = '-l '.$url['user'];
+					}
+
+					if (isset($url['port']) AND $url['port'] != '')
+					{
+						$params[] = '-p '.$url['port'];
+					}
+
+					$params[] = '-o StrictHostKeyChecking=no';
+					break;
+
+				// Use plink command
+				case 'plink':
+				default:
+					$ssh_path = $_CONFIG['plink'];
+					$params = array('-ssh');
+
+					if (isset($url['user']) AND $url['user'] != '')
+					{
+						$params[] = '-l '.$url['user'];
+					}
+
+					if (isset($url['pass']) AND $url['pass'] != '')
+					{
+						$params[] = '-pw '.$url['pass'];
+					}
+
+					if (isset($url['port']) AND $url['port'] != '')
+					{
+						$params[] = '-P '.$url['port'];
+					}
 			}
 
 			$params[] = $url['host'];
@@ -591,7 +625,7 @@ function process($url, $exec, $return_buffer = FALSE)
 			// Get MikroTik additional summary information
 			if (preg_match('/^\/routing bgp peer print status/i', $exec) AND $os == 'mikrotik' AND $return_buffer != TRUE)
 			{
-				if ($instance = @shell_exec('echo n | '.$_CONFIG['plink'].' '.implode(' ', $params).' /routing bgp instance print'))
+				if ($instance = @shell_exec('echo n | '.$ssh_path.' '.implode(' ', $params).' /routing bgp instance print'))
 				{
 					$instance_list = parse_list($instance);
 
@@ -602,7 +636,7 @@ function process($url, $exec, $return_buffer = FALSE)
 			// Get MikroTik version for traceroute
 			if (preg_match('/^\/tool traceroute/i', $exec) AND $os == 'mikrotik' AND $return_buffer != TRUE)
 			{
-				if ($instance = @shell_exec('echo n | '.$_CONFIG['plink'].' '.implode(' ', $params).' /system resource print'))
+				if ($instance = @shell_exec('echo n | '.$ssh_path.' '.implode(' ', $params).' /system resource print'))
 				{
 					if (preg_match('/version: (\d+)/', $instance, $ver))
 					{
@@ -619,7 +653,7 @@ function process($url, $exec, $return_buffer = FALSE)
 				$exec .= "\n";
 			}
 
-			if ($fp = @popen('echo n | '.$_CONFIG['plink'].' '.implode(' ', $params).' '.$exec, 'r'))
+			if ($fp = @popen('echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec, 'r'))
 			{
 				while (!feof($fp))
 				{
@@ -681,7 +715,7 @@ function process($url, $exec, $return_buffer = FALSE)
 				$url['pass'] = FALSE;
 			}
 
-			try 
+			try
 			{
 				if ($os == 'mikrotik')
 				{

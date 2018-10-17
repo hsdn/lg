@@ -2,7 +2,7 @@
 PHP Version of BGP Looking Glass script, based on the Perl sources: https://github.com/Cougar/lg
 
 ### General Features
-- Supports the Telnet and SSH (through Putty/plink)
+- Supports the Telnet and SSH (through Putty/plink or sshpass)
 - Supports the Cisco, MikroTik v5 and v6, Quagga (Zebra) and JunOS routers
 - Supports the IPv4 and IPv6 protocols
 - Automatic conversion IPs to subnets using Merit RADb (for MikroTik) (http://www.ra.net/)
@@ -23,7 +23,7 @@ PHP Version of BGP Looking Glass script, based on the Perl sources: https://gith
 
 #### Graph of BGP AS pathes demonstration
 - http://dev.hsdn.org/lg/?command=graph&protocol=ipv4&query=8.8.8.8&router=example1
-- http://lg.campus-rv.net/?command=graph&protocol=ipv4&query=8.8.8.8&router=edge
+- https://lg.apc.sg/?command=graph&protocol=ipv4&query=8.8.8.8&router=apchosting-br1
 
 ### License
     HSDN Looking Glass

@@ -25,9 +25,19 @@ $_CONFIG['logo'] = 'lg_logo.gif';
 $_CONFIG['color'] = '#E48559';
 
 /*
+ * Type of command to make a SSH connection (`plink' or `sshpass')
+ */
+$_CONFIG['sshcommand'] = 'plink';
+
+/*
  * Putty `plink' command path (for SSH connections)
  */
 $_CONFIG['plink'] = '/usr/local/bin/plink';
+
+/*
+ * sshpass command path (for SSH connections)
+ */
+$_CONFIG['sshpass'] = '/usr/bin/sshpass';
 
 /*
  * URL address of the IP whois service
