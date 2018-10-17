@@ -28,10 +28,12 @@ PHP Version of BGP Looking Glass script, based on the Perl sources: https://gith
 - `$_CONFIG['color']` - Main color of design elements on the LG page.
 - `$_CONFIG['ipwhois']` - URL address of the IP whois service.
 - `$_CONFIG['aswhois']` - URL address of the AS whois service.
+
 #### Programs configuration
 - `$_CONFIG['sshcommand']` - Type of command to make a SSH connection (you can use *plink* or *sshpass* as value).
 - `$_CONFIG['plink']` - Path to **plink** command if you use it (for SSH connections).
 - `$_CONFIG['sshpass']` - Path to **sshpass** command if you use it (for SSH connections).
+
 #### Routers configuration
 Configuration of routers is specified as array in the parameter `$_CONFIG['routers']` with following format:
 ```php
@@ -48,6 +50,7 @@ $_CONFIG['routers'] = array
     // etc.
 );
 ```
+
 ##### Router parameters:
 - `url` - URL address in format: **[ssh|telnet]://[login]:[password]@[host]:[port]**.
 - `pingtraceurl` - URL address for ping and traceroute tools for Quagga routers (or *FALSE*).
