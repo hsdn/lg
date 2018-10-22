@@ -1,10 +1,11 @@
 <?php
 /**
- * HSDN PHP Looking Glass version 1.2.20b
+ * HSDN PHP Looking Glass version 1.2.21b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink or sshpass)
- *  - Supports the Cisco, MikroTik v5 and v6, Quagga (Zebra) and JunOS routers
+ *  - Supports the Cisco, MikroTik v5/v6, Juniper, Huawei (Comware), 
+ *       Quagga (Zebra) and OpenBGPD routers.
  *  - Supports the IPv4 and IPv6 protocols
  *  - Automatic conversion IPs to subnets using RADb (for MikroTik)
  *  - Drawing graph of BGP AS pathes using GraphViz toolkit
@@ -766,8 +767,8 @@ function process($url, $exec, $return_buffer = FALSE)
 
 					//$c = preg_replace('/\[\d;?(\d+)?;?(\d)?m/x', ' ', $c); // Strip remaining
 					//$c = preg_replace('/\x1B\x5B\x30\x6D/x', '\x0A', $c); // Convert to \n
-					//$c = preg_replace('/[\x80-\xFF]/x', ' ', $c); // Strip Ext ASCII
-					//$c = preg_replace('/[\x00-\x09\x0B-\x1F]/x', ' ', $c); // Strip Low ASCII
+					$buffer = preg_replace('/[\x80-\xFF]/x', ' ', $buffer); // Strip Ext ASCII
+					$buffer = preg_replace('/[\x00-\x09]/x', ' ', $buffer); // Strip Low ASCII // \x0B-\x1F
 					$buffer = preg_replace('/\x1b\x5b;?([^\x6d]+)?\x6d/x', '', $buffer); // Strip colors
 
 					if (preg_match($prompt, substr($buffer, -4)))
@@ -804,7 +805,7 @@ function process($url, $exec, $return_buffer = FALSE)
 						// JunOS
 						if (strpos($buffer, '---(more)---') !== FALSE)
 						{
-							$buffer = ltrim(substr($buffer, 12), "\r\n");
+							$buffer = ltrim(str_replace('---(more)---', '', $buffer), "\r\n");
 						}
 
 						$i++;
@@ -844,6 +845,11 @@ function process($url, $exec, $return_buffer = FALSE)
 					}
 				}
 				while ($c != $telnet->NULL OR $c != $telnet->DC1);
+
+				if (!$line)
+				{
+					print '<p class="error">Command failed.</p>';
+				}
 			}
 			catch (Exception $exception) 
 			{
