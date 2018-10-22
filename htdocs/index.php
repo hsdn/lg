@@ -1,6 +1,6 @@
 <?php
 /**
- * HSDN PHP Looking Glass version 1.2.19b
+ * HSDN PHP Looking Glass version 1.2.20b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink or sshpass)
@@ -620,6 +620,8 @@ function process($url, $exec, $return_buffer = FALSE)
 
 			$params[] = $url['host'];
 
+			$exec = escapeshellcmd($exec)."\n";
+
 			// Get MikroTik additional summary information
 			if (preg_match('/^\/routing bgp peer print status/i', $exec) AND $os == 'mikrotik' AND $return_buffer != TRUE)
 			{
@@ -650,8 +652,6 @@ function process($url, $exec, $return_buffer = FALSE)
 				}
 				$exec .= "\n";
 			}
-
-			$exec = escapeshellcmd($exec)."\n";
 
 			if ($fp = @popen('echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec, 'r'))
 			{
