@@ -1,6 +1,6 @@
 <?php
 /**
- * HSDN PHP Looking Glass version 1.2.21b
+ * HSDN PHP Looking Glass version 1.2.22b
  *
  * General Features:
  *  - Supports the Telnet and SSH (through Putty/plink or sshpass)
@@ -142,7 +142,7 @@ $queries = array
 		'ipv4' => array
 		(
 			'bgp' => 'show ip bgp %s',
-			'advertised-routes'	=> 'show ip bgp neighbors %s advertised-routes',
+			'advertised-routes' => 'show ip bgp neighbors %s advertised-routes',
 			'received-routes' => 'show ip bgp neighbors %s received-routes',
 			'routes' =>	'show ip bgp neighbors %s routes',
 			'summary' => 'show ip bgp summary',
@@ -152,7 +152,7 @@ $queries = array
 		'ipv6' => array
 		(
 			'bgp' => 'show bgp ipv6 unicast %s',
-			'advertised-routes'	=> 'show bgp ipv6 neighbors %s advertised-routes',
+			'advertised-routes' => 'show bgp ipv6 neighbors %s advertised-routes',
 			'received-routes' => 'show bgp ipv6 neighbors %s received-routes',
 			'routes' =>	'show bgp ipv6 neighbors %s routes',
 			'summary' => 'show bgp ipv6 unicast summary',
@@ -165,7 +165,7 @@ $queries = array
 		'ipv4' => array
 		(
 			'bgp' => 'show ip bgp %s',
-			'advertised-routes'	=> 'show ip bgp neighbors %s advertised-routes',
+			'advertised-routes' => 'show ip bgp neighbors %s advertised-routes',
 			'received-routes' => 'show ip bgp neighbors %s received-routes',
 			'routes' => 'show ip bgp neighbors %s routes',
 			'summary' => 'show ip bgp summary',
@@ -175,7 +175,7 @@ $queries = array
 		'ipv6' => array
 		(
 			'bgp' => 'show ipv6 bgp %s',
-			'advertised-routes'	=> 'show ipv6 bgp neighbors %s advertised-routes',
+			'advertised-routes' => 'show ipv6 bgp neighbors %s advertised-routes',
 			'received-routes' => 'show ipv6 bgp neighbors %s received-routes',
 			'routes' => 'show ipv6 bgp neighbors %s routes',
 			'summary' => 'show ipv6 bgp summary',
@@ -188,7 +188,7 @@ $queries = array
 		'ipv4' => array
 		(
 			'bgp' => '/ip route print detail where bgp dst-address=%s',
-			'advertised-routes'	=> '/routing bgp advertisements print peer=%s',
+			'advertised-routes' => '/routing bgp advertisements print peer=%s',
 			'routes' => '/ip route print where gateway=%s',
 			'summary' => '/routing bgp peer print status where address-families=ip',
 			'ping' => '/ping count=5 size=56 %s',
@@ -197,7 +197,7 @@ $queries = array
 		'ipv6' => array
 		(
 			'bgp' => '/ipv6 route print detail where bgp dst-address=%s',
-			'advertised-routes'	=> '/routing bgp advertisements print peer=%s',
+			'advertised-routes' => '/routing bgp advertisements print peer=%s',
 			'routes' => '/ipv6 route print where gateway=%s',
 			'summary' => '/routing bgp peer print status where address-families=ipv6',
 			'ping' => '/ping count=5 size=56 %s',
@@ -209,7 +209,7 @@ $queries = array
 		'ipv4' => array
 		(
 			'bgp' => 'show bgp %s',
-			'advertised-routes'	=> 'show route advertising-protocol bgp %s',
+			'advertised-routes' => 'show route advertising-protocol bgp %s',
 			'routes'	=> 'show route receive-protocol bgp %s active-path',
 			'summary' => 'show bgp summary',
 			'ping' => 'ping count 5 %s',
@@ -654,6 +654,12 @@ function process($url, $exec, $return_buffer = FALSE)
 				$exec .= "\n";
 			}
 
+			// Huawei disable screen breaks (issue #21) -- needs more tests
+			/*if ($os == 'huawei')
+			{
+				@shell_exec('echo n | '.$ssh_path.' '.implode(' ', $params).' screen-length 0 temporary');
+			}*/
+
 			if ($fp = @popen('echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec, 'r'))
 			{
 				while (!feof($fp))
@@ -733,6 +739,12 @@ function process($url, $exec, $return_buffer = FALSE)
 				$telnet = new Telnet($url['host'], $url['port'], 10, $prompt);
 				$telnet->connect();
 				$telnet->login($url['user'], $url['pass']);
+
+				// Huawei disable screen breaks (issue #21) -- needs more tests
+				/*if ($os == 'huawei')
+				{
+					$telnet->write('screen-length 0 temporary');
+				}*/
 
 				$telnet->write(($os == 'junos') ? $exec.' | no-more' : $exec);
 
@@ -1637,7 +1649,7 @@ function parse_out($output, $check = FALSE)
 			$output
 		);
 		$output = preg_replace_callback(
-			"/( update prefix filter list is )(\S+)/",
+			"/( update prefix filter list is\s+:?\*?)(\S+)/",
 			function ($matches) {
 				return $matches[1].link_command("bgp", "prefix-list+".$matches[2], $matches[2]);
 			},
@@ -1688,7 +1700,7 @@ function parse_out($output, $check = FALSE)
 			$output
 		);
 		$output = preg_replace_callback(
-			"/( update prefix filter list is )(\S+)/",
+			"/( update prefix filter list is\s+:?\*?)(\S+)/",
 			function ($matches) {
 				return $matches[1].link_command("bgp", "prefix-list+".$matches[2], $matches[2]);
 			},
