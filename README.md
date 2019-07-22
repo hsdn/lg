@@ -67,12 +67,12 @@ $_CONFIG['routers'] = array
 
 #### Graph of BGP AS pathes demonstration
 - http://dev.hsdn.org/lg/?command=graph&protocol=ipv4&query=8.8.8.8&router=example1
-- https://lg.apc.sg/?command=graph&protocol=ipv4&query=8.8.8.8&router=apchosting-br1
+- http://lg.as51326.net/?command=graph&protocol=ipv4&query=8.8.8.8&router=example1
 
 ### License
     HSDN Looking Glass
 
-    Copyright (C) 2012-2018 Information Networks Ltd.
+    Copyright (C) 2012-2019 Information Networks Ltd.
     Copyright (C) 2000-2002 Cougar
     Copyright (C) 2014 Regional Networks Ltd.
 
