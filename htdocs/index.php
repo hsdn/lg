@@ -59,6 +59,7 @@ $_CONFIG = array
 	'company' => 'My Company Name',
 	'logo' => 'lg_logo.gif',
 	'color' => '#E48559',
+	'sshauthtype' => 'password',
 	'sshcommand' => 'plink',
 	'plink' => '/usr/local/bin/plink',
 	'sshpass' => '/usr/bin/sshpass',
@@ -287,6 +288,10 @@ if (isset($_CONFIG['routers'][$router]) AND
 	}
 
 	$url = $_CONFIG['routers'][$router]['url'];
+
+	if(isset($_CONFIG['routers'][$router]['sshpublickeypath'])){
+		$sshpublickeypath = $_CONFIG['routers'][$router]['sshpublickeypath'];
+	}
 
 	if (($command == 'ping' OR $command == 'trace') AND 
 		isset($_CONFIG['routers'][$router]['pingtraceurl']) AND 
@@ -570,20 +575,63 @@ function process($url, $exec, $return_buffer = FALSE)
 	switch ($url['scheme'])
 	{
 		case 'ssh':
-			switch ($_CONFIG['sshcommand'])
+			switch ($_CONFIG['sshauthtype'])
 			{
-				// Use sshpass command
-				case 'sshpass':
-					$ssh_path = $_CONFIG['sshpass'];
-					$params = array();
-
-					if (isset($url['pass']) AND $url['pass'] != '')
+				case 'password':
+					switch ($_CONFIG['sshcommand'])
 					{
-						$params[] = '-p '.$url['pass'];
+						// Use sshpass command
+						case 'sshpass':
+							$ssh_path = $_CONFIG['sshpass'];
+							$params = array();
+
+							if (isset($url['pass']) AND $url['pass'] != '')
+							{
+								$params[] = '-p '.$url['pass'];
+							}
+
+							$params[] = 'ssh';
+
+							if (isset($url['user']) AND $url['user'] != '')
+							{
+								$params[] = '-l '.$url['user'];
+							}
+
+							if (isset($url['port']) AND $url['port'] != '')
+							{
+								$params[] = '-p '.$url['port'];
+							}
+
+							$params[] = '-o StrictHostKeyChecking=no';
+							break;
+
+						// Use plink command
+						case 'plink':
+						default:
+							$ssh_path = $_CONFIG['plink'];
+							$params = array('-ssh');
+							if (isset($url['user']) AND $url['user'] != '')
+							{
+								$params[] = '-l '.$url['user'];
+							}
+
+							if (isset($url['pass']) AND $url['pass'] != '')
+							{
+								$params[] = '-pw '.$url['pass'];
+							}
+
+							if (isset($url['port']) AND $url['port'] != '')
+							{
+								$params[] = '-P '.$url['port'];
+							}
 					}
-
+					break;
+				case 'publickey':
 					$params[] = 'ssh';
-
+					if (isset($sshpublickeypath) AND $sshpublickeypath != '')
+					{
+						$params[] = '-i '.$sshpublickeypath;
+					}
 					if (isset($url['user']) AND $url['user'] != '')
 					{
 						$params[] = '-l '.$url['user'];
@@ -596,28 +644,8 @@ function process($url, $exec, $return_buffer = FALSE)
 
 					$params[] = '-o StrictHostKeyChecking=no';
 					break;
-
-				// Use plink command
-				case 'plink':
-				default:
-					$ssh_path = $_CONFIG['plink'];
-					$params = array('-ssh');
-
-					if (isset($url['user']) AND $url['user'] != '')
-					{
-						$params[] = '-l '.$url['user'];
-					}
-
-					if (isset($url['pass']) AND $url['pass'] != '')
-					{
-						$params[] = '-pw '.$url['pass'];
-					}
-
-					if (isset($url['port']) AND $url['port'] != '')
-					{
-						$params[] = '-P '.$url['port'];
-					}
 			}
+			
 
 			$params[] = $url['host'];
 
