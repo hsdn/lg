@@ -293,6 +293,10 @@ if (isset($_CONFIG['routers'][$router]) AND
 		$sshpublickeypath = $_CONFIG['routers'][$router]['sshpublickeypath'];
 	}
 
+	if(isset($_CONFIG['routers'][$router]['sshauthtype'])){
+		$sshauthtype = $_CONFIG['routers'][$router]['sshauthtype'];
+	}
+
 	if (($command == 'ping' OR $command == 'trace') AND 
 		isset($_CONFIG['routers'][$router]['pingtraceurl']) AND 
 		$_CONFIG['routers'][$router]['pingtraceurl'] != FALSE)
@@ -575,7 +579,7 @@ function process($url, $exec, $return_buffer = FALSE)
 	switch ($url['scheme'])
 	{
 		case 'ssh':
-			switch ($_CONFIG['sshauthtype'])
+			switch ($sshauthtype)
 			{
 				case 'password':
 					switch ($_CONFIG['sshcommand'])

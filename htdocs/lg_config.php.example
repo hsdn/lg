@@ -53,18 +53,21 @@ $_CONFIG['aswhois'] = 'http://noc.hsdn.org/aswhois/';
  * Router nodes
  *
  * Parameters:
- *	url          - URL address in format: [ssh|telnet]://[login]:[password]@[host]:[port]
- *	pingtraceurl - URL address for ping and traceroute tools (or FALSE)
- *	description  - Node description
- *	group        - Node group name (of FALSE)
- *	ipv6         - Node is supports IPv6 (TRUE/FALSE)
- *	os           - Node OS (ios, mikrotik, quagga, junos)
+ *	url              - URL address in format: [ssh|telnet]://[login]:[password]@[host]:[port]
+ *  sshauthtype      - SSH authentication type in format: [password|publickey]
+ *  sshpublickeypath - SSH public key path (only works if sshauthtype = publickey) in format: [/opt/lg/keys/keyname.pub]
+ *	pingtraceurl     - URL address for ping and traceroute tools (or FALSE)
+ *	description      - Node description
+ *	group            - Node group name (of FALSE)
+ *	ipv6             - Node supports IPv6 (TRUE/FALSE)
+ *	os               - Node OS (ios, mikrotik, quagga, junos)
  */
 $_CONFIG['routers'] = array
 (
 	'example1' => array
 	(
 		'url' => 'telnet://route-views.optus.net.au:23',
+		'sshauthtype' => 'password',
 		'sshpublickeypath' => '',
 		'pingtraceurl' => FALSE,
 		'description' => 'Example Router 1',
