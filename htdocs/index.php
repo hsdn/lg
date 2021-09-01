@@ -645,6 +645,7 @@ function process($url, $exec, $return_buffer = FALSE)
                         break;
                 }
             }
+            die(var_dump($params));
 
 			$params[] = $url['host'];
 
