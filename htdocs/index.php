@@ -686,7 +686,7 @@ function process($url, $exec, $return_buffer = FALSE)
 			{
 				@shell_exec('echo n | '.$ssh_path.' '.implode(' ', $params).' screen-length 0 temporary');
 			}*/
-
+            $commandSuccess = false;
 			if ($fp = @popen('echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec, 'r'))
 			{
 				while (!feof($fp))
@@ -713,7 +713,7 @@ function process($url, $exec, $return_buffer = FALSE)
 						$lines .= $output;
 						continue;
 					}
-
+                    $commandSuccess = true;
 					print $line;
 					flush();
 
@@ -726,7 +726,7 @@ function process($url, $exec, $return_buffer = FALSE)
 				pclose($fp);
 			}
 
-			if (!$line)
+			if (!$commandSuccess)
 			{
 				print '<p class="error">Command failed.</p>';
 			}
