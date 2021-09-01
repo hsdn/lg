@@ -69,8 +69,8 @@ $_CONFIG['aswhois'] = 'http://noc.hsdn.org/aswhois/';
  *
  * Parameters:
  *      url               - URL address in format: [ssh|telnet]://[login]:[password]@[host]:[port]
- *      sshauthtype       - SSH authentication type in format: [password|key]
- *      sshprivatekeypath - SSH private key path (only works if sshauthtype = key) in example format: [/opt/lg/keys/id_rsa]. Optional. If excluded, value from $_CONFIG will be used.
+ *      sshauthtype       - SSH authentication type in format: [password|privatekey]
+ *      sshprivatekeypath - SSH private key path (only works if sshauthtype = privatekey) in example format: [/opt/lg/keys/id_rsa]. Optional. If excluded, value from $_CONFIG will be used.
  *      pingtraceurl      - URL address for ping and traceroute tools (or FALSE)
  *      description       - Node description
  *      group             - Node group name (of FALSE)
@@ -112,7 +112,7 @@ $_CONFIG['routers'] = array
     'example4' => array
 	(
 		'url' => 'ssh://user@device.local',
-        'sshauthtype' => 'key',
+        'sshauthtype' => 'privatekey',
 		'pingtraceurl' => FALSE,
 		'description' => 'Example Router 4',
 		'group' => 'AS12345',
