@@ -688,7 +688,8 @@ function process($url, $exec, $return_buffer = FALSE)
 			}*/
             //var_dump('echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec);
             error_reporting(E_ALL);
-			if ($fp = @popen('echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec, 'r'))
+			#if ($fp = @popen('echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec, 'r'))
+            if ($fp = popen('echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec, 'r'))
 			{
 				while (!feof($fp))
 				{
