@@ -77,7 +77,6 @@ $_CONFIG['routers'] = array
 	'example1' => array
 	(
 		'url' => 'telnet://route-views.optus.net.au:23',
-        'sshauthtype' => 'password',
 		'pingtraceurl' => FALSE,
 		'description' => 'Example Router 1',
 		'group' => 'AS12345',
@@ -88,7 +87,6 @@ $_CONFIG['routers'] = array
 	'example2' => array
 	(
 		'url' => 'ssh://route-server.eastlink.ca:23',
-        'sshauthtype' => 'password',
 		'pingtraceurl' => FALSE,
 		'description' => 'Example Router 2',
 		'group' => 'AS12345',
@@ -99,7 +97,6 @@ $_CONFIG['routers'] = array
     'example3' => array
 	(
 		'url' => 'ssh://user@device.local',
-        'sshauthtype' => 'password',
 		'pingtraceurl' => FALSE,
 		'description' => 'Example Router 3',
 		'group' => 'AS12345',
