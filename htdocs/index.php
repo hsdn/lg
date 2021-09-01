@@ -571,8 +571,8 @@ function process($url, $exec, $return_buffer = FALSE)
 	switch ($url['scheme'])
 	{
 		case 'ssh':
-            if(isset($_CONFIG['routers'][$router]['sshauthtype']) AND ! empty(($_CONFIG['routers'][$router]['sshauthtype']))){
-                switch ($_CONFIG['routers'][$router]['sshauthtype'])
+            if(isset($router['sshauthtype']) AND ! empty(($router['sshauthtype']))){
+                switch ($router['sshauthtype'])
                 {
                     case 'password':
                         switch ($_CONFIG['sshcommand'])
