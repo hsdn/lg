@@ -686,7 +686,8 @@ function process($url, $exec, $return_buffer = FALSE)
 			{
 				@shell_exec('echo n | '.$ssh_path.' '.implode(' ', $params).' screen-length 0 temporary');
 			}*/
-            var_dump('echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec, 'r');
+            var_dump('echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec);
+            error_reporting(E_ALL);
 			if ($fp = @popen('echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec, 'r'))
 			{
 				while (!feof($fp))
@@ -697,7 +698,7 @@ function process($url, $exec, $return_buffer = FALSE)
 					}
 
 					$line = !$return_buffer ? parse_out($output, TRUE) : $output;
-
+                    var_dump($line);
 					if ($line === TRUE)
 					{
 						if (!$return_buffer)
