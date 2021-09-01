@@ -715,6 +715,7 @@ function process($url, $exec, $return_buffer = FALSE)
 					}
 
 					print $line;
+                    var_dump(array($line, $commandSuccess));
                     $commandSuccess = true;
 					flush();
 
