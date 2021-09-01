@@ -727,7 +727,7 @@ function process($url, $exec, $return_buffer = FALSE)
 				pclose($fp);
 			}
 
-			if (empty($lines))
+			if (empty($lines) AND !$line)
 			{
 				print '<p class="error">Command failed.</p>';
 			}
@@ -886,7 +886,7 @@ function process($url, $exec, $return_buffer = FALSE)
 				}
 				while ($c != $telnet->NULL OR $c != $telnet->DC1);
 
-				if (empty($lines))
+				if (empty($lines) AND !$line)
 				{
 					print '<p class="error">Command failed.</p>';
 				}
