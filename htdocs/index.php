@@ -573,6 +573,7 @@ function process($url, $exec, $return_buffer = FALSE)
 	switch ($url['scheme'])
 	{
 		case 'ssh':
+            die(var_dump($_CONFIG['routers'][$router]['sshauthtype']));
             if(isset($_CONFIG['routers'][$router]['sshauthtype']) AND ! empty(($_CONFIG['routers'][$router]['sshauthtype']))){
                 switch ($_CONFIG['routers'][$router]['sshauthtype'])
                 {
