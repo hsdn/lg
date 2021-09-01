@@ -191,7 +191,7 @@ $queries = array
 		'ipv4' => array
 		(
 			'bgp' => '/ip route print detail where bgp dst-address=%s',
-            'bgp-in' => '/ip route print detail where bgp dst-address in %s',
+            'bgp-within' => '/ip route print detail where bgp dst-address in %s',
 			'advertised-routes' => '/routing bgp advertisements print peer=%s',
 			'routes' => '/ip route print where gateway=%s',
 			'summary' => '/routing bgp peer print status where address-families=ip',
@@ -201,7 +201,7 @@ $queries = array
 		'ipv6' => array
 		(
 			'bgp' => '/ipv6 route print detail where bgp dst-address=%s',
-            'bgp-in' => '/ip route print detail where bgp dst-address in %s',
+            'bgp-within' => '/ip route print detail where bgp dst-address in %s',
 			'advertised-routes' => '/routing bgp advertisements print peer=%s',
 			'routes' => '/ipv6 route print where gateway=%s',
 			'summary' => '/routing bgp peer print status where address-families=ipv6',
@@ -323,7 +323,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 			}
 		}
 
-		if ($query AND ($command == 'bgp' OR $command == 'bgp-in' OR $command == 'graph') AND ($os == 'mikrotik' OR ($protocol == 'ipv6' AND $os == 'ios')))
+		if ($query AND ($command == 'bgp' OR $command == 'bgp-within' OR $command == 'graph') AND ($os == 'mikrotik' OR ($protocol == 'ipv6' AND $os == 'ios')))
 		{
 			if (strpos($query, '/') === FALSE AND $radb = get_radb($query))
 			{
@@ -514,7 +514,7 @@ else
 				<tr><td>
 				<table border="0" cellpadding="2" cellspacing="2">
 					<tr><td><input type="radio" name="command" id="bgp" value="bgp" checked="checked"></td><td><label for="bgp">bgp equal</label></td></tr>
-                    <tr><td><input type="radio" name="command" id="bgp-in" value="bgp-in" checked="checked"></td><td><label for="bgp-in">bgp within</label></td></tr>
+                    <tr><td><input type="radio" name="command" id="bgp-within" value="bgp-within" checked="checked"></td><td><label for="bgp-within">bgp within</label></td></tr>
 					<tr><td><input type="radio" name="command" id="advertised-routes" value="advertised-routes"></td><td><label for="advertised-routes">bgp&nbsp;advertised-routes</label></td></tr>
 					<tr><td><input type="radio" name="command" id="summary" value="summary"></td><td><label for="summary">bgp&nbsp;summary</label></td></tr>
 					<tr><td><input type="radio" name="command" id="graph" value="graph"></td><td><label for="graph">bgp graph</label></td></tr>
