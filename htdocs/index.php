@@ -715,7 +715,6 @@ function process($url, $exec, $return_buffer = FALSE)
 					}
 
 					print $line;
-                    die(var_dump(array($line, $commandSuccess)));
                     $commandSuccess = true;
 					flush();
 
@@ -727,6 +726,7 @@ function process($url, $exec, $return_buffer = FALSE)
 
 				pclose($fp);
 			}
+            die(var_dump($lines));
 
 			if ($commandSuccess == false)
 			{
