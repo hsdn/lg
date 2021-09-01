@@ -60,9 +60,11 @@ $_CONFIG = array
 	'logo' => 'lg_logo.gif',
 	'color' => '#E48559',
 	'sshauthtype' => 'password',
+    'sshprivatekeypath' => '',
 	'sshcommand' => 'plink',
 	'plink' => '/usr/local/bin/plink',
 	'sshpass' => '/usr/bin/sshpass',
+    'ssh' => '/usr/bin/ssh',
 	'ipwhois' => 'http://noc.hsdn.org/whois/',
 	'aswhois' => 'http://noc.hsdn.org/aswhois/',
 	'routers' => array(),
@@ -571,8 +573,8 @@ function process($url, $exec, $return_buffer = FALSE)
 	switch ($url['scheme'])
 	{
 		case 'ssh':
-            if(isset($router['sshauthtype']) AND ! empty(($router['sshauthtype']))){
-                switch ($router['sshauthtype'])
+            if(isset($_CONFIG['routers'][$router]['sshauthtype']) AND ! empty(($_CONFIG['routers'][$router]['sshauthtype']))){
+                switch ($_CONFIG['routers'][$router]['sshauthtype'])
                 {
                     case 'password':
                         switch ($_CONFIG['sshcommand'])
@@ -624,7 +626,7 @@ function process($url, $exec, $return_buffer = FALSE)
                         }
                         break;
                     case 'key':
-                        $params[] = 'ssh';
+                        $ssh_path = $_CONFIG['ssh'];
                         if (isset($_CONFIG['sshprivatekeypath']) AND ! empty($_CONFIG['sshprivatekeypath']))
                         {
                             $params[] = '-i '. $_CONFIG['sshprivatekeypath'];
