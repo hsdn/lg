@@ -57,6 +57,8 @@ $_CONFIG['routers'] = array
 
 ##### Router parameters:
 - `url` - URL address in format: **[ssh|telnet]://[login]:[password]@[host]:[port]**.
+- `sshauthtype` - SSH authentication type in format: [password|key]
+- `sshprivatekeypath` - SSH private key path (only works if sshauthtype = key) in example format: **/opt/lg/keys/id_rsa**. Optional. If excluded, value from $_CONFIG will be used.
 - `pingtraceurl` - URL address for ping and traceroute tools for Quagga routers (or *FALSE*).
 - `description` - Router description.
 - `group` - Router group name - AS number (or *FALSE*).
