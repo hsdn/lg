@@ -11,7 +11,7 @@ PHP Version of BGP Looking Glass script, based on the Perl sources: https://gith
 
 ### System Requirements
 - php version 5.2.0 and above with Sockets and Filter (http://www.php.net/).
-- For the SSH connections
+- For SSH connections:
   - Password authentication requires **sshpass** or Putty **plink** command (http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html).
   - Private key authentication requires **ssh**.
 - GraphViz toolkit for drawing BGP pathes graph (http://www.graphviz.org/).
