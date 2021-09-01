@@ -694,11 +694,12 @@ function process($url, $exec, $return_buffer = FALSE)
 				{
 					if (!$output = fgets($fp, 1024))
 					{
+                        die("broke");
 						continue;
 					}
 
 					$line = !$return_buffer ? parse_out($output, TRUE) : $output;
-                    var_dump($line);
+
 					if ($line === TRUE)
 					{
 						if (!$return_buffer)
