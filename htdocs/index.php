@@ -585,7 +585,7 @@ function process($url, $exec, $return_buffer = FALSE)
             {
                 $sshauthtype = $_CONFIG['sshauthtype'];
             }
-            switch ($_CONFIG['routers'][$router]['sshauthtype'])
+            switch ($sshauthtype)
             {
                 case 'password':
                     switch ($_CONFIG['sshpwdcommand'])

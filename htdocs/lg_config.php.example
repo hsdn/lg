@@ -50,6 +50,11 @@ $_CONFIG['plink'] = '/usr/local/bin/plink';
 $_CONFIG['sshpass'] = '/usr/bin/sshpass';
 
 /*
+ * sshpass command path (for SSH connections)
+ */
+$_CONFIG['ssh'] = '/usr/bin/sshpass';
+
+/*
  * URL address of the IP whois service
  */
 $_CONFIG['ipwhois'] = 'http://noc.hsdn.org/whois/';
