@@ -686,7 +686,7 @@ function process($url, $exec, $return_buffer = FALSE)
 			{
 				@shell_exec('echo n | '.$ssh_path.' '.implode(' ', $params).' screen-length 0 temporary');
 			}*/
-            
+
 			if ($fp = @popen('echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec, 'r'))
 			{
 				while (!feof($fp))
@@ -723,7 +723,7 @@ function process($url, $exec, $return_buffer = FALSE)
 					}
 				}
 
-				$pcloseresult = pclose($fp);
+				pclose($fp);
 			}
 
 			if (!$line)
