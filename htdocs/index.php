@@ -289,10 +289,6 @@ if (isset($_CONFIG['routers'][$router]) AND
 
 	$url = $_CONFIG['routers'][$router]['url'];
 
-	if(isset($_CONFIG['routers'][$router]['sshauthtype'])){
-		$sshauthtype = $_CONFIG['routers'][$router]['sshauthtype'];
-	}
-
 	if (($command == 'ping' OR $command == 'trace') AND 
 		isset($_CONFIG['routers'][$router]['pingtraceurl']) AND 
 		$_CONFIG['routers'][$router]['pingtraceurl'] != FALSE)
@@ -575,77 +571,78 @@ function process($url, $exec, $return_buffer = FALSE)
 	switch ($url['scheme'])
 	{
 		case 'ssh':
-			switch ($sshauthtype)
-			{
-				case 'password':
-					switch ($_CONFIG['sshcommand'])
-					{
-						// Use sshpass command
-						case 'sshpass':
-							$ssh_path = $_CONFIG['sshpass'];
-							$params = array();
+            if(isset($_CONFIG['routers'][$router]['sshauthtype']) AND ! empty(($_CONFIG['routers'][$router]['sshauthtype']))){
+                switch ($sshauthtype)
+                {
+                    case 'password':
+                        switch ($_CONFIG['sshcommand'])
+                        {
+                            // Use sshpass command
+                            case 'sshpass':
+                                $ssh_path = $_CONFIG['sshpass'];
+                                $params = array();
 
-							if (isset($url['pass']) AND $url['pass'] != '')
-							{
-								$params[] = '-p '.$url['pass'];
-							}
+                                if (isset($url['pass']) AND $url['pass'] != '')
+                                {
+                                    $params[] = '-p '.$url['pass'];
+                                }
 
-							$params[] = 'ssh';
+                                $params[] = 'ssh';
 
-							if (isset($url['user']) AND $url['user'] != '')
-							{
-								$params[] = '-l '.$url['user'];
-							}
+                                if (isset($url['user']) AND $url['user'] != '')
+                                {
+                                    $params[] = '-l '.$url['user'];
+                                }
 
-							if (isset($url['port']) AND $url['port'] != '')
-							{
-								$params[] = '-p '.$url['port'];
-							}
+                                if (isset($url['port']) AND $url['port'] != '')
+                                {
+                                    $params[] = '-p '.$url['port'];
+                                }
 
-							$params[] = '-o StrictHostKeyChecking=no';
-							break;
+                                $params[] = '-o StrictHostKeyChecking=no';
+                                break;
 
-						// Use plink command
-						case 'plink':
-						default:
-							$ssh_path = $_CONFIG['plink'];
-							$params = array('-ssh');
-							if (isset($url['user']) AND $url['user'] != '')
-							{
-								$params[] = '-l '.$url['user'];
-							}
+                            // Use plink command
+                            case 'plink':
+                            default:
+                                $ssh_path = $_CONFIG['plink'];
+                                $params = array('-ssh');
+                                if (isset($url['user']) AND $url['user'] != '')
+                                {
+                                    $params[] = '-l '.$url['user'];
+                                }
 
-							if (isset($url['pass']) AND $url['pass'] != '')
-							{
-								$params[] = '-pw '.$url['pass'];
-							}
+                                if (isset($url['pass']) AND $url['pass'] != '')
+                                {
+                                    $params[] = '-pw '.$url['pass'];
+                                }
 
-							if (isset($url['port']) AND $url['port'] != '')
-							{
-								$params[] = '-P '.$url['port'];
-							}
-					}
-					break;
-				case 'key':
-					$params[] = 'ssh';
-					if (isset($_CONFIG['sshprivatekeypath']) AND ! empty($_CONFIG['sshprivatekeypath']))
-					{
-						$params[] = '-i '. $_CONFIG['sshprivatekeypath'];
-					}
-					if (isset($url['user']) AND $url['user'] != '')
-					{
-						$params[] = '-l '.$url['user'];
-					}
+                                if (isset($url['port']) AND $url['port'] != '')
+                                {
+                                    $params[] = '-P '.$url['port'];
+                                }
+                        }
+                        break;
+                    case 'key':
+                        $params[] = 'ssh';
+                        if (isset($_CONFIG['sshprivatekeypath']) AND ! empty($_CONFIG['sshprivatekeypath']))
+                        {
+                            $params[] = '-i '. $_CONFIG['sshprivatekeypath'];
+                        }
+                        if (isset($url['user']) AND $url['user'] != '')
+                        {
+                            $params[] = '-l '.$url['user'];
+                        }
 
-					if (isset($url['port']) AND $url['port'] != '')
-					{
-						$params[] = '-p '.$url['port'];
-					}
+                        if (isset($url['port']) AND $url['port'] != '')
+                        {
+                            $params[] = '-p '.$url['port'];
+                        }
 
-					$params[] = '-o StrictHostKeyChecking=no';
-					break;
-			}
-			
+                        $params[] = '-o StrictHostKeyChecking=no';
+                        break;
+                }
+            }
 
 			$params[] = $url['host'];
 
