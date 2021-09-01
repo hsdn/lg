@@ -32,7 +32,7 @@ PHP Version of BGP Looking Glass script, based on the Perl sources: https://gith
 - `$_CONFIG['aswhois']` - URL address of the AS whois service.
 
 #### Programs Configuration
-- `$_CONFIG['sshauthtype']` - SSH authentication type (*password* or *privatekey*)
+- `$_CONFIG['sshauthtype']` - SSH authentication type (you can use *password* or *privatekey* as value)
 - `$_CONFIG['sshprivatekeypath']` - Absolute path to SSH private key
 - `$_CONFIG['sshpwdcommand']` - Type of command to make a SSH connection with password authentication (you can use *plink* or *sshpass* as value).
 - `$_CONFIG['plink']` - Path to **plink** command if you use it (for SSH connections).
