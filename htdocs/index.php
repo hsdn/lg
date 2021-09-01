@@ -727,7 +727,7 @@ function process($url, $exec, $return_buffer = FALSE)
 				pclose($fp);
 			}
 
-			if (!$line)
+			if ($commandSuccess == false)
 			{
 				print '<p class="error">Command failed.</p>';
 			}
