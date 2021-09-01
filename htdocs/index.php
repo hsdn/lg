@@ -713,8 +713,9 @@ function process($url, $exec, $return_buffer = FALSE)
 						$lines .= $output;
 						continue;
 					}
-                    $commandSuccess = true;
+
 					print $line;
+                    $commandSuccess = true;
 					flush();
 
 					if ($line === NULL)
@@ -726,7 +727,7 @@ function process($url, $exec, $return_buffer = FALSE)
 				pclose($fp);
 			}
 
-			if (!$commandSuccess)
+			if (!$line)
 			{
 				print '<p class="error">Command failed.</p>';
 			}
