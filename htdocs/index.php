@@ -686,7 +686,7 @@ function process($url, $exec, $return_buffer = FALSE)
 			{
 				@shell_exec('echo n | '.$ssh_path.' '.implode(' ', $params).' screen-length 0 temporary');
 			}*/
-            $commandSuccess = false;
+
 			if ($fp = @popen('echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec, 'r'))
 			{
 				while (!feof($fp))
@@ -715,7 +715,7 @@ function process($url, $exec, $return_buffer = FALSE)
 					}
 
 					print $line;
-                    $commandSuccess = true;
+
 					flush();
 
 					if ($line === NULL)
@@ -726,9 +726,8 @@ function process($url, $exec, $return_buffer = FALSE)
 
 				pclose($fp);
 			}
-            die(var_dump($lines));
 
-			if ($commandSuccess == false)
+			if (empty($lines))
 			{
 				print '<p class="error">Command failed.</p>';
 			}
@@ -887,7 +886,7 @@ function process($url, $exec, $return_buffer = FALSE)
 				}
 				while ($c != $telnet->NULL OR $c != $telnet->DC1);
 
-				if (!$line)
+				if (empty($lines))
 				{
 					print '<p class="error">Command failed.</p>';
 				}
