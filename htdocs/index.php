@@ -289,10 +289,6 @@ if (isset($_CONFIG['routers'][$router]) AND
 
 	$url = $_CONFIG['routers'][$router]['url'];
 
-	if(isset($_CONFIG['routers'][$router]['sshpublickeypath'])){
-		$sshpublickeypath = $_CONFIG['routers'][$router]['sshpublickeypath'];
-	}
-
 	if(isset($_CONFIG['routers'][$router]['sshauthtype'])){
 		$sshauthtype = $_CONFIG['routers'][$router]['sshauthtype'];
 	}
@@ -630,11 +626,11 @@ function process($url, $exec, $return_buffer = FALSE)
 							}
 					}
 					break;
-				case 'publickey':
+				case 'key':
 					$params[] = 'ssh';
-					if (isset($sshpublickeypath) AND $sshpublickeypath != '')
+					if (isset($_CONFIG['sshprivatekeypath']) AND ! empty($_CONFIG['sshprivatekeypath']))
 					{
-						$params[] = '-i '.$sshpublickeypath;
+						$params[] = '-i '. $_CONFIG['sshprivatekeypath'];
 					}
 					if (isset($url['user']) AND $url['user'] != '')
 					{
