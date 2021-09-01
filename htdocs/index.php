@@ -514,7 +514,7 @@ else
 				<tr><td>
 				<table border="0" cellpadding="2" cellspacing="2">
 					<tr><td><input type="radio" name="command" id="bgp" value="bgp" checked="checked"></td><td><label for="bgp">bgp equal</label></td></tr>
-                    <tr><td><input type="radio" name="command" id="bgp-in" value="bgp-in" checked="checked"></td><td><label for="bgp-in">bgp in</label></td></tr>
+                    <tr><td><input type="radio" name="command" id="bgp-in" value="bgp-in" checked="checked"></td><td><label for="bgp-in">bgp within</label></td></tr>
 					<tr><td><input type="radio" name="command" id="advertised-routes" value="advertised-routes"></td><td><label for="advertised-routes">bgp&nbsp;advertised-routes</label></td></tr>
 					<tr><td><input type="radio" name="command" id="summary" value="summary"></td><td><label for="summary">bgp&nbsp;summary</label></td></tr>
 					<tr><td><input type="radio" name="command" id="graph" value="graph"></td><td><label for="graph">bgp graph</label></td></tr>
