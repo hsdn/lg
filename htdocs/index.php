@@ -694,7 +694,6 @@ function process($url, $exec, $return_buffer = FALSE)
 				{
 					if (!$output = fgets($fp, 1024))
 					{
-                        die("broke");
 						continue;
 					}
 
@@ -725,7 +724,8 @@ function process($url, $exec, $return_buffer = FALSE)
 					}
 				}
 
-				pclose($fp);
+				$pcloseresult = pclose($fp);
+                var_dump("pcloseresult: " . $pcloseresult);
 			}
 
 			if (!$line)
