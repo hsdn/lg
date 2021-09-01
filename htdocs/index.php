@@ -645,7 +645,6 @@ function process($url, $exec, $return_buffer = FALSE)
                         break;
                 }
             }
-            die(var_dump($params));
 
 			$params[] = $url['host'];
 
@@ -687,7 +686,7 @@ function process($url, $exec, $return_buffer = FALSE)
 			{
 				@shell_exec('echo n | '.$ssh_path.' '.implode(' ', $params).' screen-length 0 temporary');
 			}*/
-
+            var_dump('echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec, 'r');
 			if ($fp = @popen('echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec, 'r'))
 			{
 				while (!feof($fp))
