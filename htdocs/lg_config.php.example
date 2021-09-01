@@ -25,9 +25,19 @@ $_CONFIG['logo'] = 'lg_logo.gif';
 $_CONFIG['color'] = '#E48559';
 
 /*
- * Type of command to make a SSH connection (`plink' or `sshpass')
+ * SSH authentication type (`password` or `privatekey`)
  */
-$_CONFIG['sshcommand'] = 'plink';
+$_CONFIG['sshauthtype'] = 'password';
+
+/*
+ * Absolute path to SSH private key
+ */
+$_CONFIG['sshprivatekeypath'] = '/opt/lg/keys/id_rsa';
+
+/*
+ * Type of command for SSH connection with password authentication (`plink` or `sshpass`)
+ */
+$_CONFIG['sshpwdcommand'] = 'plink';
 
 /*
  * Putty `plink' command path (for SSH connections)
@@ -53,22 +63,21 @@ $_CONFIG['aswhois'] = 'http://noc.hsdn.org/aswhois/';
  * Router nodes
  *
  * Parameters:
- *	url              - URL address in format: [ssh|telnet]://[login]:[password]@[host]:[port]
- *  sshauthtype      - SSH authentication type in format: [password|publickey]
- *  sshpublickeypath - SSH public key path (only works if sshauthtype = publickey) in format: [/opt/lg/keys/keyname.pub]
- *	pingtraceurl     - URL address for ping and traceroute tools (or FALSE)
- *	description      - Node description
- *	group            - Node group name (of FALSE)
- *	ipv6             - Node supports IPv6 (TRUE/FALSE)
- *	os               - Node OS (ios, mikrotik, quagga, junos)
+ *      url               - URL address in format: [ssh|telnet]://[login]:[password]@[host]:[port]
+ *      sshauthtype       - SSH authentication type in format: [password|key]
+ *      sshprivatekeypath - SSH private key path (only works if sshauthtype = key) in example format: [/opt/lg/keys/id_rsa]. Optional. If excluded, value from $_CONFIG will be used.
+ *      pingtraceurl      - URL address for ping and traceroute tools (or FALSE)
+ *      description       - Node description
+ *      group             - Node group name (of FALSE)
+ *      ipv6              - Node supports IPv6 (TRUE/FALSE)
+ *      os                - Node OS (ios, mikrotik, quagga, junos)
  */
 $_CONFIG['routers'] = array
 (
 	'example1' => array
 	(
 		'url' => 'telnet://route-views.optus.net.au:23',
-		'sshauthtype' => 'password',
-		'sshpublickeypath' => '',
+        'sshauthtype' => 'password',
 		'pingtraceurl' => FALSE,
 		'description' => 'Example Router 1',
 		'group' => 'AS12345',
@@ -78,12 +87,35 @@ $_CONFIG['routers'] = array
 
 	'example2' => array
 	(
-		'url' => 'telnet://route-server.eastlink.ca:23',
+		'url' => 'ssh://route-server.eastlink.ca:23',
+        'sshauthtype' => 'password',
 		'pingtraceurl' => FALSE,
 		'description' => 'Example Router 2',
 		'group' => 'AS12345',
 		'ipv6' => TRUE,
 		'os' => 'ios',
+	),
+
+    'example3' => array
+	(
+		'url' => 'ssh://user@device.local',
+        'sshauthtype' => 'password',
+		'pingtraceurl' => FALSE,
+		'description' => 'Example Router 3',
+		'group' => 'AS12345',
+		'ipv6' => TRUE,
+		'os' => 'mikrotik',
+	),
+    
+    'example4' => array
+	(
+		'url' => 'ssh://user@device.local',
+        'sshauthtype' => 'key',
+		'pingtraceurl' => FALSE,
+		'description' => 'Example Router 4',
+		'group' => 'AS12345',
+		'ipv6' => TRUE,
+		'os' => 'mikrotik',
 	),
 );
 
