@@ -59,9 +59,12 @@ $_CONFIG = array
 	'company' => 'My Company Name',
 	'logo' => 'lg_logo.gif',
 	'color' => '#E48559',
-	'sshcommand' => 'plink',
+    'sshauthtype' => 'password',
+    'sshprivatekeypath' => '',
+	'sshpwdcommand' => 'plink',
 	'plink' => '/usr/local/bin/plink',
 	'sshpass' => '/usr/bin/sshpass',
+    'ssh' => '/usr/bin/ssh',
 	'ipwhois' => 'http://noc.hsdn.org/whois/',
 	'aswhois' => 'http://noc.hsdn.org/aswhois/',
 	'routers' => array(),
@@ -188,6 +191,7 @@ $queries = array
 		'ipv4' => array
 		(
 			'bgp' => '/ip route print detail where bgp dst-address=%s',
+            'bgp-within' => '/ip route print detail where bgp dst-address in %s',
 			'advertised-routes' => '/routing bgp advertisements print peer=%s',
 			'routes' => '/ip route print where gateway=%s',
 			'summary' => '/routing bgp peer print status where address-families=ip',
@@ -197,6 +201,7 @@ $queries = array
 		'ipv6' => array
 		(
 			'bgp' => '/ipv6 route print detail where bgp dst-address=%s',
+            'bgp-within' => '/ip route print detail where bgp dst-address in %s',
 			'advertised-routes' => '/routing bgp advertisements print peer=%s',
 			'routes' => '/ipv6 route print where gateway=%s',
 			'summary' => '/routing bgp peer print status where address-families=ipv6',
@@ -318,7 +323,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 			}
 		}
 
-		if ($query AND ($command == 'bgp' OR $command == 'graph') AND ($os == 'mikrotik' OR ($protocol == 'ipv6' AND $os == 'ios')))
+		if ($query AND ($command == 'bgp' OR $command == 'bgp-within' OR $command == 'graph') AND ($os == 'mikrotik' OR ($protocol == 'ipv6' AND $os == 'ios')))
 		{
 			if (strpos($query, '/') === FALSE AND $radb = get_radb($query))
 			{
@@ -508,7 +513,8 @@ else
 				<tr><th>Type of Query</th><th>Additional parameters</th><th>Node</th></tr>
 				<tr><td>
 				<table border="0" cellpadding="2" cellspacing="2">
-					<tr><td><input type="radio" name="command" id="bgp" value="bgp" checked="checked"></td><td><label for="bgp">bgp</label></td></tr>
+					<tr><td><input type="radio" name="command" id="bgp" value="bgp" checked="checked"></td><td><label for="bgp">bgp equal</label></td></tr>
+                    <tr><td><input type="radio" name="command" id="bgp-within" value="bgp-within" checked="checked"></td><td><label for="bgp-within">bgp within</label></td></tr>
 					<tr><td><input type="radio" name="command" id="advertised-routes" value="advertised-routes"></td><td><label for="advertised-routes">bgp&nbsp;advertised-routes</label></td></tr>
 					<tr><td><input type="radio" name="command" id="summary" value="summary"></td><td><label for="summary">bgp&nbsp;summary</label></td></tr>
 					<tr><td><input type="radio" name="command" id="graph" value="graph"></td><td><label for="graph">bgp graph</label></td></tr>
@@ -562,6 +568,7 @@ function process($url, $exec, $return_buffer = FALSE)
 {
 	global $_CONFIG, $router, $protocol, $os, $command, $query, $ros;
 
+    $sshauthtype = null;
 	$buffer = '';
 	$lines = $line = $is_exception = FALSE;
 	$index = 0;
@@ -570,54 +577,88 @@ function process($url, $exec, $return_buffer = FALSE)
 	switch ($url['scheme'])
 	{
 		case 'ssh':
-			switch ($_CONFIG['sshcommand'])
-			{
-				// Use sshpass command
-				case 'sshpass':
-					$ssh_path = $_CONFIG['sshpass'];
-					$params = array();
+            if(! empty($_CONFIG['routers'][$router]['sshauthtype']))
+            {
+                $sshauthtype = $_CONFIG['routers'][$router]['sshauthtype'];
+            }
+            elseif (! empty($_CONFIG['sshauthtype']))
+            {
+                $sshauthtype = $_CONFIG['sshauthtype'];
+            }
+            switch ($sshauthtype)
+            {
+                case 'password':
+                    switch ($_CONFIG['sshpwdcommand'])
+                    {
+                        // Use sshpass command
+                        case 'sshpass':
+                            $ssh_path = $_CONFIG['sshpass'];
+                            $params = array();
 
-					if (isset($url['pass']) AND $url['pass'] != '')
-					{
-						$params[] = '-p '.$url['pass'];
-					}
+                            if (isset($url['pass']) AND $url['pass'] != '')
+                            {
+                                $params[] = '-p '.$url['pass'];
+                            }
 
-					$params[] = 'ssh';
+                            $params[] = 'ssh';
 
-					if (isset($url['user']) AND $url['user'] != '')
-					{
-						$params[] = '-l '.$url['user'];
-					}
+                            if (isset($url['user']) AND $url['user'] != '')
+                            {
+                                $params[] = '-l '.$url['user'];
+                            }
 
-					if (isset($url['port']) AND $url['port'] != '')
-					{
-						$params[] = '-p '.$url['port'];
-					}
+                            if (isset($url['port']) AND $url['port'] != '')
+                            {
+                                $params[] = '-p '.$url['port'];
+                            }
 
-					$params[] = '-o StrictHostKeyChecking=no';
-					break;
+                            $params[] = '-o StrictHostKeyChecking=no';
+                            break;
 
-				// Use plink command
-				case 'plink':
-				default:
-					$ssh_path = $_CONFIG['plink'];
-					$params = array('-ssh');
+                        // Use plink command
+                        case 'plink':
+                        default:
+                            $ssh_path = $_CONFIG['plink'];
+                            $params = array('-ssh');
+                            if (isset($url['user']) AND $url['user'] != '')
+                            {
+                                $params[] = '-l '.$url['user'];
+                            }
 
-					if (isset($url['user']) AND $url['user'] != '')
-					{
-						$params[] = '-l '.$url['user'];
-					}
+                            if (isset($url['pass']) AND $url['pass'] != '')
+                            {
+                                $params[] = '-pw '.$url['pass'];
+                            }
 
-					if (isset($url['pass']) AND $url['pass'] != '')
-					{
-						$params[] = '-pw '.$url['pass'];
-					}
+                            if (isset($url['port']) AND $url['port'] != '')
+                            {
+                                $params[] = '-P '.$url['port'];
+                            }
+                    }
+                    break;
+                case 'privatekey':
+                    $ssh_path = $_CONFIG['ssh'];
+                    if(isset($_CONFIG['routers'][$router]['sshprivatekeypath']) AND ! empty($_CONFIG['routers'][$router]['sshprivatekeypath']))
+                    {
+                        $params[] = '-i '. $_CONFIG['routers'][$router]['sshprivatekeypath'];
+                    }
+                    elseif (isset($_CONFIG['sshprivatekeypath']) AND ! empty($_CONFIG['sshprivatekeypath']))
+                    {
+                        $params[] = '-i '. $_CONFIG['sshprivatekeypath'];
+                    }
+                    if (isset($url['user']) AND $url['user'] != '')
+                    {
+                        $params[] = '-l '.$url['user'];
+                    }
 
-					if (isset($url['port']) AND $url['port'] != '')
-					{
-						$params[] = '-P '.$url['port'];
-					}
-			}
+                    if (isset($url['port']) AND $url['port'] != '')
+                    {
+                        $params[] = '-p '.$url['port'];
+                    }
+
+                    $params[] = '-o StrictHostKeyChecking=no';
+                    break;
+            }
 
 			$params[] = $url['host'];
 
@@ -688,6 +729,7 @@ function process($url, $exec, $return_buffer = FALSE)
 					}
 
 					print $line;
+
 					flush();
 
 					if ($line === NULL)
@@ -699,7 +741,7 @@ function process($url, $exec, $return_buffer = FALSE)
 				pclose($fp);
 			}
 
-			if (!$line)
+			if (empty($lines) AND !$line)
 			{
 				print '<p class="error">Command failed.</p>';
 			}
@@ -858,7 +900,7 @@ function process($url, $exec, $return_buffer = FALSE)
 				}
 				while ($c != $telnet->NULL OR $c != $telnet->DC1);
 
-				if (!$line)
+				if (empty($lines) AND !$line)
 				{
 					print '<p class="error">Command failed.</p>';
 				}

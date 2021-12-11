@@ -2,7 +2,7 @@
 PHP Version of BGP Looking Glass script, based on the Perl sources: https://github.com/Cougar/lg
 
 ### General Features
-- Supports the Telnet and SSH (through Putty/plink or sshpass).
+- Supports the Telnet and SSH (through Putty/plink, sshpass, or ssh).
 - Supports the Cisco, MikroTik v5/v6, Juniper, Huawei (Comware), Quagga (Zebra) and OpenBGPD routers.
 - Supports the IPv4 and IPv6 protocols.
 - Automatic conversion IPs to subnets using Merit RADb for MikroTik (http://www.ra.net/).
@@ -11,7 +11,9 @@ PHP Version of BGP Looking Glass script, based on the Perl sources: https://gith
 
 ### System Requirements
 - php version 5.2.0 and above with Sockets and Filter (http://www.php.net/).
-- For the SSH connections require **sshpass** or Putty **plink** command (http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html).
+- For SSH connections:
+  - Password authentication requires **sshpass** or Putty **plink** command (http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html).
+  - Private key authentication requires **ssh**.
 - GraphViz toolkit for drawing BGP pathes graph (http://www.graphviz.org/).
 - php pear package Image_GraphViz (http://pear.php.net/package/Image_GraphViz).
 
@@ -30,7 +32,9 @@ PHP Version of BGP Looking Glass script, based on the Perl sources: https://gith
 - `$_CONFIG['aswhois']` - URL address of the AS whois service.
 
 #### Programs Configuration
-- `$_CONFIG['sshcommand']` - Type of command to make a SSH connection (you can use *plink* or *sshpass* as value).
+- `$_CONFIG['sshauthtype']` - SSH authentication type (you can use *password* or *privatekey* as value)
+- `$_CONFIG['sshprivatekeypath']` - Absolute path to SSH private key
+- `$_CONFIG['sshpwdcommand']` - Type of command to make a SSH connection with password authentication (you can use *plink* or *sshpass* as value).
 - `$_CONFIG['plink']` - Path to **plink** command if you use it (for SSH connections).
 - `$_CONFIG['sshpass']` - Path to **sshpass** command if you use it (for SSH connections).
 
@@ -53,6 +57,8 @@ $_CONFIG['routers'] = array
 
 ##### Router parameters:
 - `url` - URL address in format: **[ssh|telnet]://[login]:[password]@[host]:[port]**.
+- `sshauthtype` - SSH authentication type in format: [password|privatekey].
+- `sshprivatekeypath` - SSH private key path in example format: **/opt/lg/keys/id_rsa**.
 - `pingtraceurl` - URL address for ping and traceroute tools for Quagga routers (or *FALSE*).
 - `description` - Router description.
 - `group` - Router group name - AS number (or *FALSE*).
