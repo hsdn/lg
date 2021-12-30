@@ -459,7 +459,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 			}
 			else if (preg_match("/^show route advertising-protocol bgp\s+([\d\.A-Fa-f:\/]+)$/", $exec, $exec_exp))
 			{
-				$exec = 'show route advertising-protocol '.$exec_exp[1].' table '.$table;
+				$exec = 'show route advertising-protocol bgp '.$exec_exp[1].' table '.$table;
 			}
 		}
 
