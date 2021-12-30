@@ -395,31 +395,31 @@ if (isset($_CONFIG['routers'][$router]) AND
 			}
 			else if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+) ro\w*$/", $exec, $exec_exp)) 
 			{
-				$exec = 'show route receive-protocol bgp '.$exec_exp[1];
+				$exec = 'show route receive-protocol bgp '.$exec_exp[1]." table ".$table;
 			}
 			else if (preg_match("/^show bgp neighbors ([\d\.A-Fa-f:]+) routes all$/", $exec, $exec_exp))
 			{
-				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' all';
+				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' table '.$table.' all';
 			}
 			else if (preg_match("/^show bgp neighbors ([\d\.A-Fa-f:]+) routes damping suppressed$/", $exec, $exec_exp)) 
 			{
-				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' damping suppressed';
+				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' table '.$table.' damping suppressed';
 			}
 			else if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+) advertised-routes ([\d\.A-Fa-f:\/]+)$/", $exec, $exec_exp))
 			{
-				$exec = 'show route advertising-protocol bgp '.$exec_exp[1].' '.$exec_exp[2].' exact detail';
+                $exec = 'show route advertising-protocol bgp '.$exec_exp[1].' '.$exec_exp[2].' table '.$table.' exact detail';
 			}
 			else if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+) receive-protocol ([\d\.A-Fa-f:\/]+)$/", $exec, $exec_exp)) 
 			{
-				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' '.$exec_exp[2].' exact detail';
+				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' '.$exec_exp[2].' table '.$table.' exact detail';
 			}
 			else if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+) a[\w\-]*$/", $exec, $exec_exp))
 			{
-				$exec = 'show route advertising-protocol bgp '.$exec_exp[1];
+                $exec = 'show route advertising-protocol bgp '.$exec_exp[1].' table '.$table.;
 			}
 			else if (preg_match("/^show bgp\s+([\d\.A-Fa-f:]+\/\d+)$/", $exec, $exec_exp))
 			{
-       		    $exec = 'show route protocol bgp '.$exec_exp[1].' terse exact';
+				$exec = 'show route protocol bgp '.$exec_exp[1].' table '.$table.' terse exact';
 			}
 			else if (preg_match("/^show bgp\s+([\d\.A-Fa-f:]+)$/", $exec, $exec_exp))
 			{
@@ -427,7 +427,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 			}
 			else if (preg_match("/^show bgp\s+([\d\.A-Fa-f:\/]+) exact$/", $exec, $exec_exp)) 
 			{
-				$exec = 'show route protocol bgp '.$exec_exp[1].' exact detail all';
+				$exec = 'show route protocol bgp '.$exec_exp[1].' table '.$table.' exact detail all';
 			}
 			else if (preg_match("/^show bgp re\s+(.*)$/", $exec, $exec_exp)) 
 			{
