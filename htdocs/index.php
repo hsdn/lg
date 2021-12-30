@@ -395,55 +395,31 @@ if (isset($_CONFIG['routers'][$router]) AND
 			}
 			else if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+) ro\w*$/", $exec, $exec_exp)) 
 			{
-                $exec = 'show route receive-protocol bgp '.$exec_exp[1];
+				$exec = 'show route receive-protocol bgp '.$exec_exp[1];
 			}
 			else if (preg_match("/^show bgp neighbors ([\d\.A-Fa-f:]+) routes all$/", $exec, $exec_exp))
 			{
-			    if ($routing_instance){
-                    $exec = 'show route instance '.$routing_instance.' receive-protocol bgp '.$exec_exp[1].' all';
-                }else{
-                    $exec = 'show route receive-protocol bgp '.$exec_exp[1].' all';
-                }
+				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' all';
 			}
 			else if (preg_match("/^show bgp neighbors ([\d\.A-Fa-f:]+) routes damping suppressed$/", $exec, $exec_exp)) 
 			{
-			    if ($routing_instance){
-                    $exec = 'show route instance '.$routing_instance.$exec_exp[1].' damping suppressed';
-                }else{
-				    $exec = 'show route receive-protocol bgp '.$exec_exp[1].' damping suppressed';
-                }
+				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' damping suppressed';
 			}
 			else if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+) advertised-routes ([\d\.A-Fa-f:\/]+)$/", $exec, $exec_exp))
 			{
-			    if ($routing_instance){
-                    $exec = 'show route instance '.$routing_instance.' advertising-protocol bgp '.$exec_exp[1].' '.$exec_exp[2].' exact detail';
-                }else{
-                    $exec = 'show route advertising-protocol bgp '.$exec_exp[1].' '.$exec_exp[2].' exact detail';
-                }
+				$exec = 'show route advertising-protocol bgp '.$exec_exp[1].' '.$exec_exp[2].' exact detail';
 			}
 			else if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+) receive-protocol ([\d\.A-Fa-f:\/]+)$/", $exec, $exec_exp)) 
 			{
-			    if ($routing_instance){
-                    $exec = 'show route instance '.$routing_instance.' receive-protocol bgp '.$exec_exp[1].' '.$exec_exp[2].' exact detail';
-                }else{
-                    $exec = 'show route receive-protocol bgp '.$exec_exp[1].' '.$exec_exp[2].' exact detail';
-                }
+				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' '.$exec_exp[2].' exact detail';
 			}
 			else if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+) a[\w\-]*$/", $exec, $exec_exp))
 			{
-			    if ($routing_instance){
-                    $exec = 'show route instance '.$routing_instance.' advertising-protocol bgp '.$exec_exp[1];
-                }else{
-                    $exec = 'show route advertising-protocol bgp '.$exec_exp[1];
-                }
+				$exec = 'show route advertising-protocol bgp '.$exec_exp[1];
 			}
 			else if (preg_match("/^show bgp\s+([\d\.A-Fa-f:]+\/\d+)$/", $exec, $exec_exp))
 			{
-			    if ($routing_instance){
-                    $exec = 'show route instance '.$routing_instance.' protocol bgp '.$exec_exp[1].' terse exact';
-                }else{
-       				$exec = 'show route protocol bgp '.$exec_exp[1].' terse exact';
-                }
+       		    $exec = 'show route protocol bgp '.$exec_exp[1].' terse exact';
 			}
 			else if (preg_match("/^show bgp\s+([\d\.A-Fa-f:]+)$/", $exec, $exec_exp))
 			{
