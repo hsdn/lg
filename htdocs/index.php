@@ -461,6 +461,15 @@ if (isset($_CONFIG['routers'][$router]) AND
 			{
 				$exec = 'show route advertising-protocol bgp '.$exec_exp[1].' table '.$table;
 			}
+			else if (preg_match("/^traceroute (ip|ipv6) ([\d\.A-Fa-f:\/]+)$/", $exec, $exec_exp))
+			{
+			    if ($routing_instance){
+                    $exec = 'traceroute '.$exec_exp[1].' routing-instance '.$routing_instance.' '.$exec_exp[2];
+                }else{
+					$exec = 'traceroute '.$exec_exp[1].' '.$exec_exp[2];
+                }
+			}
+
 		}
 
 		if ($command == 'graph')
