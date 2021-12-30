@@ -395,11 +395,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 			}
 			else if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+) ro\w*$/", $exec, $exec_exp)) 
 			{
-			    if ($routing_instance){
-                    $exec = 'show route instance '.$routing_instance.' receive-protocol bgp '.$exec_exp[1];
-                }else{
-                    $exec = 'show route receive-protocol bgp '.$exec_exp[1];
-                }
+                $exec = 'show route receive-protocol bgp '.$exec_exp[1];
 			}
 			else if (preg_match("/^show bgp neighbors ([\d\.A-Fa-f:]+) routes all$/", $exec, $exec_exp))
 			{
