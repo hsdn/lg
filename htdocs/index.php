@@ -427,11 +427,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 			}
 			else if (preg_match("/^show bgp\s+([\d\.A-Fa-f:\/]+) exact$/", $exec, $exec_exp)) 
 			{
-			    if ($routing_instance){
-                    $exec = 'show route instance '.$routing_instance.' protocol bgp '.$exec_exp[1].' exact detail all';
-                }else{
-       			    $exec = 'show route protocol bgp '.$exec_exp[1].' exact detail all';
-                }
+				$exec = 'show route protocol bgp '.$exec_exp[1].' exact detail all';
 			}
 			else if (preg_match("/^show bgp re\s+(.*)$/", $exec, $exec_exp)) 
 			{
