@@ -302,6 +302,8 @@ if (isset($_CONFIG['routers'][$router]) AND
 
 	$url = @parse_url($url);
 
+	$routing_instance = $_CONFIG['routers'][$router]['routing-instance'];
+
 	$os = $_CONFIG['routers'][$router]['os'];
 
 	if ($command == 'graph' AND isset($queries[$os][$protocol]['bgp']))
@@ -377,7 +379,11 @@ if (isset($_CONFIG['routers'][$router]) AND
 		if ($os == 'junos') 
 		{
 			// @see JunOS Routing Table Names (http://www.net-gyver.com/?p=602)
-			$table = ($protocol == 'ipv6') ? 'inet6.0' : 'inet.0';
+            if ($routing_instance){
+                $table = ($protocol == 'ipv6') ? $routing_instance.'.inet6.0' : $routing_instance.'.inet.0';
+            }else{
+			    $table = ($protocol == 'ipv6') ? 'inet6.0' : 'inet.0';
+			}
 
 			if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+)$/", $exec, $exec_exp))
 			{
