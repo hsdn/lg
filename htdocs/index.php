@@ -1440,7 +1440,7 @@ function parse_out($output, $check = FALSE)
 		return $output;
 	}
 
-	if (preg_match("/^show bgp summary( instance .*)?$/", $exec))
+	if (preg_match("/^show bgp summary(?:\s+instance\s+[\d\w-]*)?$/", $exec))
 	{
 		// JunOS
 		if (preg_match("/^([\dA-Fa-f:][\d\.A-Fa-f:]+)\s+/", $output, $lastip_exp)) 
@@ -1813,7 +1813,7 @@ function parse_out($output, $check = FALSE)
 		return $output;
 	}
 
-	if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+)/i", $exec, $ip_exp))
+	if (preg_match("/^show bgp n\w*\s+(?:instance\s+[\d\w-]*)?\s*([\d\.A-Fa-f:]+)/i", $exec, $ip_exp))
 	{
 		$ip = $ip_exp[1];
 
