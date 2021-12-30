@@ -457,6 +457,10 @@ if (isset($_CONFIG['routers'][$router]) AND
        			    $exec = 'show bgp summary';
                 }
 			}
+			else if (preg_match("/^show route advertising-protocol bgp\s+([\d\.A-Fa-f:\/]+)$/", $exec, $exec_exp))
+			{
+				$exec = 'show route advertising-protocol '.$exec_exp[1].' table '.$table;
+			}
 		}
 
 		if ($command == 'graph')
