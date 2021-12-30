@@ -1578,7 +1578,7 @@ function parse_out($output, $check = FALSE)
 	}
 
 	// JunOS
-	if (preg_match("/^show route advertising-protocol bgp\s+([\d\.A-Fa-f:]+)$/i", $exec, $ip_exp))
+	if (preg_match("/^show route advertising-protocol bgp\s+([\d\.A-Fa-f:]+)(?:\s+instance\s+[\d\w-]*)?$/i", $exec, $ip_exp))
 	{
 		$ip = $ip_exp[1];
 
