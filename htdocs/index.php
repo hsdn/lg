@@ -415,7 +415,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 			}
 			else if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+) a[\w\-]*$/", $exec, $exec_exp))
 			{
-                $exec = 'show route advertising-protocol bgp '.$exec_exp[1].' table '.$table.;
+                $exec = 'show route advertising-protocol bgp '.$exec_exp[1].' table '.$table;
 			}
 			else if (preg_match("/^show bgp\s+([\d\.A-Fa-f:]+\/\d+)$/", $exec, $exec_exp))
 			{
