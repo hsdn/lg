@@ -59,6 +59,8 @@ $_CONFIG = array
 	'company' => 'My Company Name',
 	'logo' => 'lg_logo.gif',
 	'color' => '#E48559',
+	'showpeerinfo' => 'TRUE',
+	'safesubnet' => '',
     'sshauthtype' => 'password',
     'sshprivatekeypath' => '',
 	'sshpwdcommand' => 'plink',
@@ -278,10 +280,76 @@ $queries = array
 	),
 );
 
+# Test shell_exec to make sure it's available and working
+if(trim(shell_exec('echo lgshellexectest')) != 'lgshellexectest')
+{
+	print '<div class="center"><p class="error">shell_exec not enabled</p></div>';
+	exit;
+}
+
+# Test popen to make sure it's available and working
+$popentest = "";
+$fp = popen('echo lgpopentest','r');
+while(!feof($fp))
+    {
+        // send the current file part to the browser
+        $popentest .= trim(fread($fp, 1024));
+        // flush the content to the browser
+        flush();
+    }
+fclose($fp);
+$popentest = trim($popentest);
+if($popentest != "lgpopentest")
+{
+	print '<div class="center"><p class="error">popen not working</p></div>';
+	exit;
+}
+
+# Check if client IP is within safe subnets
+
+$ipsafe = false;
+if(isset($_CONFIG['safesubnets']) AND ! empty($_CONFIG['safesubnets']))
+{
+	foreach($_CONFIG['safesubnets'] as $safesubnet)
+	{
+		if(! empty($safesubnet))
+		{
+			if(checkIP($_SERVER['REMOTE_ADDR'], $safesubnet))
+			{
+				$ipsafe = true;
+			}
+		}
+	}
+}
+
+if($ipsafe){
+	if($command == 'graph' AND isset($_REQUEST['render']) AND $_REQUEST['render'] == true)
+	{
+		# Don't display
+	}
+	else
+	{
+		echo '<div class="center">Your public IP is ' . $_SERVER['REMOTE_ADDR'] . ' and is within a safe subnet, therefore permitting display of peer information.<br /><br /></div>';
+	}
+	
+}
+
 if (isset($_CONFIG['routers'][$router]) AND 
 	isset($queries[$_CONFIG['routers'][$router]['os']][$protocol]) AND
 	(isset($queries[$_CONFIG['routers'][$router]['os']][$protocol][$command]) OR $command == 'graph'))
 {
+	if(!$ipsafe AND ($_CONFIG['showpeerinfo'] == "FALSE" OR $_CONFIG['routers'][$router]['showpeerinfo'] == "FALSE"))
+	{
+		switch ($command)
+		{
+			case "summary": 
+			{
+				print '<div class="center"><p class="error">Summary not permitted.</p></div>';
+				exit;
+				break;
+			}
+		}	
+	}
 	if ($protocol == 'ipv6' AND (!isset($_CONFIG['routers'][$router]['ipv6']) OR 
 		$_CONFIG['routers'][$router]['ipv6'] !== TRUE))
 	{
@@ -492,7 +560,12 @@ if (isset($_CONFIG['routers'][$router]) AND
 		}
 		else
 		{
-			print '<p><b>Router:</b> '.$_CONFIG['routers'][$router]['description'].'<br><b>Command:</b> '.$exec.'</p><pre><code>';
+			print '<p><b>Router:</b> '.$_CONFIG['routers'][$router]['description'].'<br>';
+			if($ipsafe OR ($_CONFIG['routers'][$router]['showpeerinfo'] == "TRUE" OR ($_CONFIG['showpeerinfo'] == "TRUE" AND !isset($_CONFIG['routers'][$router]['showpeerinfo'])))){
+				print '<b>Command:</b> '.$exec.'</p><pre><code>';
+			} else {
+				print '</p><pre><code>';
+			}
 			flush();
 
 			process($url, $exec);
@@ -516,7 +589,9 @@ else
 					<tr><td><input type="radio" name="command" id="bgp" value="bgp" checked="checked"></td><td><label for="bgp">bgp equal</label></td></tr>
                     <tr><td><input type="radio" name="command" id="bgp-within" value="bgp-within" checked="checked"></td><td><label for="bgp-within">bgp within</label></td></tr>
 					<tr><td><input type="radio" name="command" id="advertised-routes" value="advertised-routes"></td><td><label for="advertised-routes">bgp&nbsp;advertised-routes</label></td></tr>
+					<?php if($ipsafe OR ($_CONFIG['routers'][$router]['showpeerinfo'] == "TRUE" OR ($_CONFIG['showpeerinfo'] == "TRUE" AND !isset($_CONFIG['routers'][$router]['showpeerinfo'])))){ ?>
 					<tr><td><input type="radio" name="command" id="summary" value="summary"></td><td><label for="summary">bgp&nbsp;summary</label></td></tr>
+					<?php } ?>
 					<tr><td><input type="radio" name="command" id="graph" value="graph"></td><td><label for="graph">bgp graph</label></td></tr>
 					<tr><td><input type="radio" name="command" id="trace" value="trace"></td><td><label for="trace">traceroute</label></td></tr>
 					<tr><td><input type="radio" name="command" id="ping" value="ping"></td><td><label for="ping">ping</label></td></tr>
@@ -552,7 +627,7 @@ else
 ?>
 		<hr>
 		<div class="center">
-			<p><small>Information: <a href="https://stat.ripe.net/AS<?php print $_CONFIG['asn'] ?>" target="_blank">RIPEstat</a> <a href="http://bgp.he.net/AS<?php print $_CONFIG['asn'] ?>" target="_blank">he.net</a> <a href="https://www.robtex.com/as/AS<?php print $_CONFIG['asn'] ?>.html" target="_blank">robtex.com</a> <a href="http://www.peeringdb.com/view.php?asn=<?php print $_CONFIG['asn'] ?>" target="_blank">PeeringDB</a></small></p>
+			<p><small>Information: <a href="https://stat.ripe.net/AS<?php print $_CONFIG['asn'] ?>" target="_blank">RIPEstat</a> <a href="https://www.radb.net/query?keywords=AS<?php print $_CONFIG['asn'] ?>" target="_blank">RADb</a> <a href="http://bgp.he.net/AS<?php print $_CONFIG['asn'] ?>" target="_blank">he.net</a> <a href="https://www.robtex.com/as/AS<?php print $_CONFIG['asn'] ?>.html" target="_blank">robtex.com</a> <a href="http://www.peeringdb.com/view.php?asn=<?php print $_CONFIG['asn'] ?>" target="_blank">PeeringDB</a></small></p>
 			<p>Copyright &copy; <?php print date('Y') ?> <?php print htmlspecialchars($_CONFIG['company']) ?></p>
 		</div>
 	</body>
@@ -671,7 +746,14 @@ function process($url, $exec, $return_buffer = FALSE)
 				{
 					$instance_list = parse_list($instance);
 
-					print 'BGP router identifier '.$instance_list['router-id'].', local AS number '.link_as($instance_list['as'])."\n";
+					if(! empty($instance_list['confederation']))
+					{
+						print 'BGP router identifier '.$instance_list['router-id'].', sub ' . link_as($instance_list['as'], true) . " within confederation " . link_as($instance_list['confederation'], true) . "\n";
+					}
+					else
+					{
+						print 'BGP router identifier '.$instance_list['router-id'].', local '.link_as($instance_list['as'])."\n";
+					}
 				}
 			}
 
@@ -700,7 +782,7 @@ function process($url, $exec, $return_buffer = FALSE)
 			{
 				@shell_exec('echo n | '.$ssh_path.' '.implode(' ', $params).' screen-length 0 temporary');
 			}*/
-
+			
 			if ($fp = @popen('echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec, 'r'))
 			{
 				while (!feof($fp))
@@ -2368,14 +2450,44 @@ function link_community($line)
 /**
  * Link to AS whois
  */
-function link_as($line, $word = FALSE)
+function link_as($line, $word = FALSE, $type = null)
 {
 	global $_CONFIG;
 
-	//print_r($line);
-	
-	return preg_replace("/(?:AS)?([\d]+)/is", 
-		"<a href=\"".htmlspecialchars($_CONFIG['aswhois'])."AS\\1\" target=\"_blank\">".($word ? 'AS' : '')."\\1</a>", $line);
+	$asn = intval(preg_replace("/(?:AS)?([\d]+)/is", 
+	"$1", $line));
+
+	$url = null;
+	$publicasn = false;
+	if(($asn >= 1 AND $asn <= 23455) OR ($asn >= 23457 AND $asn <= 64495) OR ($asn >= 131072 AND $asn <= 4199999999)){
+		$publicasn = true;
+	}
+
+	if($word)
+	{
+		$asnword = "AS" . $asn;
+	}
+	else
+	{
+		$asnword = $asn;
+	}
+
+	if($publicasn AND $type == "url")
+	{
+		return htmlspecialchars($_CONFIG['aswhois']) . "AS" . $asn;
+	}
+	elseif($publicasn)
+	{
+		return '<a href="' . htmlspecialchars($_CONFIG['aswhois']) . "AS" . $asn . '" target="_blank">' . $asnword . '</a>';
+	}
+	elseif($type == "url")
+	{
+		return null;
+	}
+	else
+	{
+		return $asnword;
+	}
 }
 
 function get_as($ip, $original_as)
@@ -2534,10 +2646,9 @@ function get_path_graph($router, $query, $as_pathes, $as_best_path, $format = 's
 		$color = isset($as_peer_list[$as_id]) ? ($as_peer_list[$as_id] ? '#CCFFCC' : '#CCCCFF') : 'white';
 
 		$asinfo = get_asinfo($as_id);
-
 		$graph->addNode($as_id, array
 		(
-			'URL' => $_CONFIG['aswhois'].$as_id,
+			'URL' => link_as($as_id, false, "url"),
 			'target' => '_blank',
 			'label' => isset($asinfo['description']) ? $as_id."\n".$asinfo['description'] : $as_id,
 			'style' => 'filled', 
@@ -2682,16 +2793,23 @@ function get_asinfo($request)
 	}
 
 	$segments = array_map('trim', explode('|', $dns[0]['txt'], 5));
-
+	
 	if (sizeof($segments) != 5)
 	{
 		return FALSE;
 	}
-
-	list($segments[4], $segments[5]) = explode(' ', $segments[4], 2);
-
+	if(strpos(explode(',', $segments[4], 2)[0], " "))
+	{
+		list($segments[4], $segments[5]) = explode(' ', $segments[4], 2);
+	}
+	else
+	{
+		$segments[5] = $segments[4];
+		$segments[4] = explode(',', $segments[4], 2)[0];
+	}
+	
 	$segments[5] = str_replace('_', '"', $segments[5]);
-
+	
 	return array
 	(
 		'asn' => $segments[0],
@@ -2827,6 +2945,31 @@ function group_routers($array)
 	}
 
 	return $return;
+}
+
+function checkIP($ip, $cidr)
+{
+	if (strpos($cidr, "/") !== false)
+	{
+		list($net, $mask) = explode("/", $cidr);
+   
+		$ip_net = ip2long ($net);
+		$ip_mask = ~((1 << (32 - $mask)) - 1);
+
+		$ip_ip = ip2long ($ip);
+
+		$ip_ip_net = $ip_ip & $ip_mask;
+
+		return ($ip_ip_net == $ip_net);
+	}
+	elseif (filter_var(trim($cidr), FILTER_VALIDATE_IP) == true AND $ip === $cidr)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 // ------------------------------------------------------------------------

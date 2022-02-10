@@ -25,6 +25,18 @@ $_CONFIG['logo'] = 'lg_logo.gif';
 $_CONFIG['color'] = '#E48559';
 
 /*
+ * Should the LG show BGP peer information?
+ */
+$_CONFIG['showpeerinfo'] = 'TRUE';
+
+/*
+ * If 'showpeerinfo' above is TRUE, and you would like to show BGP peer information to visitors from a specific IPv4 address or subnet, add the IPv4 address or subnet (in CIDR format) to the array below
+ */
+$_CONFIG['safesubnets'] = array(
+	''
+);
+
+/*
  * SSH authentication type (`password` or `privatekey`)
  */
 $_CONFIG['sshauthtype'] = 'password';
@@ -57,12 +69,12 @@ $_CONFIG['ssh'] = '/usr/bin/sshpass';
 /*
  * URL address of the IP whois service
  */
-$_CONFIG['ipwhois'] = 'http://noc.hsdn.org/whois/';
+$_CONFIG['ipwhois'] = 'https://www.radb.net/query?keywords=';
 
 /*
  * URL address of the AS whois service
  */
-$_CONFIG['aswhois'] = 'http://noc.hsdn.org/aswhois/';
+$_CONFIG['aswhois'] = 'https://www.radb.net/query?keywords=';
 
 /**
  * Router nodes
@@ -74,6 +86,7 @@ $_CONFIG['aswhois'] = 'http://noc.hsdn.org/aswhois/';
  *      pingtraceurl      - URL address for ping and traceroute tools (or FALSE)
  *      description       - Node description
  *      group             - Node group name (of FALSE)
+ *      showpeerinfo      - Should the LG show peer information? (TRUE / FALSE)
  *      ipv6              - Node supports IPv6 (TRUE/FALSE)
  *      os                - Node OS (ios, mikrotik, quagga, junos)
  */
@@ -85,6 +98,7 @@ $_CONFIG['routers'] = array
 		'pingtraceurl' => FALSE,
 		'description' => 'Example Router 1',
 		'group' => 'AS12345',
+		'showpeerinfo' => TRUE,
 		'ipv6' => TRUE,
 		'os' => 'ios',
 	),
@@ -95,6 +109,7 @@ $_CONFIG['routers'] = array
 		'pingtraceurl' => FALSE,
 		'description' => 'Example Router 2',
 		'group' => 'AS12345',
+		'showpeerinfo' => FALSE,
 		'ipv6' => TRUE,
 		'os' => 'ios',
 	),
@@ -105,6 +120,7 @@ $_CONFIG['routers'] = array
 		'pingtraceurl' => FALSE,
 		'description' => 'Example Router 3',
 		'group' => 'AS12345',
+		'showpeerinfo' => TRUE,
 		'ipv6' => TRUE,
 		'os' => 'mikrotik',
 	),
@@ -116,6 +132,7 @@ $_CONFIG['routers'] = array
 		'pingtraceurl' => FALSE,
 		'description' => 'Example Router 4',
 		'group' => 'AS12345',
+		'showpeerinfo' => FALSE,
 		'ipv6' => TRUE,
 		'os' => 'mikrotik',
 	),
