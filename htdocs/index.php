@@ -329,7 +329,7 @@ if($ipsafe){
 	}
 	else
 	{
-		echo '<div class="center">Your public IP is ' . $_SERVER['REMOTE_ADDR'] . ' and is within a safe subnet, therefore permitting display of peer information.<br /><br /></div>';
+		echo '<div class="center">Your public IP is ' . $_SERVER['REMOTE_ADDR'] . ' and is within a safe subnet, therefore permitting display of peer information and command line.<br /><br /></div>';
 	}
 	
 }
@@ -1024,7 +1024,7 @@ function parse_out($output, $check = FALSE)
 	global $_CONFIG, $router, $protocol, $os, $command, $exec, $query, $index, $lastip, $best, $count, $str_in, $ros;
 
 	$output = str_replace("\r\n", "\n", $output);
-
+	
 	// MikroTik
 	if (preg_match("/^\/(ip|ipv6) route print detail/i", $exec) AND $os == 'mikrotik')
 	{
@@ -1221,7 +1221,7 @@ function parse_out($output, $check = FALSE)
 
 			return 'traceroute to '.$query.' ('.get_ptr($query).'), 64 hops max, 60 byte packets'."\n";
 		}
-
+		
 		if ($index > 0)
 		{
 			$exp = explode(' ', preg_replace('/[\s\t]+/', ' ', trim($output)));
@@ -1241,11 +1241,12 @@ function parse_out($output, $check = FALSE)
 			}
 			else
 			{
-				$radb = get_radb($exp[1]);
-
+				#$radb = get_radb($exp[1]);
+				$asn = get_as($exp[1], "15835");
 				$new_exp[1] = get_ptr($exp[1]);
 				$new_exp[2] = '('.$exp[1].')';
-				$new_exp[3] = '['.(isset($radb['origin']) ? 'AS '.link_as($radb['origin']) : '').']';
+				#$new_exp[3] = '['.(isset($radb['origin']) ? 'AS '.link_as($radb['origin']) : '').']';
+				$new_exp[3] = $asn;
 				$new_exp[4] = $exp[5].'ms';
 				$new_exp[5] = $exp[6].'ms';
 				$new_exp[6] = $exp[7].'ms';
@@ -2114,7 +2115,7 @@ function parse_out($output, $check = FALSE)
 	if (preg_match("/^trace/", $exec))
 	{
 		$output = preg_replace("/\[AS0\]\s(.*)/", "\\1", $output);
-
+		
 		// IPv4
 		$output = preg_replace_callback(
 			"/(\[AS)(\d+)(\])\s(.*)(\))(.*)/",
