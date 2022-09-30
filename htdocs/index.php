@@ -259,6 +259,7 @@ $queries = array
 		(
 			'bgp' => 'display bgp routing-table %s',
 			'advertised-routes'	=> 'display bgp routing-table peer %s advertised-routes',
+			'bgp-within' => 'display bgp routing-table community | include %s',
 			'received-routes' => 'display bgp routing-table peer %s received-routes',
 			'routes'	=> 'display bgp routing-table peer %s received-routes active',
 			'summary' => 'display bgp peer',
