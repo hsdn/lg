@@ -2,18 +2,68 @@
 PHP Version of BGP Looking Glass script, based on the Perl sources: https://github.com/Cougar/lg
 
 ### General Features
-- Supports the Telnet and SSH (through Putty/plink)
-- Supports the Cisco, MikroTik v5 and v6, Quagga (Zebra) and JunOS routers
-- Supports the IPv4 and IPv6 protocols
-- Automatic conversion IPs to subnets using Merit RADb (for MikroTik) (http://www.ra.net/)
-- Drawing graph of BGP AS pathes using GraphViz toolkit
-- Works on php 5.2.0 and above
+- Supports the Telnet and SSH (through Putty/plink, sshpass, or ssh).
+- Supports the Cisco, MikroTik v5/v6, Juniper, Huawei (Comware), Quagga (Zebra) and OpenBGPD routers.
+- Supports the IPv4 and IPv6 protocols.
+- Automatic conversion IPs to subnets using Merit RADb for MikroTik (http://www.ra.net/).
+- Drawing graph of BGP AS pathes using GraphViz toolkit.
+- Works on php 5.2.0 and above.
 
 ### System Requirements
-- php version 5.2.0 and above with Sockets and Filter (http://www.php.net/)
-- Putty for SSH connections usign `plink' command (http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html)
-- GraphViz toolkit for drawing BGP pathes graph (http://www.graphviz.org/)
-- php pear package Image_GraphViz (http://pear.php.net/package/Image_GraphViz)
+- php version 5.2.0 and above with Sockets and Filter (http://www.php.net/).
+- For SSH connections:
+  - Password authentication requires **sshpass** or Putty **plink** command (http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html).
+  - Private key authentication requires **ssh**.
+- GraphViz toolkit for drawing BGP pathes graph (http://www.graphviz.org/).
+- php pear package Image_GraphViz (http://pear.php.net/package/Image_GraphViz).
+
+### Installation Instructions
+1. Copy **index.php** file to your web server home directory.
+2. Copy **lg_config.php.example** file as **lg_config.php** into your web server home directory.
+3. Edit **lg_config.php** configuration file (see parameters description below).
+
+### Configuration Parameters
+#### Branding Configuration
+- `$_CONFIG['asn']` - Your AS number for display on the LG page.
+- `$_CONFIG['company']` - Your company for display on the LG page.
+- `$_CONFIG['logo']` - Your company logo for display on the LG page.
+- `$_CONFIG['color']` - Main color of design elements on the LG page.
+- `$_CONFIG['ipwhois']` - URL address of the IP whois service.
+- `$_CONFIG['aswhois']` - URL address of the AS whois service.
+
+#### Programs Configuration
+- `$_CONFIG['sshauthtype']` - SSH authentication type (you can use *password* or *privatekey* as value)
+- `$_CONFIG['sshprivatekeypath']` - Absolute path to SSH private key
+- `$_CONFIG['sshpwdcommand']` - Type of command to make a SSH connection with password authentication (you can use *plink* or *sshpass* as value).
+- `$_CONFIG['plink']` - Path to **plink** command if you use it (for SSH connections).
+- `$_CONFIG['sshpass']` - Path to **sshpass** command if you use it (for SSH connections).
+
+#### Routers Configuration
+Configuration of routers is specified as array in the parameter `$_CONFIG['routers']` with following format:
+```php
+$_CONFIG['routers'] = array
+(
+    'router1' = array
+    (
+        // Router parameters
+    ),
+    'router2' = array
+    (
+        // Router parameters
+    ),
+    // etc.
+);
+```
+
+##### Router parameters:
+- `url` - URL address in format: **[ssh|telnet]://[login]:[password]@[host]:[port]**.
+- `sshauthtype` - SSH authentication type in format: [password|privatekey].
+- `sshprivatekeypath` - SSH private key path in example format: **/opt/lg/keys/id_rsa**.
+- `pingtraceurl` - URL address for ping and traceroute tools for Quagga routers (or *FALSE*).
+- `description` - Router description.
+- `group` - Router group name - AS number (or *FALSE*).
+- `ipv6` - Router is supports IPv6 (*TRUE* or *FALSE*).
+- `os` - Router type (*ios*, *mikrotik*, *quagga,* *junos*, *openbgpd*, *huawei*).
 
 ### Demonstration
 - http://dev.hsdn.org/lg/
@@ -23,12 +73,12 @@ PHP Version of BGP Looking Glass script, based on the Perl sources: https://gith
 
 #### Graph of BGP AS pathes demonstration
 - http://dev.hsdn.org/lg/?command=graph&protocol=ipv4&query=8.8.8.8&router=example1
-- http://lg.campus-rv.net/?command=graph&protocol=ipv4&query=8.8.8.8&router=edge
+- http://lg.as51326.net/?command=graph&protocol=ipv4&query=8.8.8.8&router=example1
 
 ### License
     HSDN Looking Glass
 
-    Copyright (C) 2012-2018 Information Networks Ltd.
+    Copyright (C) 2012-2019 Information Networks Ltd.
     Copyright (C) 2000-2002 Cougar
     Copyright (C) 2014 Regional Networks Ltd.
 

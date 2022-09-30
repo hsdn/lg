@@ -1,10 +1,11 @@
 <?php
 /**
- * HSDN PHP Looking Glass version 1.2.16b
+ * HSDN PHP Looking Glass version 1.2.22b
  *
  * General Features:
- *  - Supports the Telnet and SSH (through Putty/plink)
- *  - Supports the Cisco, MikroTik v5 and v6, Quagga (Zebra) and JunOS routers
+ *  - Supports the Telnet and SSH (through Putty/plink or sshpass)
+ *  - Supports the Cisco, MikroTik v5/v6, Juniper, Huawei (Comware), 
+ *       Quagga (Zebra) and OpenBGPD routers.
  *  - Supports the IPv4 and IPv6 protocols
  *  - Automatic conversion IPs to subnets using RADb (for MikroTik)
  *  - Drawing graph of BGP AS pathes using GraphViz toolkit
@@ -58,7 +59,12 @@ $_CONFIG = array
 	'company' => 'My Company Name',
 	'logo' => 'lg_logo.gif',
 	'color' => '#E48559',
+    'sshauthtype' => 'password',
+    'sshprivatekeypath' => '',
+	'sshpwdcommand' => 'plink',
 	'plink' => '/usr/local/bin/plink',
+	'sshpass' => '/usr/bin/sshpass',
+    'ssh' => '/usr/bin/ssh',
 	'ipwhois' => 'http://noc.hsdn.org/whois/',
 	'aswhois' => 'http://noc.hsdn.org/aswhois/',
 	'routers' => array(),
@@ -139,7 +145,7 @@ $queries = array
 		'ipv4' => array
 		(
 			'bgp' => 'show ip bgp %s',
-			'advertised-routes'	=> 'show ip bgp neighbors %s advertised-routes',
+			'advertised-routes' => 'show ip bgp neighbors %s advertised-routes',
 			'received-routes' => 'show ip bgp neighbors %s received-routes',
 			'routes' =>	'show ip bgp neighbors %s routes',
 			'summary' => 'show ip bgp summary',
@@ -149,7 +155,7 @@ $queries = array
 		'ipv6' => array
 		(
 			'bgp' => 'show bgp ipv6 unicast %s',
-			'advertised-routes'	=> 'show bgp ipv6 neighbors %s advertised-routes',
+			'advertised-routes' => 'show bgp ipv6 neighbors %s advertised-routes',
 			'received-routes' => 'show bgp ipv6 neighbors %s received-routes',
 			'routes' =>	'show bgp ipv6 neighbors %s routes',
 			'summary' => 'show bgp ipv6 unicast summary',
@@ -162,7 +168,7 @@ $queries = array
 		'ipv4' => array
 		(
 			'bgp' => 'show ip bgp %s',
-			'advertised-routes'	=> 'show ip bgp neighbors %s advertised-routes',
+			'advertised-routes' => 'show ip bgp neighbors %s advertised-routes',
 			'received-routes' => 'show ip bgp neighbors %s received-routes',
 			'routes' => 'show ip bgp neighbors %s routes',
 			'summary' => 'show ip bgp summary',
@@ -172,7 +178,7 @@ $queries = array
 		'ipv6' => array
 		(
 			'bgp' => 'show ipv6 bgp %s',
-			'advertised-routes'	=> 'show ipv6 bgp neighbors %s advertised-routes',
+			'advertised-routes' => 'show ipv6 bgp neighbors %s advertised-routes',
 			'received-routes' => 'show ipv6 bgp neighbors %s received-routes',
 			'routes' => 'show ipv6 bgp neighbors %s routes',
 			'summary' => 'show ipv6 bgp summary',
@@ -185,7 +191,8 @@ $queries = array
 		'ipv4' => array
 		(
 			'bgp' => '/ip route print detail where bgp dst-address=%s',
-			'advertised-routes'	=> '/routing bgp advertisements print peer=%s',
+            'bgp-within' => '/ip route print detail where bgp dst-address in %s',
+			'advertised-routes' => '/routing bgp advertisements print peer=%s',
 			'routes' => '/ip route print where gateway=%s',
 			'summary' => '/routing bgp peer print status where address-families=ip',
 			'ping' => '/ping count=5 size=56 %s',
@@ -194,7 +201,8 @@ $queries = array
 		'ipv6' => array
 		(
 			'bgp' => '/ipv6 route print detail where bgp dst-address=%s',
-			'advertised-routes'	=> '/routing bgp advertisements print peer=%s',
+            'bgp-within' => '/ip route print detail where bgp dst-address in %s',
+			'advertised-routes' => '/routing bgp advertisements print peer=%s',
 			'routes' => '/ipv6 route print where gateway=%s',
 			'summary' => '/routing bgp peer print status where address-families=ipv6',
 			'ping' => '/ping count=5 size=56 %s',
@@ -206,7 +214,7 @@ $queries = array
 		'ipv4' => array
 		(
 			'bgp' => 'show bgp %s',
-			'advertised-routes'	=> 'show route advertising-protocol bgp %s',
+			'advertised-routes' => 'show route advertising-protocol bgp %s',
 			'routes'	=> 'show route receive-protocol bgp %s active-path',
 			'summary' => 'show bgp summary',
 			'ping' => 'ping count 5 %s',
@@ -251,6 +259,7 @@ $queries = array
 		(
 			'bgp' => 'display bgp routing-table %s',
 			'advertised-routes'	=> 'display bgp routing-table peer %s advertised-routes',
+			'bgp-within' => 'display bgp routing-table community | include %s',
 			'received-routes' => 'display bgp routing-table peer %s received-routes',
 			'routes'	=> 'display bgp routing-table peer %s received-routes active',
 			'summary' => 'display bgp peer',
@@ -315,7 +324,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 			}
 		}
 
-		if ($query AND ($command == 'bgp' OR $command == 'graph') AND ($os == 'mikrotik' OR ($protocol == 'ipv6' AND $os == 'ios')))
+		if ($query AND ($command == 'bgp' OR $command == 'bgp-within' OR $command == 'graph') AND ($os == 'mikrotik' OR ($protocol == 'ipv6' AND $os == 'ios')))
 		{
 			if (strpos($query, '/') === FALSE AND $radb = get_radb($query))
 			{
@@ -505,7 +514,8 @@ else
 				<tr><th>Type of Query</th><th>Additional parameters</th><th>Node</th></tr>
 				<tr><td>
 				<table border="0" cellpadding="2" cellspacing="2">
-					<tr><td><input type="radio" name="command" id="bgp" value="bgp" checked="checked"></td><td><label for="bgp">bgp</label></td></tr>
+					<tr><td><input type="radio" name="command" id="bgp" value="bgp" checked="checked"></td><td><label for="bgp">bgp equal</label></td></tr>
+                    <tr><td><input type="radio" name="command" id="bgp-within" value="bgp-within" checked="checked"></td><td><label for="bgp-within">bgp within</label></td></tr>
 					<tr><td><input type="radio" name="command" id="advertised-routes" value="advertised-routes"></td><td><label for="advertised-routes">bgp&nbsp;advertised-routes</label></td></tr>
 					<tr><td><input type="radio" name="command" id="summary" value="summary"></td><td><label for="summary">bgp&nbsp;summary</label></td></tr>
 					<tr><td><input type="radio" name="command" id="graph" value="graph"></td><td><label for="graph">bgp graph</label></td></tr>
@@ -559,8 +569,7 @@ function process($url, $exec, $return_buffer = FALSE)
 {
 	global $_CONFIG, $router, $protocol, $os, $command, $query, $ros;
 
-	$exec = escapeshellcmd($exec)."\n";
-
+    $sshauthtype = null;
 	$buffer = '';
 	$lines = $line = $is_exception = FALSE;
 	$index = 0;
@@ -569,29 +578,97 @@ function process($url, $exec, $return_buffer = FALSE)
 	switch ($url['scheme'])
 	{
 		case 'ssh':
-			$params = array('-ssh');
+            if(! empty($_CONFIG['routers'][$router]['sshauthtype']))
+            {
+                $sshauthtype = $_CONFIG['routers'][$router]['sshauthtype'];
+            }
+            elseif (! empty($_CONFIG['sshauthtype']))
+            {
+                $sshauthtype = $_CONFIG['sshauthtype'];
+            }
+            switch ($sshauthtype)
+            {
+                case 'password':
+                    switch ($_CONFIG['sshpwdcommand'])
+                    {
+                        // Use sshpass command
+                        case 'sshpass':
+                            $ssh_path = $_CONFIG['sshpass'];
+                            $params = array();
 
-			if (isset($url['user']) AND $url['user'] != '')
-			{
-				$params[] = '-l '.$url['user'];
-			}
+                            if (isset($url['pass']) AND $url['pass'] != '')
+                            {
+                                $params[] = '-p '.$url['pass'];
+                            }
 
-			if (isset($url['pass']) AND $url['pass'] != '')
-			{
-				$params[] = '-pw '.$url['pass'];
-			}
+                            $params[] = 'ssh';
 
-			if (isset($url['port']) AND $url['port'] != '')
-			{
-				$params[] = '-P '.$url['port'];
-			}
+                            if (isset($url['user']) AND $url['user'] != '')
+                            {
+                                $params[] = '-l '.$url['user'];
+                            }
+
+                            if (isset($url['port']) AND $url['port'] != '')
+                            {
+                                $params[] = '-p '.$url['port'];
+                            }
+
+                            $params[] = '-o StrictHostKeyChecking=no';
+                            break;
+
+                        // Use plink command
+                        case 'plink':
+                        default:
+                            $ssh_path = $_CONFIG['plink'];
+                            $params = array('-ssh');
+                            if (isset($url['user']) AND $url['user'] != '')
+                            {
+                                $params[] = '-l '.$url['user'];
+                            }
+
+                            if (isset($url['pass']) AND $url['pass'] != '')
+                            {
+                                $params[] = '-pw '.$url['pass'];
+                            }
+
+                            if (isset($url['port']) AND $url['port'] != '')
+                            {
+                                $params[] = '-P '.$url['port'];
+                            }
+                    }
+                    break;
+                case 'privatekey':
+                    $ssh_path = $_CONFIG['ssh'];
+                    if(isset($_CONFIG['routers'][$router]['sshprivatekeypath']) AND ! empty($_CONFIG['routers'][$router]['sshprivatekeypath']))
+                    {
+                        $params[] = '-i '. $_CONFIG['routers'][$router]['sshprivatekeypath'];
+                    }
+                    elseif (isset($_CONFIG['sshprivatekeypath']) AND ! empty($_CONFIG['sshprivatekeypath']))
+                    {
+                        $params[] = '-i '. $_CONFIG['sshprivatekeypath'];
+                    }
+                    if (isset($url['user']) AND $url['user'] != '')
+                    {
+                        $params[] = '-l '.$url['user'];
+                    }
+
+                    if (isset($url['port']) AND $url['port'] != '')
+                    {
+                        $params[] = '-p '.$url['port'];
+                    }
+
+                    $params[] = '-o StrictHostKeyChecking=no';
+                    break;
+            }
 
 			$params[] = $url['host'];
+
+			$exec = escapeshellcmd($exec)."\n";
 
 			// Get MikroTik additional summary information
 			if (preg_match('/^\/routing bgp peer print status/i', $exec) AND $os == 'mikrotik' AND $return_buffer != TRUE)
 			{
-				if ($instance = @shell_exec('echo n | '.$_CONFIG['plink'].' '.implode(' ', $params).' /routing bgp instance print'))
+				if ($instance = @shell_exec('echo n | '.$ssh_path.' '.implode(' ', $params).' /routing bgp instance print'))
 				{
 					$instance_list = parse_list($instance);
 
@@ -602,7 +679,7 @@ function process($url, $exec, $return_buffer = FALSE)
 			// Get MikroTik version for traceroute
 			if (preg_match('/^\/tool traceroute/i', $exec) AND $os == 'mikrotik' AND $return_buffer != TRUE)
 			{
-				if ($instance = @shell_exec('echo n | '.$_CONFIG['plink'].' '.implode(' ', $params).' /system resource print'))
+				if ($instance = @shell_exec('echo n | '.$ssh_path.' '.implode(' ', $params).' /system resource print'))
 				{
 					if (preg_match('/version: (\d+)/', $instance, $ver))
 					{
@@ -619,7 +696,13 @@ function process($url, $exec, $return_buffer = FALSE)
 				$exec .= "\n";
 			}
 
-			if ($fp = @popen('echo n | '.$_CONFIG['plink'].' '.implode(' ', $params).' '.$exec, 'r'))
+			// Huawei disable screen breaks (issue #21) -- needs more tests
+			/*if ($os == 'huawei')
+			{
+				@shell_exec('echo n | '.$ssh_path.' '.implode(' ', $params).' screen-length 0 temporary');
+			}*/
+
+			if ($fp = @popen('echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec, 'r'))
 			{
 				while (!feof($fp))
 				{
@@ -647,6 +730,7 @@ function process($url, $exec, $return_buffer = FALSE)
 					}
 
 					print $line;
+
 					flush();
 
 					if ($line === NULL)
@@ -658,7 +742,7 @@ function process($url, $exec, $return_buffer = FALSE)
 				pclose($fp);
 			}
 
-			if (!$line)
+			if (empty($lines) AND !$line)
 			{
 				print '<p class="error">Command failed.</p>';
 			}
@@ -681,7 +765,7 @@ function process($url, $exec, $return_buffer = FALSE)
 				$url['pass'] = FALSE;
 			}
 
-			try 
+			try
 			{
 				if ($os == 'mikrotik')
 				{
@@ -693,9 +777,17 @@ function process($url, $exec, $return_buffer = FALSE)
 					$prompt = '/[^\s]{2,}[\$%>] {0,1}$/';
 				}
 
+				$exec .= "\n";
+
 				$telnet = new Telnet($url['host'], $url['port'], 10, $prompt);
 				$telnet->connect();
 				$telnet->login($url['user'], $url['pass']);
+
+				// Huawei disable screen breaks (issue #21) -- needs more tests
+				/*if ($os == 'huawei')
+				{
+					$telnet->write('screen-length 0 temporary');
+				}*/
 
 				$telnet->write(($os == 'junos') ? $exec.' | no-more' : $exec);
 
@@ -730,8 +822,8 @@ function process($url, $exec, $return_buffer = FALSE)
 
 					//$c = preg_replace('/\[\d;?(\d+)?;?(\d)?m/x', ' ', $c); // Strip remaining
 					//$c = preg_replace('/\x1B\x5B\x30\x6D/x', '\x0A', $c); // Convert to \n
-					//$c = preg_replace('/[\x80-\xFF]/x', ' ', $c); // Strip Ext ASCII
-					//$c = preg_replace('/[\x00-\x09\x0B-\x1F]/x', ' ', $c); // Strip Low ASCII
+					$buffer = preg_replace('/[\x80-\xFF]/x', ' ', $buffer); // Strip Ext ASCII
+					$buffer = preg_replace('/[\x00-\x09]/x', ' ', $buffer); // Strip Low ASCII // \x0B-\x1F
 					$buffer = preg_replace('/\x1b\x5b;?([^\x6d]+)?\x6d/x', '', $buffer); // Strip colors
 
 					if (preg_match($prompt, substr($buffer, -4)))
@@ -763,6 +855,12 @@ function process($url, $exec, $return_buffer = FALSE)
 						if ($i == 1 AND $buffer == "\r\n")
 						{
 							$buffer = '';
+						}
+
+						// JunOS
+						if (strpos($buffer, '---(more)---') !== FALSE)
+						{
+							$buffer = ltrim(str_replace('---(more)---', '', $buffer), "\r\n");
 						}
 
 						$i++;
@@ -802,6 +900,11 @@ function process($url, $exec, $return_buffer = FALSE)
 					}
 				}
 				while ($c != $telnet->NULL OR $c != $telnet->DC1);
+
+				if (empty($lines) AND !$line)
+				{
+					print '<p class="error">Command failed.</p>';
+				}
 			}
 			catch (Exception $exception) 
 			{
@@ -1589,7 +1692,7 @@ function parse_out($output, $check = FALSE)
 			$output
 		);
 		$output = preg_replace_callback(
-			"/( update prefix filter list is )(\S+)/",
+			"/( update prefix filter list is\s+:?\*?)(\S+)/",
 			function ($matches) {
 				return $matches[1].link_command("bgp", "prefix-list+".$matches[2], $matches[2]);
 			},
@@ -1640,7 +1743,7 @@ function parse_out($output, $check = FALSE)
 			$output
 		);
 		$output = preg_replace_callback(
-			"/( update prefix filter list is )(\S+)/",
+			"/( update prefix filter list is\s+:?\*?)(\S+)/",
 			function ($matches) {
 				return $matches[1].link_command("bgp", "prefix-list+".$matches[2], $matches[2]);
 			},
@@ -1724,6 +1827,27 @@ function parse_out($output, $check = FALSE)
 	// JunOS
 	if (preg_match("/^show route protocol bgp .* terse/i", $exec)) 
 	{
+		if (preg_match("/^([\+\-\*]){1}/", $output, $exp) AND strpos($output, 'Active Route') === FALSE)
+		{
+			if ($exp[1] == '*' OR $exp[1] == '+') 
+			{
+				$best = "#ff0000";
+			}
+			else if ($exp[1] == '-') 
+			{
+				$best = "#008800";
+			}
+			else 
+			{
+				$best = '';
+			}
+		}
+
+		if (isset($best) AND $best != '')
+		{
+			$output = '<span style="color:'.$best.'">'.$output.'</span>';
+		}
+
 		$output = preg_replace_callback(
 			"/^([\* ] )([\d\.A-Fa-f:\/]+)(\s+)/",
 			function ($matches) {
@@ -1981,6 +2105,45 @@ function parse_bgp_path($output)
 				}
 			}
 		}
+
+		return array
+		(
+			'best' => $best,
+			'pathes' => $pathes
+		);
+	}
+
+	// JunOS
+	if (preg_match("/^show route protocol bgp .* terse/i", $exec)) 
+	{
+		$lines = explode("\n", $output);
+
+		foreach ($lines as $line)
+		{
+			if (preg_match("/^[\+\-\*]{1}/", $line, $exp) AND strpos($line, 'Active Route') === FALSE)
+			{
+				$line =  preg_replace('/ {2,}/',' ',$line);
+				$line = explode(' ', $line);
+
+				if ($line[0] == '*' OR $line[0] == '+') 
+				{
+					if ($count == 0)
+					{
+						$count++;
+					}
+				}
+
+				$line = array_slice($line, 6, -1);
+				$line = implode(' ', $line);
+
+				if ($path = parse_as_path($line))
+				{
+					$pathes[] = $path;
+				}
+			}
+		}
+
+		$best = $count - 1;
 
 		return array
 		(
