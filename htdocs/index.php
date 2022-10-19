@@ -303,6 +303,8 @@ if (isset($_CONFIG['routers'][$router]) AND
 
 	$url = @parse_url($url);
 
+	$routing_instance = $_CONFIG['routers'][$router]['routing-instance'];
+
 	$os = $_CONFIG['routers'][$router]['os'];
 
 	if ($command == 'graph' AND isset($queries[$os][$protocol]['bgp']))
@@ -378,39 +380,47 @@ if (isset($_CONFIG['routers'][$router]) AND
 		if ($os == 'junos') 
 		{
 			// @see JunOS Routing Table Names (http://www.net-gyver.com/?p=602)
-			$table = ($protocol == 'ipv6') ? 'inet6.0' : 'inet.0';
+            if ($routing_instance){
+                $table = ($protocol == 'ipv6') ? $routing_instance.'.inet6.0' : $routing_instance.'.inet.0';
+            }else{
+			    $table = ($protocol == 'ipv6') ? 'inet6.0' : 'inet.0';
+			}
 
 			if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+)$/", $exec, $exec_exp))
 			{
-				$exec = 'show bgp neighbor '.$exec_exp[1];
+			    if ($routing_instance){
+			        $exec = 'show bgp neighbor instance '.$routing_instance.' '.$exec_exp[1];
+			    }else{
+				    $exec = 'show bgp neighbor '.$exec_exp[1];
+				}
 			}
 			else if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+) ro\w*$/", $exec, $exec_exp)) 
 			{
-				$exec = 'show route receive-protocol bgp '.$exec_exp[1];
+				$exec = 'show route receive-protocol bgp '.$exec_exp[1]." table ".$table;
 			}
 			else if (preg_match("/^show bgp neighbors ([\d\.A-Fa-f:]+) routes all$/", $exec, $exec_exp))
 			{
-				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' all';
+				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' table '.$table.' all';
 			}
 			else if (preg_match("/^show bgp neighbors ([\d\.A-Fa-f:]+) routes damping suppressed$/", $exec, $exec_exp)) 
 			{
-				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' damping suppressed';
+				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' table '.$table.' damping suppressed';
 			}
 			else if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+) advertised-routes ([\d\.A-Fa-f:\/]+)$/", $exec, $exec_exp))
 			{
-				$exec = 'show route advertising-protocol bgp '.$exec_exp[1].' '.$exec_exp[2].' exact detail';
+                $exec = 'show route advertising-protocol bgp '.$exec_exp[1].' '.$exec_exp[2].' table '.$table.' exact detail';
 			}
 			else if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+) receive-protocol ([\d\.A-Fa-f:\/]+)$/", $exec, $exec_exp)) 
 			{
-				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' '.$exec_exp[2].' exact detail';
+				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' '.$exec_exp[2].' table '.$table.' exact detail';
 			}
 			else if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+) a[\w\-]*$/", $exec, $exec_exp))
 			{
-				$exec = 'show route advertising-protocol bgp '.$exec_exp[1];
+                $exec = 'show route advertising-protocol bgp '.$exec_exp[1].' table '.$table;
 			}
 			else if (preg_match("/^show bgp\s+([\d\.A-Fa-f:]+\/\d+)$/", $exec, $exec_exp))
 			{
-				$exec = 'show route protocol bgp '.$exec_exp[1].' terse exact';
+				$exec = 'show route protocol bgp '.$exec_exp[1].' table '.$table.' terse exact';
 			}
 			else if (preg_match("/^show bgp\s+([\d\.A-Fa-f:]+)$/", $exec, $exec_exp))
 			{
@@ -418,7 +428,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 			}
 			else if (preg_match("/^show bgp\s+([\d\.A-Fa-f:\/]+) exact$/", $exec, $exec_exp)) 
 			{
-				$exec = 'show route protocol bgp '.$exec_exp[1].' exact detail all';
+				$exec = 'show route protocol bgp '.$exec_exp[1].' table '.$table.' exact detail all';
 			}
 			else if (preg_match("/^show bgp re\s+(.*)$/", $exec, $exec_exp)) 
 			{
@@ -434,8 +444,33 @@ if (isset($_CONFIG['routers'][$router]) AND
 					$re = $re.".*\$";
 				}
 
-				$exec = 'show route aspath-regex "'.str_replace('_', ' ', $re).'" all';
+			    if ($routing_instance){
+                    $exec = 'show route instance '.$routing_instance.' aspath-regex "'.str_replace('_', ' ', $re).'" all';
+                }else{
+       			    $exec = 'show route aspath-regex "'.str_replace('_', ' ', $re).'" all';
+                }
 			}
+			else if (preg_match("/^show bgp summary$/", $exec, $exec_exp))
+			{
+			    if ($routing_instance){
+                    $exec = 'show bgp summary instance '.$routing_instance;
+                }else{
+       			    $exec = 'show bgp summary';
+                }
+			}
+			else if (preg_match("/^show route advertising-protocol bgp\s+([\d\.A-Fa-f:\/]+)$/", $exec, $exec_exp))
+			{
+				$exec = 'show route advertising-protocol bgp '.$exec_exp[1].' table '.$table;
+			}
+			else if (preg_match("/^traceroute (ip|ipv6) ([\d\.A-Fa-f:\/]+)$/", $exec, $exec_exp))
+			{
+			    if ($routing_instance){
+                    $exec = 'traceroute '.$exec_exp[1].' routing-instance '.$routing_instance.' '.$exec_exp[2];
+                }else{
+					$exec = 'traceroute '.$exec_exp[1].' '.$exec_exp[2];
+                }
+			}
+
 		}
 
 		if ($command == 'graph')
@@ -1387,7 +1422,7 @@ function parse_out($output, $check = FALSE)
 		return $output;
 	}
 
-	if ($exec == 'show bgp summary') 
+	if (preg_match("/^show bgp summary(?:\s+instance\s+[\d\w-]*)?$/", $exec))
 	{
 		// JunOS
 		if (preg_match("/^([\dA-Fa-f:][\d\.A-Fa-f:]+)\s+/", $output, $lastip_exp)) 
@@ -1553,7 +1588,7 @@ function parse_out($output, $check = FALSE)
 	}
 
 	// JunOS
-	if (preg_match("/^show route advertising-protocol bgp\s+([\d\.A-Fa-f:]+)$/i", $exec, $ip_exp))
+	if (preg_match("/^show route advertising-protocol bgp\s+([\d\.A-Fa-f:]+)(?:\s+table\s+[\d\w\-\.]*)?$/i", $exec, $ip_exp))
 	{
 		$ip = $ip_exp[1];
 
@@ -1760,7 +1795,7 @@ function parse_out($output, $check = FALSE)
 		return $output;
 	}
 
-	if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+)/i", $exec, $ip_exp))
+	if (preg_match("/^show bgp n\w*\s+(?:instance\s+[\d\w-]*)?\s*([\d\.A-Fa-f:]+)/i", $exec, $ip_exp))
 	{
 		$ip = $ip_exp[1];
 
