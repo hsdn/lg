@@ -191,7 +191,7 @@ $queries = array
 		'ipv4' => array
 		(
 			'bgp' => '/ip route print detail where bgp dst-address in %s', 
-            'bgp-within' => '/ip route print detail where bgp dst-address in %s',
+            'bgp-within' => '/ip route print detail where bgp dst-address=%s',
 			'advertised-routes' => '/routing bgp advertisements print peer=%s',
 			'routes' => '/ip route print where gateway=%s',
 			'summary' => '/routing bgp peer print status where address-families=ip',
@@ -2611,7 +2611,7 @@ function get_path_graph($router, $query, $as_pathes, $as_best_path, $format = 's
 
 	foreach ($as_list as $as_id)
 	{
-		$color = isset($as_peer_list[$as_id]) ? ($as_peer_list[$as_id] ? '#CCFFCC' : '#CCCCFF') : 'white';
+		$color = isset($as_peer_list[$as_id]) ? ($as_peer_list[$as_id] ? '#CCFFCC' : '#CCCCFF') : '#D3D3D3';
 
 		$asinfo = get_asinfo($as_id);
 
@@ -2619,7 +2619,8 @@ function get_path_graph($router, $query, $as_pathes, $as_best_path, $format = 's
 		(
 			'URL' => $_CONFIG['aswhois'].$as_id,
 			'target' => '_blank',
-			'label' => isset($asinfo['description']) ? $as_id."\n".$asinfo['description'] : $as_id,
+			'shape' => 'rect',
+			'label' => isset($asinfo['description']) ? $as_id."\n".$asinfo['asname']."\n".$asinfo['description'] : $as_id,
 			'style' => 'filled', 
 			'fillcolor' => $color, 
 			'fontsize' => $font_size
