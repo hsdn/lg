@@ -353,7 +353,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 			}
 		}
 		
-		if ($query AND ($command == 'bgp' OR $command == 'bgp-within' OR $command == 'graph') AND ($os == 'huawei' OR ($protocol == 'ipv6' AND $os == 'huawei')))
+		if ($query AND ($command == 'bgp' OR $command == 'bgp-within' OR $command == 'graph') AND $os == 'huawei')
 		{
 			if (buscabarra($query,"/",1))
 			{
