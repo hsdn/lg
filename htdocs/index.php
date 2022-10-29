@@ -352,6 +352,14 @@ if (isset($_CONFIG['routers'][$router]) AND
 				}
 			}
 		}
+		
+		if ($query AND ($command == 'bgp' OR $command == 'bgp-within' OR $command == 'graph') AND ($os == 'huawei' OR ($protocol == 'ipv6' AND $os == 'huawei')))
+		{
+			if (buscabarra($query,"/",1))
+			{
+				$query = str_replace("/"," ",$query);
+			}
+		}
 
 		$exec = sprintf($exec, escapeshellcmd($query));
 
@@ -609,6 +617,7 @@ function process($url, $exec, $return_buffer = FALSE)
 	$lines = $line = $is_exception = FALSE;
 	$index = 0;
 	$str_in = array();
+	
 
 	switch ($url['scheme'])
 	{
@@ -2888,6 +2897,17 @@ function get_ptr($ip)
 
 	return reset($ptr);
 }
+
+function buscabarra($haystack, $needle, $nth) {
+    $count = 0;
+    $pos = -1;
+    do {
+        $pos = strpos($haystack, $needle, $pos + 1);
+        $count++;
+    } while ($pos !== false && $count < $nth);
+    return $pos;
+}
+
 
 /**
  * Group router list
