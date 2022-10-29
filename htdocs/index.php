@@ -190,13 +190,13 @@ $queries = array
 	(
 		'ipv4' => array
 		(
-			'bgp' => '/ip route print detail where bgp dst-address=%s',
+			'bgp' => '/ip route print detail where bgp dst-address in %s', 
             'bgp-within' => '/ip route print detail where bgp dst-address in %s',
 			'advertised-routes' => '/routing bgp advertisements print peer=%s',
 			'routes' => '/ip route print where gateway=%s',
 			'summary' => '/routing bgp peer print status where address-families=ip',
 			'ping' => '/ping count=5 size=56 %s',
-			'trace' => '/tool traceroute %s size=60 count=1',
+			'trace' => '/tool traceroute %s size=60 count=1', 
 		),
 		'ipv6' => array
 		(
@@ -2110,7 +2110,7 @@ function parse_bgp_path($output)
 	$pathes = array();
 
 	$output = str_replace("\r\n", "\n", $output);
-
+	
 	// MikroTik
 	if (preg_match("/^\/(ip|ipv6) route print detail/i", $exec) AND $os == 'mikrotik')
 	{
@@ -2123,24 +2123,30 @@ function parse_bgp_path($output)
 
 		$summary_parts = explode("\n\n" , $output_parts[3]);
 
+
 		foreach ($summary_parts as $i => $summary_part)
 		{
 			$data_exp = explode(' ', trim($summary_part), 3);
-
+	
 			if (strpos($data_exp[1], 'A') !== FALSE)
 			{
 				$best = $i;
+				
 			}
 
 			if (preg_match("/bgp-as-path=\"([^\"]+)\"/", $summary_part, $exp))
 			{
+				
 				if ($path = parse_as_path($exp[1]))
 				{
 					$pathes[] = $path;
 				}
 			}
 		}
-
+		
+// echo "<pre>";
+// var_dump($pathes);
+// echo "</pre>";
 		return array
 		(
 			'best' => $best,
@@ -2148,6 +2154,41 @@ function parse_bgp_path($output)
 		);
 	}
 
+	// Huawei
+	if ($os == 'huawei')
+	{
+		$output_parts = explode("BGP local router ID :" , trim($output), 4);
+		$output_parts = explode("AS-path " , trim($output_parts[1]), 4);
+		if (!isset($output_parts[1]))
+		{
+			return FALSE;
+		}
+		$output_parts = explode("," , trim($output_parts[1]), 4)[0];
+
+
+		$summary_parts[] = $output_parts;
+
+
+		foreach ($summary_parts as $i => $summary_part)
+		{
+			
+			$data_exp = str_replace(' ', ',',trim($summary_part));
+	
+
+			if ($path = parse_as_path($data_exp))
+			{
+				$pathes[] = $path;
+			}
+		}
+
+		return array
+		(
+			'best' => 0,
+			'pathes' => $pathes
+		);
+	}
+
+	
 	// JunOS
 	if (preg_match("/^show route protocol bgp .* terse/i", $exec)) 
 	{
@@ -2479,10 +2520,13 @@ function link_whois($line, $name = '')
 function get_path_graph($router, $query, $as_pathes, $as_best_path, $format = 'svg')
 {
 	global $_CONFIG, $_REQUEST;
+	
+	// echo "Vai renderizar o Gráfico<br>";
+	
 
 	$font_size = 9; // default font size
 	$graph = new Image_GraphViz();
-
+	// var_dump($graph);
 	$graph->addNode($router, array
 	(
 		'label' => $_CONFIG['routers'][$router]['description'],
@@ -2642,6 +2686,7 @@ function get_path_graph($router, $query, $as_pathes, $as_best_path, $format = 's
  */
 function get_blank_graph($string, $format = 'svg')
 {
+	echo "Nada de grafico";
 	$graph = new Image_GraphViz();
 
 	$graph->addNode('error', array
