@@ -252,7 +252,7 @@ $queries = array
 			'bgp' => 'display bgp routing-table %s',
 			'advertised-routes'	=> 'display bgp routing-table peer %s advertised-routes | no-more',
 			'bgp-within' => 'display bgp routing-table community | include %s',
-			'received-routes' => 'display bgp routing-table peer %s  | no-more',
+			'received-routes' => 'display bgp routing-table peer %s received-routes | no-more',
 			'routes'	=> 'display bgp routing-table peer %s received-routes active  | no-more',
 			'summary' => 'display bgp peer',
 			'ping' => 'ping %s',
@@ -1023,6 +1023,7 @@ function parse_out($output, $check = FALSE)
 			$asinfo = get_asinfo("AS".$asn);
 			$estilo = $status == "Established" ? 'style="background-color: bisque;"' : "";
 			$pesquisar = $status == "Established" ? link_command("advertised-routes", $peer, $name = 'Anuncios', $return_uri = FALSE) : "";
+			$pesquisar_recebidas = $prefixos > 0 ? link_command("received-routes", $peer, $name = $prefixos, $return_uri = FALSE) : "$prefixos";
 			
 			if(sizeof(explode("h",$uptime))>1){
 				$horasb = explode("h",$uptime)[0];
@@ -1052,7 +1053,7 @@ function parse_out($output, $check = FALSE)
 							<td>$enviado</td>
 							<td>$status</td>
 							<td style='text-align: right;'>$uptime</td>
-							<td>$prefixos</td>
+							<td>$pesquisar_recebidas</td>
 							<td>$OutQ</td>
 					   </tr>";
 			
