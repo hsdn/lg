@@ -1,4 +1,4 @@
-
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <?php
 /**
 <meta http-equiv="refresh" content="5" />
@@ -119,18 +119,8 @@ if ($command != 'graph' OR !isset($_REQUEST['render']) OR !isset($_CONFIG['route
 			.legend { font-size: 12px; margin: auto; }
 		//-->
 		</style>
-		<script type="text/javascript">
-		<!--
-			function load() {
-				var loading = document.getElementById('loading');
-				if (loading !== null) {
-					loading.style.display = 'none';
-				}
-			}
-		//-->
-		</script>
 	</head>
-	<body onload="load();">
+	<body>
 <?php if (isset($_CONFIG['logo']) AND $_CONFIG['logo']): ?>
 		<div class="center"><a href="?"><img src="<?php print $_CONFIG['logo'] ?>" border="0" alt="lg"></a></div>
 <?php endif ?>
@@ -260,10 +250,10 @@ $queries = array
 		'ipv4' => array
 		(
 			'bgp' => 'display bgp routing-table %s',
-			'advertised-routes'	=> 'display bgp routing-table peer %s advertised-routes',
+			'advertised-routes'	=> 'display bgp routing-table peer %s advertised-routes | no-more',
 			'bgp-within' => 'display bgp routing-table community | include %s',
-			'received-routes' => 'display bgp routing-table peer %s received-routes',
-			'routes'	=> 'display bgp routing-table peer %s received-routes active',
+			'received-routes' => 'display bgp routing-table peer %s  | no-more',
+			'routes'	=> 'display bgp routing-table peer %s received-routes active  | no-more',
 			'summary' => 'display bgp peer',
 			'ping' => 'ping %s',
 			'trace' => 'tracert %s',
@@ -271,9 +261,9 @@ $queries = array
 		'ipv6' => array
 		(
 			'bgp' => 'display bgp ipv6 routing-table %s',
-			'advertised-routes' => 'display bgp ipv6 routing-table peer %s advertised-routes',
-			'received-routes' => 'display bgp ipv6 routing-table peer %s received-routes',
-			'routes'	=> 'display bgp ipv6 routing-table peer %s received-routes active',
+			'advertised-routes' => 'display bgp ipv6 routing-table peer %s advertised-routes | no-more',
+			'received-routes' => 'display bgp ipv6 routing-table peer %s received-routes | no-more',
+			'routes'	=> 'display bgp ipv6 routing-table peer %s received-routes active | no-more',
 			'summary' => 'display bgp ipv6 peer',
 			'ping' => 'ping ipv6 %s',
 			'trace' => 'tracert ipv6 %s',
@@ -523,12 +513,8 @@ if (isset($_CONFIG['routers'][$router]) AND
 			</table>
 			<br>
 			<div id="loading" style="display:inline"><p><b>Please wait...</b></p></div>
-			<!--[if IE]>
-				<p><img src="?command=graph&amp;protocol=<?php print $protocol ?>&amp;query=<?php print $query ?>&amp;router=<?php print $router ?>&amp;render=png" alt="" title=""></p>
-			<![endif]-->
-			<![if ! IE]>
-				<object data="?command=graph&amp;protocol=<?php print $protocol ?>&amp;query=<?php print $query ?>&amp;router=<?php print $router ?>&amp;render=true" type="image/svg+xml"></object>
-			<![endif]>
+			<script src="showgraph.js?<?php echo time(); ?>"></script>
+			<div id="mapa" url="?command=graph&amp;protocol=<?php print $protocol ?>&amp;query=<?php print $query ?>&amp;router=<?php print $router ?>&amp;render=true"></div>
 			<br>
 		</div>
 <?php
@@ -1056,7 +1042,6 @@ function parse_out($output, $check = FALSE)
 				$uptime = $dias."d ".$uptime;
 			}
 			
-			// var_dump(explode("h",$uptime));
 			
 			$trupa .= "<tr $estilo>
 							<td>$peer</td>
@@ -1076,7 +1061,6 @@ function parse_out($output, $check = FALSE)
 		$output = null;
 		$output['head'] = $head;
 		$output['tail'] = $newout;
-		// return var_dump($output);
 		$titles = "<tr>
 							<th>Peer</th>
 							<th>ASN</th>
@@ -2271,10 +2255,6 @@ function parse_bgp_path($output)
 				}
 			}
 		}
-		
-// echo "<pre>";
-// var_dump($pathes);
-// echo "</pre>";
 		return array
 		(
 			'best' => $best,
@@ -2648,13 +2628,9 @@ function link_whois($line, $name = '')
 function get_path_graph($router, $query, $as_pathes, $as_best_path, $format = 'svg')
 {
 	global $_CONFIG, $_REQUEST;
-	
-	// echo "Vai renderizar o Gráfico<br>";
-	
 
 	$font_size = 9; // default font size
 	$graph = new Image_GraphViz();
-	// var_dump($graph);
 	$graph->addNode($router, array
 	(
 		'label' => $_CONFIG['routers'][$router]['description'],
@@ -2815,7 +2791,7 @@ function get_path_graph($router, $query, $as_pathes, $as_best_path, $format = 's
  */
 function get_blank_graph($string, $format = 'svg')
 {
-	echo "Nada de grafico";
+	
 	$graph = new Image_GraphViz();
 
 	$graph->addNode('error', array
