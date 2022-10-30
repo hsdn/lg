@@ -1,5 +1,7 @@
+
 <?php
 /**
+<meta http-equiv="refresh" content="5" />
  * HSDN PHP Looking Glass version 1.2.22b
  *
  * General Features:
@@ -754,8 +756,13 @@ function process($url, $exec, $return_buffer = FALSE)
 					{
 						continue;
 					}
-
-					$line = !$return_buffer ? parse_out($output, TRUE) : $output;
+					
+					// não quebra as linhas no sumário huawei
+					if (!($os == 'huawei' and (preg_match('/^display bgp peer/i', $exec) or preg_match('/^display bgp ipv6 peer/i', $exec)))){
+						
+						$line = !$return_buffer ? parse_out($output, TRUE) : $output;
+						
+					}
 
 					if ($line === TRUE)
 					{
@@ -782,7 +789,6 @@ function process($url, $exec, $return_buffer = FALSE)
 						$line = $output;
 					}
 				}
-
 				pclose($fp);
 			}
 
@@ -985,8 +991,121 @@ function process($url, $exec, $return_buffer = FALSE)
 function parse_out($output, $check = FALSE)
 {
 	global $_CONFIG, $router, $protocol, $os, $command, $exec, $query, $index, $lastip, $best, $count, $str_in, $ros;
-
+	
+	// Huawei
+	if (preg_match('/^display bgp peer/i', $exec) or preg_match('/^display bgp ipv6 peer/i', $exec))
+	{
+		$output = str_replace("\r", "", $output);
+		if(sizeof(explode("through SSH.",$output)) > 1){
+			$output = explode("through SSH.",$output)[1];
+		}
+		$ooo = explode("\n",$output);
+		foreach($ooo as $v){
+			if (strlen($v) < 20) continue;
+			if (preg_match("/^Info: The max number of VTY /i",$v)) continue;
+			$v = preg_replace('/\\s\\s+/', ' ', $v);
+			
+			if (preg_match("/^ BGP local router /i",$v)){
+				$head['ID'] = explode(": ",$v)[1];
+				continue;
+			}
+			if (preg_match("/^ Local AS /i",$v)){
+				$head['ASN'] = explode(": ",$v)[1];
+				continue;
+			}
+			if (preg_match("/^ Total number/i",$v)){
+				$head['peers'] = explode(" ",$v)[6];
+				$head['up'] = explode(" ",$v)[12];
+				continue;
+			}
+			if (preg_match("/Peer/i",$v)){
+				continue;
+			}
+			
+			$resumo = "Router ID: $head[ID] from ASN: $head[ASN]<br>Peering: $head[up] up of $head[peers] total";
+			
+			// A partir daqui todos os itens avaliados serão um peer a compor a tabela
+			$v = explode(" ",$v);
+			$peer = $v[1];
+			$asn = $v[3];
+			$recebido = $v[4];
+			$enviado = $v[5];
+			$uptime = $v[7];
+			$status = $v[8];
+			$prefixos = $v[9];
+			$OutQ = $v[6];
+			$asinfo = get_asinfo("AS".$asn);
+			$estilo = $status == "Established" ? 'style="background-color: bisque;"' : "";
+			$pesquisar = $status == "Established" ? link_command("advertised-routes", $peer, $name = 'Anuncios', $return_uri = FALSE) : "";
+			
+			if(sizeof(explode("h",$uptime))>1){
+				$horasb = explode("h",$uptime)[0];
+				$dias = intval($horasb/24);
+				$horas = ($horasb/24-$dias)*24;
+				$horas = $horasb%24;
+				$minutos = str_replace("m",":",explode("h",$uptime)[1]);
+				$segundos = '00';
+				
+				$uptime = $dias."d ".$horas.":".$minutos.$segundos;
+			}else{
+				$dias = 0;
+				$horas = explode(":",$uptime)[0];
+				$minutos = explode(":",$uptime)[1]."m";
+				$segundos = explode(":",$uptime)[2];
+				
+				$uptime = $dias."d ".$uptime;
+			}
+			
+			// var_dump(explode("h",$uptime));
+			
+			$trupa .= "<tr $estilo>
+							<td>$peer</td>
+							<td>".link_as($asn)."</td>
+							<td style='font-size: 12px;'>".$asinfo['asname']." ".$asinfo['description']."</td>
+							<td>$pesquisar</td>
+							<td>$recebido</td>
+							<td>$enviado</td>
+							<td>$status</td>
+							<td style='text-align: right;'>$uptime</td>
+							<td>$prefixos</td>
+							<td>$OutQ</td>
+					   </tr>";
+			
+			// $newout[] = $v;
+		}
+		$output = null;
+		$output['head'] = $head;
+		$output['tail'] = $newout;
+		// return var_dump($output);
+		$titles = "<tr>
+							<th>Peer</th>
+							<th>ASN</th>
+							<th>Nome</th>
+							<th>Anuncios</th>
+							<th>Msg Recebidas</th>
+							<th>Msg Enviadas</th>
+							<th>Status</th>
+							<th>Uptime</th>
+							<th>Rotas</th>
+							<th>OutQ</th>
+					   </tr>";
+		
+		$tabela .= $resumo;
+		$tabela .= "<table>";
+		$tabela .= $titles;
+		$tabela .= $trupa;
+		$tabela .= "</table>";
+		return $tabela;
+	}
+	
 	$output = str_replace("\r\n", "\n", $output);
+	if ($os == 'huawei'){
+		
+		if (preg_match("/^Info: The max number of VTY /i",$output)) return;
+		if (preg_match("/The current login time is /i",$output)) return;
+		if (preg_match("/The last login time is /i",$output)) return;
+		if (strlen($output) < 5) return;
+	}
 
 	// MikroTik
 	if (preg_match("/^\/(ip|ipv6) route print detail/i", $exec) AND $os == 'mikrotik')
@@ -2104,7 +2223,7 @@ function parse_out($output, $check = FALSE)
 
 		return $output;
 	}
-
+	
 	return $output;
 }
 
