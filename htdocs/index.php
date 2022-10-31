@@ -249,12 +249,12 @@ $queries = array
 	(
 		'ipv4' => array
 		(
-			'bgp' => 'display bgp routing-table %s',
+			'bgp' => 'display bgp routing-table %s | no-more',
 			'advertised-routes'	=> 'display bgp routing-table peer %s advertised-routes | no-more',
 			'bgp-within' => 'display bgp routing-table community | include %s',
 			'received-routes' => 'display bgp routing-table peer %s received-routes | no-more',
 			'routes'	=> 'display bgp routing-table peer %s received-routes active  | no-more',
-			'summary' => 'display bgp peer',
+			'summary' => 'display bgp peer | no-more',
 			'ping' => 'ping %s',
 			'trace' => 'tracert %s',
 		),
@@ -2256,6 +2256,7 @@ function parse_bgp_path($output)
 				}
 			}
 		}
+			
 		return array
 		(
 			'best' => $best,
@@ -2267,20 +2268,30 @@ function parse_bgp_path($output)
 	if ($os == 'huawei')
 	{
 		$output_parts = explode("BGP local router ID :" , trim($output), 4);
-		$output_parts = explode("AS-path " , trim($output_parts[1]), 4);
-		if (!isset($output_parts[1]))
+		$output_parts = explode("Paths:" , trim($output_parts[1]), 2);
+		$output_parts = explode("BGP routing table entry information of " , trim($output_parts[1]),2);
+		// Aqui eu finalmente tenho os blocos de informações separados por path
+		$output_parts = explode("\n\n" , trim($output_parts[1]));
+		if (!isset($output_parts[0]))
 		{
 			return FALSE;
 		}
-		$output_parts = explode("," , trim($output_parts[1]), 4)[0];
 
 
-		$summary_parts[] = $output_parts;
+		$summary_parts = $output_parts;
 
 
 		foreach ($summary_parts as $i => $summary_part)
 		{
 			
+			$summary_part = explode("AS-path " , trim($summary_part));
+			
+			if(preg_match("/best/i", $summary_part[1])){
+				// Se esta for a melhor rota, sinaliza ela
+				$best = $i;
+			}
+			
+			$summary_part = explode("," , trim($summary_part[1]))[0];
 			$data_exp = str_replace(' ', ',',trim($summary_part));
 	
 
@@ -2289,10 +2300,10 @@ function parse_bgp_path($output)
 				$pathes[] = $path;
 			}
 		}
-
+		
 		return array
 		(
-			'best' => 0,
+			'best' => $best,
 			'pathes' => $pathes
 		);
 	}
