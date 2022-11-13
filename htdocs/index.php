@@ -2468,7 +2468,9 @@ function parse_as_path($line)
 			$return[] = 'AS'.$asn;
 		}
 	}
-
+	
+	return $return;
+	# Se remover as duplicatas os prepends não serão sinalizados no mapa
 	return array_unique($return);
 }
 
