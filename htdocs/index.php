@@ -250,8 +250,8 @@ $queries = array
 		'ipv4' => array
 		(
 			'bgp' => 'display bgp routing-table %s | no-more',
-			'advertised-routes'	=> 'display bgp routing-table peer %s advertised-routes | no-more',
-			'bgp-within' => 'display bgp routing-table community | include %s',
+			'graph'	=> 'display bgp routing-table %s as-path | no-more',
+			'bgp-within' => 'display bgp routing-table %s as-path | no-more',
 			'received-routes' => 'display bgp routing-table peer %s received-routes | no-more',
 			'routes'	=> 'display bgp routing-table peer %s received-routes active  | no-more',
 			'summary' => 'display bgp peer | no-more',
@@ -261,6 +261,7 @@ $queries = array
 		'ipv6' => array
 		(
 			'bgp' => 'display bgp ipv6 routing-table %s',
+			'graph' => 'display bgp ipv6 routing-table %s as-path | no-more',
 			'advertised-routes' => 'display bgp ipv6 routing-table peer %s advertised-routes | no-more',
 			'received-routes' => 'display bgp ipv6 routing-table peer %s received-routes | no-more',
 			'routes'	=> 'display bgp ipv6 routing-table peer %s received-routes active | no-more',
@@ -299,12 +300,11 @@ if (isset($_CONFIG['routers'][$router]) AND
 
 	$os = $_CONFIG['routers'][$router]['os'];
 
-	if ($command == 'graph' AND isset($queries[$os][$protocol]['bgp']))
-	{
+	if ($command == 'graph' AND isset($queries[$os][$protocol]['graph'])){
+		$exec = $queries[$os][$protocol]['graph'];
+	}else if ($command == 'graph' AND isset($queries[$os][$protocol]['bgp'])){
 		$exec = $queries[$os][$protocol]['bgp'];
-	}
-	else
-	{
+	}else{
 		$exec = $queries[$os][$protocol][$command];
 	}
 
@@ -2267,37 +2267,78 @@ function parse_bgp_path($output)
 	// Huawei
 	if ($os == 'huawei')
 	{
-		$output_parts = explode("BGP local router ID :" , trim($output), 4);
-		$output_parts = explode("Paths:" , trim($output_parts[1]), 2);
-		$output_parts = explode("BGP routing table entry information of " , trim($output_parts[1]),2);
-		// Aqui eu finalmente tenho os blocos de informações separados por path
-		$output_parts = explode("\n\n" , trim($output_parts[1]));
-		if (!isset($output_parts[0]))
-		{
-			return FALSE;
-		}
-
-
-		$summary_parts = $output_parts;
-
-
-		foreach ($summary_parts as $i => $summary_part)
-		{
+		if(preg_match("/as-path/i", $exec)){
 			
-			$summary_part = explode("AS-path " , trim($summary_part));
 			
-			if(preg_match("/best/i", $summary_part[1])){
-				// Se esta for a melhor rota, sinaliza ela
-				$best = $i;
-			}
-			
-			$summary_part = explode("," , trim($summary_part[1]))[0];
-			$data_exp = str_replace(' ', ',',trim($summary_part));
-	
-
-			if ($path = parse_as_path($data_exp))
+			$output_parts = explode("BGP routing table entry information of " , trim($output));
+			// Aqui eu finalmente tenho os blocos de informações separados por path
+			if (!isset($output_parts[0]))
 			{
-				$pathes[] = $path;
+				return FALSE;
+			}
+
+
+			$summary_parts = $output_parts;
+
+
+			foreach ($summary_parts as $i => $summary_part)
+			{
+				
+				$summary_part = explode("AS-path " , trim($summary_part))[1];
+				// $summary_part = explode("Info: The max number of VTY users");
+				
+				
+				if(preg_match("/best/i", $summary_part)){
+					// Se esta for a melhor rota, sinaliza ela
+					$best = $i;
+				}
+				
+				$summary_part = explode("\n" , trim($summary_part))[0];
+				$data_exp = str_replace(' ', ',',trim($summary_part));
+				if($data_exp == "") continue;
+				echo "<pre style='text-align:left;'>";var_dump($data_exp);echo "</pre>";
+		
+				
+				if ($path = parse_as_path($data_exp))
+				{
+					$pathes[] = $path;
+				}
+			}
+			$best = getBestHuawei();
+		}else
+		{
+			$output_parts = explode("BGP local router ID :" , trim($output), 4);
+			$output_parts = explode("Paths:" , trim($output_parts[1]), 2);
+			$output_parts = explode("BGP routing table entry information of " , trim($output_parts[1]),2);
+			// Aqui eu finalmente tenho os blocos de informações separados por path
+			$output_parts = explode("\n\n" , trim($output_parts[1]));
+			if (!isset($output_parts[0]))
+			{
+				return FALSE;
+			}
+
+
+			$summary_parts = $output_parts;
+
+
+			foreach ($summary_parts as $i => $summary_part)
+			{
+				
+				$summary_part = explode("AS-path " , trim($summary_part));
+				
+				if(preg_match("/best/i", $summary_part[1])){
+					// Se esta for a melhor rota, sinaliza ela
+					$best = $i;
+				}
+				
+				$summary_part = explode("," , trim($summary_part[1]))[0];
+				$data_exp = str_replace(' ', ',',trim($summary_part));
+		
+
+				if ($path = parse_as_path($data_exp))
+				{
+					$pathes[] = $path;
+				}
 			}
 		}
 		
@@ -3015,6 +3056,31 @@ function buscabarra($haystack, $needle, $nth) {
         $count++;
     } while ($pos !== false && $count < $nth);
     return $pos;
+}
+
+function getBestHuawei() {
+	global $url,$os,$protocol, $queries,$query;
+	$exe = str_replace("%s",$query,$queries[$os][$protocol]['bgp']);
+	$test = process($url, $exe, TRUE);
+	
+	$ddd = explode("BGP local router ID :" , trim($test), 4);
+	$ddd = explode("Paths:" , trim($ddd[1]), 2);
+	$ddd = explode("BGP routing table entry information of " , trim($ddd[1]),2);
+	// Aqui eu finalmente tenho os blocos de informações separados por path
+	$ddd = explode("\n\n" , trim($ddd[1]));
+
+	$eee = $ddd;
+	foreach ($eee as $i => $sp)
+	{
+		
+		$sp = explode("AS-path " , trim($sp));
+		
+		if(preg_match("/best/i", $sp[1])){
+			// Se esta for a melhor rota, sinaliza ela
+			$best = $i;
+		}
+	}
+	return $best;
 }
 
 
