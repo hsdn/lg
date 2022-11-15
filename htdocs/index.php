@@ -2217,7 +2217,7 @@ function parse_out($output, $check = FALSE)
  */
 function parse_bgp_path($output)
 {
-	global $os, $exec, $query, $count;
+	global $os, $exec, $query, $count, $_CONFIG;
 
 	$best = FALSE;
 	$pathes = array();
@@ -2296,8 +2296,7 @@ function parse_bgp_path($output)
 				$summary_part = explode("\n" , trim($summary_part))[0];
 				$data_exp = str_replace(' ', ',',trim($summary_part));
 				if($data_exp == "") continue;
-				echo "<pre style='text-align:left;'>";var_dump($data_exp);echo "</pre>";
-		
+				if($data_exp == "Nil") $data_exp = $_CONFIG['asn'];
 				
 				if ($path = parse_as_path($data_exp))
 				{
