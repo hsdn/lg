@@ -250,6 +250,7 @@ $queries = array
 		'ipv4' => array
 		(
 			'bgp' => 'display bgp routing-table %s | no-more',
+			'advertised-routes'	=> 'display bgp routing-table peer %s advertised-routes | no-more',
 			'graph'	=> 'display bgp routing-table %s as-path | no-more',
 			'bgp-within' => 'display bgp routing-table %s as-path | no-more',
 			'received-routes' => 'display bgp routing-table peer %s received-routes | no-more',
