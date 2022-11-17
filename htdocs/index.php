@@ -697,6 +697,7 @@ function process($url, $exec, $return_buffer = FALSE)
 			$params[] = $url['host'];
 
 			$exec = escapeshellcmd($exec)."\n";
+			
 
 			// Get MikroTik additional summary information
 			if (preg_match('/^\/routing bgp peer print status/i', $exec) AND $os == 'mikrotik' AND $return_buffer != TRUE)
@@ -737,6 +738,8 @@ function process($url, $exec, $return_buffer = FALSE)
 
 			if ($fp = @popen('echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec, 'r'))
 			{
+				// echo 'echo n | '.$ssh_path.' '.implode(' ', $params).' '.$exec;
+				// var_dump(shell_exec($ssh_path.' '.implode(' ', $params).' '.$exec));
 				while (!feof($fp))
 				{
 					if (!$output = fgets($fp, 1024))
