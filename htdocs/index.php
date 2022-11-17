@@ -994,7 +994,9 @@ function parse_out($output, $check = FALSE)
 			if (strlen($v) < 20) continue;
 			if (preg_match("/^Info: The max number of VTY /i",$v)) continue;
 			$v = preg_replace('/\\s\\s+/', ' ', $v);
+			if (preg_match("/^ The current login time /i",$v)) continue;
 			
+			// var_dump($v);
 			if (preg_match("/^ BGP local router /i",$v)){
 				$head['ID'] = explode(": ",$v)[1];
 				continue;
