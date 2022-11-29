@@ -1,5 +1,4 @@
-<?php isset($_CONFIG) or die('No direct access allowed.');
-
+<?php
 // ------------------------------------------------------------------------
 // LOOKING GLASS CONFIGURATIONS
 // ------------------------------------------------------------------------
@@ -12,12 +11,12 @@ $_CONFIG['asn'] = '12345';
 /*
  * Your own company name
  */
-$_CONFIG['company'] = 'My Company Name';
+$_CONFIG['company'] = 'Empresa';
 
 /*
  * Your logo URL (or FALSE)
  */
-$_CONFIG['logo'] = 'lg_logo.gif';
+$_CONFIG['logo'] = 'logo.png';
 
 /*
  * Main style color
@@ -27,17 +26,19 @@ $_CONFIG['color'] = '#E48559';
 /*
  * SSH authentication type (`password` or `privatekey`)
  */
-$_CONFIG['sshauthtype'] = 'password';
+$_CONFIG['sshauthtype'] = 'privatekey';
 
 /*
  * Absolute path to SSH private key
+ * O DONO DO ARQUIVO DEVE SER O USUARIO DO APACHE!
+ * chown www-data id_rsa
  */
-$_CONFIG['sshprivatekeypath'] = '/opt/lg/keys/id_rsa';
+$_CONFIG['sshprivatekeypath'] = '/var/www/html/lg/keys/id_rsa';
 
 /*
  * Type of command for SSH connection with password authentication (`plink` or `sshpass`)
  */
-$_CONFIG['sshpwdcommand'] = 'plink';
+$_CONFIG['sshpwdcommand'] = 'sshpass';
 
 /*
  * Putty `plink' command path (for SSH connections)
@@ -50,9 +51,9 @@ $_CONFIG['plink'] = '/usr/local/bin/plink';
 $_CONFIG['sshpass'] = '/usr/bin/sshpass';
 
 /*
- * sshpass command path (for SSH connections)
+ * ssh command path (for SSH connections)
  */
-$_CONFIG['ssh'] = '/usr/bin/sshpass';
+$_CONFIG['ssh'] = '/usr/bin/ssh';
 
 /*
  * URL address of the IP whois service
@@ -79,47 +80,27 @@ $_CONFIG['aswhois'] = 'http://noc.hsdn.org/aswhois/';
  */
 $_CONFIG['routers'] = array
 (
-	'example1' => array
-	(
-		'url' => 'telnet://route-views.optus.net.au:23',
-		'pingtraceurl' => FALSE,
-		'description' => 'Example Router 1',
-		'group' => 'AS12345',
-		'ipv6' => TRUE,
-		'os' => 'ios',
-	),
+        'ne40' => array
+        (
+                'url' => 'ssh://"user":"senha"@10.61.61.2:22',
+                'pingtraceurl' => FALSE,
+                'description' => 'R1',
+                'group' => 'Grupo',
+                'ipv6' => TRUE,
+                'os' => 'huawei',
+        ),
 
-	'example2' => array
-	(
-		'url' => 'ssh://route-server.eastlink.ca:23',
-		'pingtraceurl' => FALSE,
-		'description' => 'Example Router 2',
-		'group' => 'AS12345',
-		'ipv6' => TRUE,
-		'os' => 'ios',
-	),
-
-    'example3' => array
-	(
-		'url' => 'ssh://user@device.local',
-		'pingtraceurl' => FALSE,
-		'description' => 'Example Router 3',
-		'group' => 'AS12345',
-		'ipv6' => TRUE,
-		'os' => 'mikrotik',
-	),
-    
-    'example4' => array
-	(
-		'url' => 'ssh://user@device.local',
-        'sshauthtype' => 'privatekey',
-		'pingtraceurl' => FALSE,
-		'description' => 'Example Router 4',
-		'group' => 'AS12345',
-		'ipv6' => TRUE,
-		'os' => 'mikrotik',
-	),
+        'chr' => array
+        (
+                'url' => 'ssh://user:senha@10.2.60.2:22',
+                'pingtraceurl' => FALSE,
+                'description' => 'R2',
+                'group' => 'Grupo',
+                'ipv6' => TRUE,
+                'os' => 'mikrotik',
+        )
 );
 
 
 /* End of file */
+?>
