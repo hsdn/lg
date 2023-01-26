@@ -154,7 +154,7 @@ if ($command != 'graph' OR !isset($_REQUEST['render']) OR !isset($_CONFIG['route
 	</head>
 	<body onload="load();">
 <?php if (isset($_CONFIG['logo']) AND $_CONFIG['logo']): ?>
-		<div class="center"><a href="?"><img src="<?php print $_CONFIG['logo'] ?>" border="0" alt="lg"></a></div>
+		<div class="center"><a href="/"><img src="<?php print $_CONFIG['logo'] ?>" border="0" alt="lg"></a></div>
 <?php endif ?>
 		<div class="center"><h2>AS<?php print $_CONFIG['asn'] ?> Looking Glass</h2></div>
 		<hr>
@@ -1098,7 +1098,6 @@ function verifyToken($url, $token){
     );
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    #curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(["token" => $token]));
@@ -1110,30 +1109,30 @@ function verifyToken($url, $token){
     $data = curl_exec($ch);
     $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     if(curl_error($ch)){
-        # die(var_dump(curl_error($ch)));
+        #var_dump(curl_error($ch)); exit;
 		return false;
     }
     curl_close($ch);
 
     if($status > 300){
-        # die(var_dump($status) . var_dump($data)));
+        #var_dump($status) . var_dump($data); exit;
 		return false;
     }
     if(!$data){
-        # die(var_dump($status) . var_dump($data)));
+        #var_dump($status) . var_dump($data); exit;
 		return false;
     }
     $decodedData = json_decode($data, true);
     if($decodedData['status'] !== 200){
-        # die(var_dump($decodedData));
+        #var_dump($decodedData); exit;
 		return false;
     }
 	if(!$decodedData['response']){
-		# die(var_dump($decodedData));
+		#var_dump($decodedData); exit;
 		return false;
 	}
 	if($decodedData['response']['success'] !== true){
-		# die(var_dump($decodedData));
+		#var_dump($decodedData); exit;
 		return false;
 	}
 	return true;
