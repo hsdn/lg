@@ -59,6 +59,11 @@ $_CONFIG = array
 	'company' => 'My Company Name',
 	'logo' => 'lg_logo.gif',
 	'color' => '#E48559',
+	'recaptchaEnabled' => false,
+	'recaptchaFrontendURL' => 'https://www.google.com/recaptcha/api.js?render=',
+	'recaptchaBackendVerifyURL' => 'https://www.google.com/recaptcha/api/siteverify',
+	'recaptchaSiteKey' => "",
+	'recaptchaSiteSecret' => "",
 	'showpeerinfo' => 'TRUE',
 	'safesubnet' => '',
     'sshauthtype' => 'password',
@@ -83,6 +88,8 @@ $router = isset($_REQUEST['router']) ? trim($_REQUEST['router']) : FALSE;
 $protocol = isset($_REQUEST['protocol']) ? trim($_REQUEST['protocol']) : FALSE;
 $command = isset($_REQUEST['command']) ? trim($_REQUEST['command']) : FALSE;
 $query = isset($_REQUEST['query']) ? trim($_REQUEST['query']) : FALSE;
+$token = isset($_REQUEST['token']) ? trim($_REQUEST['token']) : FALSE;
+
 
 if ($command != 'graph' OR !isset($_REQUEST['render']) OR !isset($_CONFIG['routers'][$router]))
 {
@@ -129,6 +136,21 @@ if ($command != 'graph' OR !isset($_REQUEST['render']) OR !isset($_CONFIG['route
 			}
 		//-->
 		</script>
+<?php if ($_CONFIG['recaptchaEnabled']): ?>
+			<script src="<?php print $_CONFIG['recaptchaFrontendURL'] . $_CONFIG['recaptchaSiteKey']?>"></script>
+				<script>
+			function captcha(event, command, protocol, router, query ) {
+				event.preventDefault();
+				grecaptcha.ready(function() {
+				grecaptcha.execute('<?php print $_CONFIG['recaptchaSiteKey']?>', {action: 'submit'}).then(function(tok) {
+					var loc = window.location.href;
+					window.location.href = loc+"?command="+command+"&protocol="+protocol+"&router="+router+"&query="+query+"&token="+tok
+				});
+				});
+			}
+		</script>
+<?php endif ?>
+  
 	</head>
 	<body onload="load();">
 <?php if (isset($_CONFIG['logo']) AND $_CONFIG['logo']): ?>
@@ -371,7 +393,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 
 	$url = @parse_url($url);
 
-	$routing_instance = $_CONFIG['routers'][$router]['routing-instance'];
+	$routing_instance = isset($_CONFIG['routers']) AND isset($_CONFIG['routers'][$router]) AND isset($_CONFIG['routers'][$router]['routing-instance']) ? $_CONFIG['routers'][$router]['routing-instance'] : null;
 
 	$os = $_CONFIG['routers'][$router]['os'];
 
@@ -597,7 +619,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 		else
 		{
 			print '<p><b>Router:</b> '.$_CONFIG['routers'][$router]['description'].'<br>';
-			if($ipsafe OR ($_CONFIG['routers'][$router]['showpeerinfo'] == "TRUE" OR ($_CONFIG['showpeerinfo'] == "TRUE" AND !isset($_CONFIG['routers'][$router]['showpeerinfo'])))){
+			if($ipsafe OR (isset($_CONFIG['routers'][$router]) AND isset($_CONFIG['routers'][$router]['showpeerinfo']) AND $_CONFIG['routers'][$router]['showpeerinfo'] == "TRUE") OR (isset($_CONFIG['showpeerinfo']) AND $_CONFIG['showpeerinfo'] == "TRUE" AND !isset($_CONFIG['routers'][$router]['showpeerinfo']))){
 				print '<b>Command:</b> '.$exec.'</p><pre><code>';
 			} else {
 				print '</p><pre><code>';
@@ -616,7 +638,7 @@ else
 
 // HTML form
 ?>
-		<form method="get" action="">
+		<form name="theForm" action="#">
 		<div class="center">
 			<table class="form" cellpadding="2" cellspacing="2">
 				<tr><th>Type of Query</th><th>Additional parameters</th><th>Node</th></tr>
@@ -625,7 +647,7 @@ else
 					<tr><td><input type="radio" name="command" id="bgp" value="bgp" checked="checked"></td><td><label for="bgp">bgp equal</label></td></tr>
                     <tr><td><input type="radio" name="command" id="bgp-within" value="bgp-within" checked="checked"></td><td><label for="bgp-within">bgp within</label></td></tr>
 					<tr><td><input type="radio" name="command" id="advertised-routes" value="advertised-routes"></td><td><label for="advertised-routes">bgp&nbsp;advertised-routes</label></td></tr>
-					<?php if($ipsafe OR ($_CONFIG['routers'][$router]['showpeerinfo'] == "TRUE" OR ($_CONFIG['showpeerinfo'] == "TRUE" AND !isset($_CONFIG['routers'][$router]['showpeerinfo'])))){ ?>
+					<?php if($ipsafe OR (isset($_CONFIG['routers'][$router]) AND isset($_CONFIG['routers'][$router]['showpeerinfo']) AND $_CONFIG['routers'][$router]['showpeerinfo'] == "TRUE") OR (isset($_CONFIG['showpeerinfo']) AND $_CONFIG['showpeerinfo'] == "TRUE" AND !isset($_CONFIG['routers'][$router]['showpeerinfo']))){ ?>
 					<tr><td><input type="radio" name="command" id="summary" value="summary"></td><td><label for="summary">bgp&nbsp;summary</label></td></tr>
 					<?php } ?>
 					<tr><td><input type="radio" name="command" id="graph" value="graph"></td><td><label for="graph">bgp graph</label></td></tr>
@@ -652,7 +674,12 @@ else
 <?php endif ?>
 <?php endforeach ?>
 				</select></td></tr>
-				<tr><td align="center" colspan="3"><p><input type="submit" value="Submit"> | <input type="reset" value="Reset"></p></td></tr>
+				<tr><td align="center" colspan="3"><p><input type="submit" name="submit"
+<?php if ($_CONFIG['recaptchaEnabled']): ?>
+					onclick="captcha(event, document.theForm.command.value, document.theForm.protocol.value, document.theForm.router.value, document.theForm.query.value)"
+<?php endif ?>   
+					> | <input type="reset" value="Reset"></p></td></tr>
+
 			</table>
 		</div>
 		</form>
@@ -677,13 +704,26 @@ else
  */
 function process($url, $exec, $return_buffer = FALSE)
 {
-	global $_CONFIG, $router, $protocol, $os, $command, $query, $ros;
+	global $_SERVER, $_CONFIG, $router, $protocol, $os, $command, $query, $ros, $token;
 
     $sshauthtype = null;
 	$buffer = '';
 	$lines = $line = $is_exception = FALSE;
 	$index = 0;
 	$str_in = array();
+
+	$urlProtocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) ? 'https' : 'http';
+	$curlUrl = $urlProtocol . "://" . $_SERVER['SERVER_NAME'] . "/backend.php";
+
+	if($_CONFIG['recaptchaEnabled'] === true) {
+		$result = verifyToken($curlUrl, $token);
+		if($result == false) {
+			echo "<script>window.location.href='/forbidden.php'</script>";
+			exit;
+		}	
+	}
+
+// do processing for the $response
 
 	switch ($url['scheme'])
 	{
@@ -1050,6 +1090,53 @@ function process($url, $exec, $return_buffer = FALSE)
 	}
 
 	flush();
+}
+
+function verifyToken($url, $token){
+    $headers = array(
+        "Content-Type: application/json"
+    );
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    #curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(["token" => $token]));
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, "1");
+    curl_setopt($ch, CURLOPT_TIMEOUT, "3");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_VERBOSE, true);
+
+    $data = curl_exec($ch);
+    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    if(curl_error($ch)){
+        # die(var_dump(curl_error($ch)));
+		return false;
+    }
+    curl_close($ch);
+
+    if($status > 300){
+        # die(var_dump($status) . var_dump($data)));
+		return false;
+    }
+    if(!$data){
+        # die(var_dump($status) . var_dump($data)));
+		return false;
+    }
+    $decodedData = json_decode($data, true);
+    if($decodedData['status'] !== 200){
+        # die(var_dump($decodedData));
+		return false;
+    }
+	if(!$decodedData['response']){
+		# die(var_dump($decodedData));
+		return false;
+	}
+	if($decodedData['response']['success'] !== true){
+		# die(var_dump($decodedData));
+		return false;
+	}
+	return true;
 }
 
 /**
