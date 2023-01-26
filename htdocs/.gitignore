@@ -1,2 +1,6 @@
 lg_config.php
+!lg_logo.gif
+*.gif
+*.jpg
+*.jpeg
 *.png
