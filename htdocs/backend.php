@@ -12,7 +12,6 @@ function curlCall($url, $headers, $action, $postdata = null){
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_SSLVERSION, 6);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        #curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, "3");
         curl_setopt($ch, CURLOPT_TIMEOUT, "3");
