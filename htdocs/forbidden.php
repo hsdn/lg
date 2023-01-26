@@ -6,7 +6,7 @@ $url = $urlProtocol . "://" . $_SERVER['SERVER_NAME'] . "/";
     <head>
         <Body>
             <h1>403 Forbidden</h1>
-            <p>Capatcha was not completed, redirecting...</p>
+            <p>reCAPTCHA was unsuccessful or expired, redirecting...</p>
         </Body>
     </head>
     <Script>
