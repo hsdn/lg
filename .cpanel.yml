@@ -1,4 +1,0 @@
----
-deployment:
-  tasks:
-    - /bin/cp -R ./htdocs/* ~/public_html/
