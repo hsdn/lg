@@ -59,6 +59,11 @@ $_CONFIG = array
 	'company' => 'My Company Name',
 	'logo' => 'lg_logo.gif',
 	'color' => '#E48559',
+	'recaptchaEnabled' => false,
+	'recaptchaFrontendURL' => 'https://www.google.com/recaptcha/api.js?render=',
+	'recaptchaBackendVerifyURL' => 'https://www.google.com/recaptcha/api/siteverify',
+	'recaptchaSiteKey' => "",
+	'recaptchaSiteSecret' => "",
 	'showpeerinfo' => 'TRUE',
 	'safesubnet' => '',
     'sshauthtype' => 'password',
@@ -83,6 +88,8 @@ $router = isset($_REQUEST['router']) ? trim($_REQUEST['router']) : FALSE;
 $protocol = isset($_REQUEST['protocol']) ? trim($_REQUEST['protocol']) : FALSE;
 $command = isset($_REQUEST['command']) ? trim($_REQUEST['command']) : FALSE;
 $query = isset($_REQUEST['query']) ? trim($_REQUEST['query']) : FALSE;
+$token = isset($_REQUEST['token']) ? trim($_REQUEST['token']) : FALSE;
+
 
 if ($command != 'graph' OR !isset($_REQUEST['render']) OR !isset($_CONFIG['routers'][$router]))
 {
@@ -129,10 +136,25 @@ if ($command != 'graph' OR !isset($_REQUEST['render']) OR !isset($_CONFIG['route
 			}
 		//-->
 		</script>
+<?php if ($_CONFIG['recaptchaEnabled']): ?>
+			<script src="<?php print $_CONFIG['recaptchaFrontendURL'] . $_CONFIG['recaptchaSiteKey']?>"></script>
+				<script>
+			function captcha(event, command, protocol, router, query ) {
+				event.preventDefault();
+				grecaptcha.ready(function() {
+				grecaptcha.execute('<?php print $_CONFIG['recaptchaSiteKey']?>', {action: 'submit'}).then(function(tok) {
+					var loc = window.location.href;
+					window.location.href = loc+"?command="+command+"&protocol="+protocol+"&router="+router+"&query="+query+"&token="+tok
+				});
+				});
+			}
+		</script>
+<?php endif ?>
+  
 	</head>
 	<body onload="load();">
 <?php if (isset($_CONFIG['logo']) AND $_CONFIG['logo']): ?>
-		<div class="center"><a href="?"><img src="<?php print $_CONFIG['logo'] ?>" border="0" alt="lg"></a></div>
+		<div class="center"><a href="/"><img src="<?php print $_CONFIG['logo'] ?>" border="0" alt="lg"></a></div>
 <?php endif ?>
 		<div class="center"><h2>AS<?php print $_CONFIG['asn'] ?> Looking Glass</h2></div>
 		<hr>
@@ -261,6 +283,7 @@ $queries = array
 		(
 			'bgp' => 'display bgp routing-table %s',
 			'advertised-routes'	=> 'display bgp routing-table peer %s advertised-routes',
+			'bgp-within' => 'display bgp routing-table community | include %s',
 			'received-routes' => 'display bgp routing-table peer %s received-routes',
 			'routes'	=> 'display bgp routing-table peer %s received-routes active',
 			'summary' => 'display bgp peer',
@@ -370,6 +393,8 @@ if (isset($_CONFIG['routers'][$router]) AND
 
 	$url = @parse_url($url);
 
+	$routing_instance = isset($_CONFIG['routers']) AND isset($_CONFIG['routers'][$router]) AND isset($_CONFIG['routers'][$router]['routing-instance']) ? $_CONFIG['routers'][$router]['routing-instance'] : null;
+
 	$os = $_CONFIG['routers'][$router]['os'];
 
 	if ($command == 'graph' AND isset($queries[$os][$protocol]['bgp']))
@@ -445,39 +470,47 @@ if (isset($_CONFIG['routers'][$router]) AND
 		if ($os == 'junos') 
 		{
 			// @see JunOS Routing Table Names (http://www.net-gyver.com/?p=602)
-			$table = ($protocol == 'ipv6') ? 'inet6.0' : 'inet.0';
+            if ($routing_instance){
+                $table = ($protocol == 'ipv6') ? $routing_instance.'.inet6.0' : $routing_instance.'.inet.0';
+            }else{
+			    $table = ($protocol == 'ipv6') ? 'inet6.0' : 'inet.0';
+			}
 
 			if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+)$/", $exec, $exec_exp))
 			{
-				$exec = 'show bgp neighbor '.$exec_exp[1];
+			    if ($routing_instance){
+			        $exec = 'show bgp neighbor instance '.$routing_instance.' '.$exec_exp[1];
+			    }else{
+				    $exec = 'show bgp neighbor '.$exec_exp[1];
+				}
 			}
 			else if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+) ro\w*$/", $exec, $exec_exp)) 
 			{
-				$exec = 'show route receive-protocol bgp '.$exec_exp[1];
+				$exec = 'show route receive-protocol bgp '.$exec_exp[1]." table ".$table;
 			}
 			else if (preg_match("/^show bgp neighbors ([\d\.A-Fa-f:]+) routes all$/", $exec, $exec_exp))
 			{
-				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' all';
+				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' table '.$table.' all';
 			}
 			else if (preg_match("/^show bgp neighbors ([\d\.A-Fa-f:]+) routes damping suppressed$/", $exec, $exec_exp)) 
 			{
-				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' damping suppressed';
+				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' table '.$table.' damping suppressed';
 			}
 			else if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+) advertised-routes ([\d\.A-Fa-f:\/]+)$/", $exec, $exec_exp))
 			{
-				$exec = 'show route advertising-protocol bgp '.$exec_exp[1].' '.$exec_exp[2].' exact detail';
+                $exec = 'show route advertising-protocol bgp '.$exec_exp[1].' '.$exec_exp[2].' table '.$table.' exact detail';
 			}
 			else if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+) receive-protocol ([\d\.A-Fa-f:\/]+)$/", $exec, $exec_exp)) 
 			{
-				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' '.$exec_exp[2].' exact detail';
+				$exec = 'show route receive-protocol bgp '.$exec_exp[1].' '.$exec_exp[2].' table '.$table.' exact detail';
 			}
 			else if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+) a[\w\-]*$/", $exec, $exec_exp))
 			{
-				$exec = 'show route advertising-protocol bgp '.$exec_exp[1];
+                $exec = 'show route advertising-protocol bgp '.$exec_exp[1].' table '.$table;
 			}
 			else if (preg_match("/^show bgp\s+([\d\.A-Fa-f:]+\/\d+)$/", $exec, $exec_exp))
 			{
-				$exec = 'show route protocol bgp '.$exec_exp[1].' terse exact';
+				$exec = 'show route protocol bgp '.$exec_exp[1].' table '.$table.' terse exact';
 			}
 			else if (preg_match("/^show bgp\s+([\d\.A-Fa-f:]+)$/", $exec, $exec_exp))
 			{
@@ -485,7 +518,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 			}
 			else if (preg_match("/^show bgp\s+([\d\.A-Fa-f:\/]+) exact$/", $exec, $exec_exp)) 
 			{
-				$exec = 'show route protocol bgp '.$exec_exp[1].' exact detail all';
+				$exec = 'show route protocol bgp '.$exec_exp[1].' table '.$table.' exact detail all';
 			}
 			else if (preg_match("/^show bgp re\s+(.*)$/", $exec, $exec_exp)) 
 			{
@@ -501,8 +534,33 @@ if (isset($_CONFIG['routers'][$router]) AND
 					$re = $re.".*\$";
 				}
 
-				$exec = 'show route aspath-regex "'.str_replace('_', ' ', $re).'" all';
+			    if ($routing_instance){
+                    $exec = 'show route instance '.$routing_instance.' aspath-regex "'.str_replace('_', ' ', $re).'" all';
+                }else{
+       			    $exec = 'show route aspath-regex "'.str_replace('_', ' ', $re).'" all';
+                }
 			}
+			else if (preg_match("/^show bgp summary$/", $exec, $exec_exp))
+			{
+			    if ($routing_instance){
+                    $exec = 'show bgp summary instance '.$routing_instance;
+                }else{
+       			    $exec = 'show bgp summary';
+                }
+			}
+			else if (preg_match("/^show route advertising-protocol bgp\s+([\d\.A-Fa-f:\/]+)$/", $exec, $exec_exp))
+			{
+				$exec = 'show route advertising-protocol bgp '.$exec_exp[1].' table '.$table;
+			}
+			else if (preg_match("/^traceroute (ip|ipv6) ([\d\.A-Fa-f:\/]+)$/", $exec, $exec_exp))
+			{
+			    if ($routing_instance){
+                    $exec = 'traceroute '.$exec_exp[1].' routing-instance '.$routing_instance.' '.$exec_exp[2];
+                }else{
+					$exec = 'traceroute '.$exec_exp[1].' '.$exec_exp[2];
+                }
+			}
+
 		}
 
 		if ($command == 'graph')
@@ -561,7 +619,7 @@ if (isset($_CONFIG['routers'][$router]) AND
 		else
 		{
 			print '<p><b>Router:</b> '.$_CONFIG['routers'][$router]['description'].'<br>';
-			if($ipsafe OR ($_CONFIG['routers'][$router]['showpeerinfo'] == "TRUE" OR ($_CONFIG['showpeerinfo'] == "TRUE" AND !isset($_CONFIG['routers'][$router]['showpeerinfo'])))){
+			if($ipsafe OR (isset($_CONFIG['routers'][$router]) AND isset($_CONFIG['routers'][$router]['showpeerinfo']) AND $_CONFIG['routers'][$router]['showpeerinfo'] == "TRUE") OR (isset($_CONFIG['showpeerinfo']) AND $_CONFIG['showpeerinfo'] == "TRUE" AND !isset($_CONFIG['routers'][$router]['showpeerinfo']))){
 				print '<b>Command:</b> '.$exec.'</p><pre><code>';
 			} else {
 				print '</p><pre><code>';
@@ -580,7 +638,7 @@ else
 
 // HTML form
 ?>
-		<form method="get" action="">
+		<form name="theForm" action="#">
 		<div class="center">
 			<table class="form" cellpadding="2" cellspacing="2">
 				<tr><th>Type of Query</th><th>Additional parameters</th><th>Node</th></tr>
@@ -589,7 +647,7 @@ else
 					<tr><td><input type="radio" name="command" id="bgp" value="bgp" checked="checked"></td><td><label for="bgp">bgp equal</label></td></tr>
                     <tr><td><input type="radio" name="command" id="bgp-within" value="bgp-within" checked="checked"></td><td><label for="bgp-within">bgp within</label></td></tr>
 					<tr><td><input type="radio" name="command" id="advertised-routes" value="advertised-routes"></td><td><label for="advertised-routes">bgp&nbsp;advertised-routes</label></td></tr>
-					<?php if($ipsafe OR ($_CONFIG['routers'][$router]['showpeerinfo'] == "TRUE" OR ($_CONFIG['showpeerinfo'] == "TRUE" AND !isset($_CONFIG['routers'][$router]['showpeerinfo'])))){ ?>
+					<?php if($ipsafe OR (isset($_CONFIG['routers'][$router]) AND isset($_CONFIG['routers'][$router]['showpeerinfo']) AND $_CONFIG['routers'][$router]['showpeerinfo'] == "TRUE") OR (isset($_CONFIG['showpeerinfo']) AND $_CONFIG['showpeerinfo'] == "TRUE" AND !isset($_CONFIG['routers'][$router]['showpeerinfo']))){ ?>
 					<tr><td><input type="radio" name="command" id="summary" value="summary"></td><td><label for="summary">bgp&nbsp;summary</label></td></tr>
 					<?php } ?>
 					<tr><td><input type="radio" name="command" id="graph" value="graph"></td><td><label for="graph">bgp graph</label></td></tr>
@@ -616,7 +674,12 @@ else
 <?php endif ?>
 <?php endforeach ?>
 				</select></td></tr>
-				<tr><td align="center" colspan="3"><p><input type="submit" value="Submit"> | <input type="reset" value="Reset"></p></td></tr>
+				<tr><td align="center" colspan="3"><p><input type="submit" name="submit"
+<?php if ($_CONFIG['recaptchaEnabled']): ?>
+					onclick="captcha(event, document.theForm.command.value, document.theForm.protocol.value, document.theForm.router.value, document.theForm.query.value)"
+<?php endif ?>   
+					> | <input type="reset" value="Reset"></p></td></tr>
+
 			</table>
 		</div>
 		</form>
@@ -641,13 +704,26 @@ else
  */
 function process($url, $exec, $return_buffer = FALSE)
 {
-	global $_CONFIG, $router, $protocol, $os, $command, $query, $ros;
+	global $_SERVER, $_CONFIG, $router, $protocol, $os, $command, $query, $ros, $token;
 
     $sshauthtype = null;
 	$buffer = '';
 	$lines = $line = $is_exception = FALSE;
 	$index = 0;
 	$str_in = array();
+
+	$urlProtocol = isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) ? 'https' : 'http';
+	$curlUrl = $urlProtocol . "://" . $_SERVER['SERVER_NAME'] . "/backend.php";
+
+	if($_CONFIG['recaptchaEnabled'] === true) {
+		$result = verifyToken($curlUrl, $token);
+		if($result == false) {
+			echo "<script>window.location.href='/forbidden.php'</script>";
+			exit;
+		}	
+	}
+
+// do processing for the $response
 
 	switch ($url['scheme'])
 	{
@@ -1014,6 +1090,52 @@ function process($url, $exec, $return_buffer = FALSE)
 	}
 
 	flush();
+}
+
+function verifyToken($url, $token){
+    $headers = array(
+        "Content-Type: application/json"
+    );
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(["token" => $token]));
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, "1");
+    curl_setopt($ch, CURLOPT_TIMEOUT, "3");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_VERBOSE, true);
+
+    $data = curl_exec($ch);
+    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    if(curl_error($ch)){
+        #var_dump(curl_error($ch)); exit;
+		return false;
+    }
+    curl_close($ch);
+
+    if($status > 300){
+        #var_dump($status) . var_dump($data); exit;
+		return false;
+    }
+    if(!$data){
+        #var_dump($status) . var_dump($data); exit;
+		return false;
+    }
+    $decodedData = json_decode($data, true);
+    if($decodedData['status'] !== 200){
+        #var_dump($decodedData); exit;
+		return false;
+    }
+	if(!$decodedData['response']){
+		#var_dump($decodedData); exit;
+		return false;
+	}
+	if($decodedData['response']['success'] !== true){
+		#var_dump($decodedData); exit;
+		return false;
+	}
+	return true;
 }
 
 /**
@@ -1489,7 +1611,7 @@ function parse_out($output, $check = FALSE)
 		return $output;
 	}
 
-	if ($exec == 'show bgp summary') 
+	if (preg_match("/^show bgp summary(?:\s+instance\s+[\d\w-]*)?$/", $exec))
 	{
 		// JunOS
 		if (preg_match("/^([\dA-Fa-f:][\d\.A-Fa-f:]+)\s+/", $output, $lastip_exp)) 
@@ -1655,7 +1777,7 @@ function parse_out($output, $check = FALSE)
 	}
 
 	// JunOS
-	if (preg_match("/^show route advertising-protocol bgp\s+([\d\.A-Fa-f:]+)$/i", $exec, $ip_exp))
+	if (preg_match("/^show route advertising-protocol bgp\s+([\d\.A-Fa-f:]+)(?:\s+table\s+[\d\w\-\.]*)?$/i", $exec, $ip_exp))
 	{
 		$ip = $ip_exp[1];
 
@@ -1862,7 +1984,7 @@ function parse_out($output, $check = FALSE)
 		return $output;
 	}
 
-	if (preg_match("/^show bgp n\w*\s+([\d\.A-Fa-f:]+)/i", $exec, $ip_exp))
+	if (preg_match("/^show bgp n\w*\s+(?:instance\s+[\d\w-]*)?\s*([\d\.A-Fa-f:]+)/i", $exec, $ip_exp))
 	{
 		$ip = $ip_exp[1];
 

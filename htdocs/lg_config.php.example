@@ -25,6 +25,31 @@ $_CONFIG['logo'] = 'lg_logo.gif';
 $_CONFIG['color'] = '#E48559';
 
 /*
+ * Enable reCAPTCHA v3
+ */
+$_CONFIG['recaptchaEnabled'] = false;
+
+/*
+ * reCAPTCHA v3 Frontend URL
+ */
+$_CONFIG['recaptchaFrontendURL'] = 'https://www.google.com/recaptcha/api.js?render=';
+
+/*
+ * reCAPTCHA v3 Backend Verify URL
+ */
+$_CONFIG['recaptchaBackendVerifyURL'] = 'https://www.google.com/recaptcha/api/siteverify';
+
+/*
+ * reCAPTCHA v3 Site Key
+ */
+$_CONFIG['recaptchaSiteKey'] = '';
+
+/*
+ * reCAPTCHA v3 Site Secret
+ */
+$_CONFIG['recaptchaSiteSecret'] = '';
+
+/*
  * Should the LG show BGP peer information?
  */
 $_CONFIG['showpeerinfo'] = 'TRUE';
